@@ -237,7 +237,7 @@ linacc_x = 0
 linacc_y = 0
 angvel_z = 0
 
-alpha = 0.3 #parameter for low-pass filter; lower = more low-pass
+alpha = 0.25 #parameter for low-pass filter; lower = more low-pass
 sensor_thres = 0.15 #threshold for sensor readings, under which it's set to zero
 ########
 
