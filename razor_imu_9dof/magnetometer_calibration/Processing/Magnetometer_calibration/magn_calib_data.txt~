@@ -1,0 +1,6 @@
+In the Razor_AHRS.ino, under 'SENSOR CALIBRATION' find the section that reads 'Magnetometer (extended calibration)'
+Replace the existing 3 lines with these:
+
+#define CALIBRATION__MAGN_USE_EXTENDED true
+const float magn_ellipsoid_center[3] = {98.9334, 37.0545, -3.94387};
+const float magn_ellipsoid_transform[3][3] = {{0.978729, -0.0121544, -0.00598809}, {-0.0121544, 0.991767, -0.000778958}, {-0.00598809, -0.000778958, 0.992890}};

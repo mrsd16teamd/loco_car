@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<include file="$(find hector_mapping)/launch/hector_hokuyo.launch" />
+
+<node pkg="rosbag" type="record" name="rosbag_record_main"
+     args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/> 
+
+</launch>
