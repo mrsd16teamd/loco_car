@@ -35,7 +35,7 @@ int main(int argc, char** argv){
   current_time = ros::Time::now(); last_time = ros::Time::now();
   double no_move_time = current_time.toSec();
 
-  ros::Rate r(10.0); //TODO make this faster later [Hz]
+  ros::Rate r(50.0); //TODO make this faster later [Hz]
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages
@@ -59,7 +59,7 @@ int main(int argc, char** argv){
     else{
 	no_move_time = current_time.toSec();
     }
-    if((current_time.toSec() - no_move_time)>1.0){
+    if((current_time.toSec() - no_move_time)>0.3){
 	vx = 0;
 	vy = 0;
 	vth = 0;
@@ -75,7 +75,7 @@ int main(int argc, char** argv){
     y += delta_y;
     th += delta_th;
 
-    ROS_INFO("x=%f, y=%f, th=%f, vx=%f, vy=%f, vth=%f", x,y,th,vx,vy,vth);
+    ROS_INFO("x=%.2f, y=%.2f, th=%.2f, vx=%.2f, vy=%.2f, vth=%.2f", x,y,th,vx,vy,vth);
 
     //since all odometry is 6DOF we'll need a quaternion created from yaw
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);

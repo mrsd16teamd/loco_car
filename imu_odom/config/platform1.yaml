@@ -1,0 +1,8 @@
+base_imu_x: 61.0
+base_imu_y: 37.0
+base_imu_z: 110.0
+
+base_lidar_x: 105.0
+base_lidar_y: 0.0
+base_lidar_z: 126.0
+

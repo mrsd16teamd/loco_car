@@ -6,6 +6,8 @@
 <arg name="rviz"  default="false" />
 <arg name="bag"   default="false" />
 
+<rosparam command="load" file="$(find imu_odom)/config/platform1.yaml" />
+
 <node pkg="imu_odom" type="odometry_publisher" name="odometry_publisher" output="screen" />
 
 <group if="$(arg imu)">
