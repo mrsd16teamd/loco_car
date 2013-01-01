@@ -1,7 +1,7 @@
 # The frequency, in Hz, at which the filter will output a position estimate. Note that the filter will not begin
 # computation until it receives at least one message from one of the inputs. It will then run continuously at the
 # frequency specified here, regardless of whether it receives more measurements. Defaults to 30 if unspecified.
-frequency: 30
+frequency: 20
 
 # The period, in seconds, after which we consider a sensor to have timed out. In this event, we carry out a predict
 # cycle on the EKF without correcting it. This parameter can be thought of as the minimum frequency with which the
@@ -160,19 +160,19 @@ pose0_nodelay: false
 # vx, vy, vz,
 # vroll, vpitch, vyaw,
 # ax, ay, az
-imu0: imu
-imu0_config: [false, false, false,
-              true,  true,  true,
-              false, false, false,
-              true,  true,  true,
-              true,  true,  true]
-imu0_nodelay: false
-imu0_differential: false
-imu0_relative: true
-imu0_queue_size: 5
-imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
-imu0_twist_rejection_threshold: 0.8                #
-imu0_linear_acceleration_rejection_threshold: 0.8  #
+#imu0: imu
+#imu0_config: [false, false, false,
+#              false,  false, false,
+#              false, false, false,
+#              false,  false,  true,
+#              false,  false,  false]
+#imu0_nodelay: false
+#imu0_differential: false
+#imu0_relative: true
+#imu0_queue_size: 5
+#imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
+#imu0_twist_rejection_threshold: 0.8                #
+#imu0_linear_acceleration_rejection_threshold: 0.8  #
 
 # [ADVANCED] Some IMUs automatically remove acceleration due to gravity, and others don't. If yours doesn't, please set
 # this to true, and *make sure* your data conforms to REP-103, specifically, that the data is in ENU frame.
