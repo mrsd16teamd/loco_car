@@ -2,7 +2,9 @@
 
 <launch>
 
-  <arg name="lidar_path" default="/dev/hokuyo/" />
+  <!--  <arg name="lidar_path" default="/dev/hokuyo" /> -->
+  <!--  <arg name="lidar_path" default="_serial_port:='/dev/hokuyo'" /> -->
+  <arg name="lidar_path" default="_ip_address:=192.168.0.10" />
 
   <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/>
 
