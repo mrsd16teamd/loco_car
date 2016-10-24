@@ -2,8 +2,9 @@
 
 <launch>
 
-  <node pkg="urg_node" type="urg_node" name="urg_node" args="/dev/ttyACM0"/>
-<!--  <node pkg="rviz" type="rviz" name="rviz"/> -->
+  <arg name="lidar_path" default="/dev/ttyACM0/" />
+
+  <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/>
 
   <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="0 0 0 0 0 0 base_footprint laser 100"/>
 

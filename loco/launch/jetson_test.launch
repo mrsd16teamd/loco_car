@@ -2,9 +2,24 @@
 
 <launch>
 
-<include file="$(find hector_mapping)/launch/hector_hokuyo.launch" />
+<arg name="lidar" default="true" />
+<arg name="imu"   default="false" />
+<arg name="rviz"  default="true" />
+
+
+<group if="$(arg lidar)">
+    <include file="$(find hector_mapping)/launch/hector_hokuyo.launch" />
+</group>
+
+<group if="$(arg imu)">
+    <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
+</group>
+
+<group if="$(arg rviz)">
+    <node pkg="rviz" type="rviz" name="rviz"/>
+</group>
 
 <node pkg="rosbag" type="record" name="rosbag_record_main"
-     args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/> 
+     args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>
 
 </launch>
