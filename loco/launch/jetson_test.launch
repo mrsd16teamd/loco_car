@@ -5,6 +5,7 @@
 <arg name="lidar" default="true" />
 <arg name="imu"   default="false" />
 <arg name="rviz"  default="true" />
+<arg name="bag"   default="false" />
 
 
 <group if="$(arg lidar)">
@@ -19,7 +20,9 @@
     <node pkg="rviz" type="rviz" name="rviz"/>
 </group>
 
-<node pkg="rosbag" type="record" name="rosbag_record_main"
-     args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>
+<group if="$(arg bag)">
+	<node pkg="rosbag" type="record" name="rosbag_record_main"
+     	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>
+</group>
 
 </launch>
