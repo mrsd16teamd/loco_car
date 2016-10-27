@@ -20,7 +20,7 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "imu_listner");
   ros::NodeHandle nh;
 
-  ros::Subscriber imu_sub = nh.subscribe("fake_imu",1000,imuCallback);
+  ros::Subscriber imu_sub = nh.subscribe("imu",1000,imuCallback);
 
   ros::spin();
 

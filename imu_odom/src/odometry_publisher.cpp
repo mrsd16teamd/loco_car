@@ -29,7 +29,7 @@ int main(int argc, char** argv){
   ros::NodeHandle n;
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom",50);
   tf::TransformBroadcaster odom_broadcaster;
-  ros::Subscriber imu_sub = n.subscribe("fake_imu",1000,imuCallback);
+  ros::Subscriber imu_sub = n.subscribe("imu",1000,imuCallback);
 
   double x = 0.0; double y = 0.0; double th = 0.0;
   double vx = 0.0; double vy = 0.0; double vth = 0.0;
@@ -37,7 +37,7 @@ int main(int argc, char** argv){
   ros::Time current_time, last_time;
   current_time = ros::Time::now(); last_time = ros::Time::now();
 
-  ros::Rate r(2.0); //TODO make this faster later [Hz]
+  ros::Rate r(10.0); //TODO make this faster later [Hz]
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages

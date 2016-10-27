@@ -8,7 +8,7 @@ int main(int argc, char** argv){
   ros::init(argc,argv,"fake_imu_publisher");
 
   ros::NodeHandle nh;
-  ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("fake_imu", 50);
+  ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 50);
 
   ros::Rate r(1.0);
 
