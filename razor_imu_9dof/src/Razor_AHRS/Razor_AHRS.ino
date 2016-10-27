@@ -174,7 +174,7 @@
 /*****************************************************************/
 // Select your hardware here by uncommenting one line!
 //#define HW__VERSION_CODE 10125 // SparkFun "9DOF Razor IMU" version "SEN-10125" (HMC5843 magnetometer)
-//#define HW__VERSION_CODE 10736 // SparkFun "9DOF Razor IMU" version "SEN-10736" (HMC5883L magnetometer)
+#define HW__VERSION_CODE 10736 // SparkFun "9DOF Razor IMU" version "SEN-10736" (HMC5883L magnetometer)
 //#define HW__VERSION_CODE 10183 // SparkFun "9DOF Sensor Stick" version "SEN-10183" (HMC5843 magnetometer)
 //#define HW__VERSION_CODE 10321 // SparkFun "9DOF Sensor Stick" version "SEN-10321" (HMC5843 magnetometer)
 //#define HW__VERSION_CODE 10724 // SparkFun "9DOF Sensor Stick" version "SEN-10724" (HMC5883L magnetometer)
@@ -230,12 +230,13 @@ boolean output_errors = false;  // true or false
 // Put MIN/MAX and OFFSET readings for your board here!
 // Accelerometer
 // "accel x,y,z (min/max) = X_MIN/X_MAX  Y_MIN/Y_MAX  Z_MIN/Z_MAX"
-float ACCEL_X_MIN = -250;
-float ACCEL_X_MAX = 250;
-float ACCEL_Y_MIN = -250;
-float ACCEL_Y_MAX = 250;
-float ACCEL_Z_MIN = -250;
-float ACCEL_Z_MAX = 250;
+// Default: all +/- 250
+float ACCEL_X_MIN = -261.7;
+float ACCEL_X_MAX = 251;
+float ACCEL_Y_MIN = -261;
+float ACCEL_Y_MAX = 268;
+float ACCEL_Z_MIN = -276;
+float ACCEL_Z_MAX = 238.7;
 
 // Magnetometer (standard calibration mode)
 // "magn x,y,z (min/max) = X_MIN/X_MAX  Y_MIN/Y_MAX  Z_MIN/Z_MAX"
@@ -248,21 +249,23 @@ float MAGN_Z_MAX = 600;
 
 // Magnetometer (extended calibration mode)
 // Set to true to use extended magnetometer calibration (compensates hard & soft iron errors)
-boolean CALIBRATION__MAGN_USE_EXTENDED = false;
-float magn_ellipsoid_center[3] = {0, 0, 0};
-float magn_ellipsoid_transform[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
-
+//boolean CALIBRATION__MAGN_USE_EXTENDED = false;
+//float magn_ellipsoid_center[3] = {0, 0, 0};
+//float magn_ellipsoid_transform[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+boolean CALIBRATION__MAGN_USE_EXTENDED = true;
+float magn_ellipsoid_center[3] = {98.9334, 37.0545, -3.94387};
+float magn_ellipsoid_transform[3][3] = {{0.978729, -0.0121544, -0.00598809}, {-0.0121544, 0.991767, -0.000778958}, {-0.00598809, -0.000778958, 0.992890}};
 // Gyroscope
 // "gyro x,y,z (current/average) = .../OFFSET_X  .../OFFSET_Y  .../OFFSET_Z
-float GYRO_AVERAGE_OFFSET_X = 0.0;
-float GYRO_AVERAGE_OFFSET_Y = 0.0;
-float GYRO_AVERAGE_OFFSET_Z = 0.0;
+float GYRO_AVERAGE_OFFSET_X = -68.08;
+float GYRO_AVERAGE_OFFSET_Y = -6.84;
+float GYRO_AVERAGE_OFFSET_Z = 5.54;
 
 
 // DEBUG OPTIONS
 /*****************************************************************/
 // When set to true, gyro drift correction will not be applied
-#define DEBUG__NO_DRIFT_CORRECTION false
+#define DEBUG__NO_DRIFT_CORRECTION true
 // Print elapsed time after each I/O loop
 #define DEBUG__PRINT_LOOP_TIME false
 
