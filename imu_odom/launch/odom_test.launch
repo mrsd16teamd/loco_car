@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<arg name="imu"   default="true" />
+<arg name="rviz"  default="false" />
+<arg name="bag"   default="false" />
+
+<node pkg="imu_odom" type="odometry_publisher" name="odometry_publisher" />
+
+<group if="$(arg imu)">
+    <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
+</group>
+
+<group if="$(arg rviz)">
+    <node pkg="rviz" type="rviz" name="rviz"/>
+</group>
+
+<group if="$(arg bag)">
+	<node pkg="rosbag" type="record" name="rosbag_record_main"
+     	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>
+</group>
+
+</launch>
