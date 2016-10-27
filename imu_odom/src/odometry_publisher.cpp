@@ -12,8 +12,10 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg){
 
   //TODO add transform from imu_frame to base_link
   //define base_link as midpoint of rect defined by wheels?
+  //needs to make static_transform_publisher for this and laser to base_link
 
   //TODO add low pass filter here? check on real IMU
+  //TODO 
 
   imu_data.ax = msg->linear_acceleration.x;
   imu_data.ay = msg->linear_acceleration.y;
@@ -35,7 +37,7 @@ int main(int argc, char** argv){
   ros::Time current_time, last_time;
   current_time = ros::Time::now(); last_time = ros::Time::now();
 
-  ros::Rate r(2.0); //[Hz]make this faster later 
+  ros::Rate r(2.0); //TODO make this faster later [Hz]
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages
