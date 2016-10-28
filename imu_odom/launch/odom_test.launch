@@ -6,7 +6,7 @@
 <arg name="rviz"  default="false" />
 <arg name="bag"   default="false" />
 
-<node pkg="imu_odom" type="odometry_publisher" name="odometry_publisher" />
+<node pkg="imu_odom" type="odometry_publisher" name="odometry_publisher" output="screen" />
 
 <group if="$(arg imu)">
     <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />

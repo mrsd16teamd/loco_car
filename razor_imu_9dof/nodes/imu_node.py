@@ -251,6 +251,10 @@ while not rospy.is_shutdown():
 
     #############
     #thresholding for linacc_x,linacc_y, ang_vel_z;
+
+    #COMPENSATING FOR STEADY STATE OFFSET HERE; THIS IS WRONG AND TEMPORARY
+    #imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - 0.60;
+
     if(abs(imuMsg.linear_acceleration.x)<0.15):
 	imuMsg.linear_acceleration.x=0;
     if(abs(imuMsg.linear_acceleration.y)<0.15):
