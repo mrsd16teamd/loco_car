@@ -15,7 +15,7 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg){
   //needs to make static_transform_publisher for this and laser to base_link
 
   //TODO add low pass filter here? check on real IMU
-  //TODO 
+  //TODO add threshold or something else in imu publisher
 
   imu_data.ax = msg->linear_acceleration.x;
   imu_data.ay = msg->linear_acceleration.y;
@@ -44,14 +44,16 @@ int main(int argc, char** argv){
 
     // Assuming x is forward, y is right, z is up. acc[m/s^2], w[rad/s]
     //integrate new sensor readings
-    vx += imu_data.ax;
-    vy += imu_data.ay;
-    vth = imu_data.w;
 
     current_time = ros::Time::now();
 
     //compute odometry in a typical way given the velocities of the robot
     double dt = (current_time - last_time).toSec();
+
+    vx += imu_data.ax*dt;
+    vy += imu_data.ay*dt;
+    vth = imu_data.w;
+
     double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
     double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
     double delta_th = vth * dt;
