@@ -249,6 +249,16 @@ while not rospy.is_shutdown():
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103) 
         imuMsg.angular_velocity.z = -float(words[8])
 
+    #############
+    #thresholding for linacc_x,linacc_y, ang_vel_z;
+    if(abs(imuMsg.linear_acceleration.x)<0.15):
+	imuMsg.linear_acceleration.x=0;
+    if(abs(imuMsg.linear_acceleration.y)<0.15):
+	imuMsg.linear_acceleration.y=0;
+    if(abs(imuMsg.angular_velocity.z)<0.15):
+	imuMsg.angular_velocity.z=0;
+    ###########
+
     q = quaternion_from_euler(roll,pitch,yaw)
     imuMsg.orientation.x = q[0]
     imuMsg.orientation.y = q[1]
