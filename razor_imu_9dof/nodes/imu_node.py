@@ -218,6 +218,16 @@ for x in range(0, 200):
 rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
 
+########
+# Initialize low-pass filter
+
+linacc_x = 0
+linacc_y = 0
+angvel_z = 0
+
+alpha = 0.1
+########
+
 while not rospy.is_shutdown():
     line = ser.readline()
     line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
@@ -250,17 +260,28 @@ while not rospy.is_shutdown():
         imuMsg.angular_velocity.z = -float(words[8])
 
     #############
-    #thresholding for linacc_x,linacc_y, ang_vel_z;
+    #low pass filter, thresholding for linacc_x,linacc_y, ang_vel_z;
 
     #COMPENSATING FOR STEADY STATE OFFSET HERE; THIS IS WRONG AND TEMPORARY
-    #imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - 0.60;
+    imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - 0.35;
+    imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - 0.4;
 
-    if(abs(imuMsg.linear_acceleration.x)<0.15):
-	imuMsg.linear_acceleration.x=0;
-    if(abs(imuMsg.linear_acceleration.y)<0.15):
-	imuMsg.linear_acceleration.y=0;
-    if(abs(imuMsg.angular_velocity.z)<0.15):
-	imuMsg.angular_velocity.z=0;
+    linacc_x = (alpha*imuMsg.linear_acceleration.x) + ((1-alpha)*linacc_x)
+    linacc_y = (alpha*imuMsg.linear_acceleration.y) + ((1-alpha)*linacc_y)
+    angvel_z = (alpha*imuMsg.angular_velocity.z) + ((1-alpha)*angvel_z)
+
+    if(abs(linacc_x)<0.15):
+	imuMsg.linear_acceleration.x=0
+    else:
+	imuMsg.linear_acceleration.x=linacc_x
+    if(abs(linacc_y)<0.15):
+	imuMsg.linear_acceleration.y=0
+    else:
+	imuMsg.linear_acceleration.y=linacc_y
+    if(abs(angvel_z)<0.15):
+	imuMsg.angular_velocity.z=0
+    else:
+	imuMsg.angular_velocity.z=angvel_z
     ###########
 
     q = quaternion_from_euler(roll,pitch,yaw)
