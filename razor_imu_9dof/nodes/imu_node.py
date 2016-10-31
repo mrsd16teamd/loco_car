@@ -218,6 +218,16 @@ for x in range(0, 200):
 rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
 
+######## stuff kazu added
+# Initialize low-pass filter
+
+linacc_x = 0
+linacc_y = 0
+angvel_z = 0
+
+alpha = 0.1
+########
+
 while not rospy.is_shutdown():
     line = ser.readline()
     line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
@@ -248,6 +258,32 @@ while not rospy.is_shutdown():
         imuMsg.angular_velocity.y = -float(words[7])
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103) 
         imuMsg.angular_velocity.z = -float(words[8])
+
+    ############# more stuff kazu added
+
+    #COMPENSATING FOR STEADY STATE OFFSET HERE; This should probably be temporary
+    linaccx_offset = 0.4; #0.35
+    linaccy_offset = 0.25; #0.4
+    imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - linaccx_offset;
+    imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - linaccy_offset;
+
+    linacc_x = (alpha*imuMsg.linear_acceleration.x) + ((1-alpha)*linacc_x)
+    linacc_y = (alpha*imuMsg.linear_acceleration.y) + ((1-alpha)*linacc_y)
+    angvel_z = (alpha*imuMsg.angular_velocity.z) + ((1-alpha)*angvel_z)
+
+    if(abs(linacc_x)<0.15):
+	imuMsg.linear_acceleration.x=0
+    else:
+	imuMsg.linear_acceleration.x=linacc_x
+    if(abs(linacc_y)<0.15):
+	imuMsg.linear_acceleration.y=0
+    else:
+	imuMsg.linear_acceleration.y=linacc_y
+    if(abs(angvel_z)<0.15):
+	imuMsg.angular_velocity.z=0
+    else:
+	imuMsg.angular_velocity.z=angvel_z
+    ###########
 
     q = quaternion_from_euler(roll,pitch,yaw)
     imuMsg.orientation.x = q[0]
