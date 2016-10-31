@@ -14,9 +14,6 @@ void imuCallback(const sensor_msgs::Imu::ConstPtr& msg){
   //define base_link as midpoint of rect defined by wheels?
   //needs to make static_transform_publisher for this and laser to base_link
 
-  //TODO add low pass filter here? check on real IMU
-  //TODO add threshold or something else in imu publisher
-
   imu_data.ax = msg->linear_acceleration.x;
   imu_data.ay = msg->linear_acceleration.y;
   imu_data.w  = msg->angular_velocity.z;
@@ -36,6 +33,7 @@ int main(int argc, char** argv){
 
   ros::Time current_time, last_time;
   current_time = ros::Time::now(); last_time = ros::Time::now();
+  double no_move_time = current_time.toSec();
 
   ros::Rate r(10.0); //TODO make this faster later [Hz]
   while(n.ok()){
@@ -53,6 +51,21 @@ int main(int argc, char** argv){
     vx += imu_data.ax*dt;
     vy += imu_data.ay*dt;
     vth = imu_data.w;
+
+    // Before integrating odometry, check if robot has been inactive for a while
+    if( (imu_data.ax==0.0) && (imu_data.ay==0.0) && (imu_data.w==0.0) ) {
+	no_move_time = no_move_time;
+    }
+    else{
+	no_move_time = current_time.toSec();
+    }
+    if((current_time.toSec() - no_move_time)>1.0){
+	vx = 0;
+	vy = 0;
+	vth = 0;
+    }
+
+    //ROS_INFO("current time = %f, no_move_time = %f", current_time.toSec(), no_move_time);
 
     double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
     double delta_y = (vx * sin(th) + vy * cos(th)) * dt;

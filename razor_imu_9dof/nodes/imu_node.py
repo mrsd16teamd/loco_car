@@ -218,7 +218,7 @@ for x in range(0, 200):
 rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
 
-########
+######## stuff kazu added
 # Initialize low-pass filter
 
 linacc_x = 0
@@ -259,12 +259,13 @@ while not rospy.is_shutdown():
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103) 
         imuMsg.angular_velocity.z = -float(words[8])
 
-    #############
-    #low pass filter, thresholding for linacc_x,linacc_y, ang_vel_z;
+    ############# more stuff kazu added
 
-    #COMPENSATING FOR STEADY STATE OFFSET HERE; THIS IS WRONG AND TEMPORARY
-    imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - 0.35;
-    imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - 0.4;
+    #COMPENSATING FOR STEADY STATE OFFSET HERE; This should probably be temporary
+    linaccx_offset = 0.4; #0.35
+    linaccy_offset = 0.25; #0.4
+    imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - linaccx_offset;
+    imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - linaccy_offset;
 
     linacc_x = (alpha*imuMsg.linear_acceleration.x) + ((1-alpha)*linacc_x)
     linacc_y = (alpha*imuMsg.linear_acceleration.y) + ((1-alpha)*linacc_y)
