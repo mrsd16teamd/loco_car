@@ -213,8 +213,18 @@ ser.write('#o1' + chr(13))
 #ser.flushInput()  #discard old input, still in invalid format
 #flush manually, as above command is not working - it breaks the serial connection
 rospy.loginfo("Flushing first 200 IMU entries...")
-for x in range(0, 200):
+for x in range(0, 199):
     line = ser.readline()
+
+###################
+line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
+    #f.write(line)                     # Write to the output log file
+words = string.split(line,",")    # Fields split
+linaccx_offset = -(float(words[3])) * accel_factor
+linaccy_offset = float(words[4]) * accel_factor
+rospy.loginfo("Accelerometer offsets: x:%f, y:%f", linaccx_offset, linaccy_offset)
+###################
+
 rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
 
@@ -262,8 +272,8 @@ while not rospy.is_shutdown():
     ############# more stuff kazu added
 
     #COMPENSATING FOR STEADY STATE OFFSET HERE; This should probably be temporary
-    linaccx_offset = 0.16; #0.4
-    linaccy_offset = 0.0; #0.25
+    #linaccx_offset = 0.16; #0.4
+    #linaccy_offset = 0.0; #0.25
     imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - linaccx_offset;
     imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - linaccy_offset;
 
