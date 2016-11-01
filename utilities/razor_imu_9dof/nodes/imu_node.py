@@ -262,8 +262,8 @@ while not rospy.is_shutdown():
     ############# more stuff kazu added
 
     #COMPENSATING FOR STEADY STATE OFFSET HERE; This should probably be temporary
-    linaccx_offset = 0.4; #0.35
-    linaccy_offset = 0.25; #0.4
+    linaccx_offset = 0.21; #0.4
+    linaccy_offset = 0.25; #0.25
     imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - linaccx_offset;
     imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - linaccy_offset;
 
