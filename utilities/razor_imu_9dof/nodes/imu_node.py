@@ -233,12 +233,12 @@ rospy.loginfo("Publishing IMU data...")
 
 ######## stuff kazu added
 # Initialize low-pass filter
-
 linacc_x = 0
 linacc_y = 0
 angvel_z = 0
 
-alpha = 0.3
+alpha = 0.3 #parameter for low-pass filter; lower = more low-pass
+sensor_thres = 0.15 #threshold for sensor readings, under which it's set to zero
 ########
 
 while not rospy.is_shutdown():
@@ -274,25 +274,25 @@ while not rospy.is_shutdown():
 
     ############# more stuff kazu added
 
-    #COMPENSATING FOR STEADY STATE OFFSET HERE; This should probably be temporary
-    #linaccx_offset = 0.16; #0.4
-    #linaccy_offset = 0.0; #0.25
+    #COMPENSATING FOR STEADY STATE OFFSET HERE
     imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - linaccx_offset;
     imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - linaccy_offset;
 
+    #low-pass filter all readings
     linacc_x = (alpha*imuMsg.linear_acceleration.x) + ((1-alpha)*linacc_x)
     linacc_y = (alpha*imuMsg.linear_acceleration.y) + ((1-alpha)*linacc_y)
     angvel_z = (alpha*imuMsg.angular_velocity.z) + ((1-alpha)*angvel_z)
 
-    if(abs(linacc_x)<0.15):
+    #threshold sensor readings to reduce effect of noise on odometry
+    if(abs(linacc_x)<sensor_thres):
 	imuMsg.linear_acceleration.x=0
     else:
 	imuMsg.linear_acceleration.x=linacc_x
-    if(abs(linacc_y)<0.15):
+    if(abs(linacc_y)<sensor_thres):
 	imuMsg.linear_acceleration.y=0
     else:
 	imuMsg.linear_acceleration.y=linacc_y
-    if(abs(angvel_z)<0.15):
+    if(abs(angvel_z)<sensor_thres):
 	imuMsg.angular_velocity.z=0
     else:
 	imuMsg.angular_velocity.z=angvel_z
