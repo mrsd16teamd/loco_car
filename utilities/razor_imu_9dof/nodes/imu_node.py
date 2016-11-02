@@ -158,7 +158,7 @@ ser.write('#o0' + chr(13))
 #automatic flush - NOT WORKING
 #ser.flushInput()  #discard old input, still in invalid format
 #flush manually, as above command is not working
-discard = ser.readlines() 
+discard = ser.readlines()
 
 #set output mode
 ser.write('#ox' + chr(13)) # To start display angle and sensor reading in text
@@ -213,7 +213,7 @@ ser.write('#o1' + chr(13))
 #ser.flushInput()  #discard old input, still in invalid format
 #flush manually, as above command is not working - it breaks the serial connection
 rospy.loginfo("Flushing first 200 IMU entries...")
-for x in range(0, 199):
+for x in range(0, 200):
     line = ser.readline()
 
 ###################
@@ -266,7 +266,7 @@ while not rospy.is_shutdown():
         imuMsg.angular_velocity.x = float(words[6])
         #in AHRS firmware y axis points right, in ROS y axis points left (see REP 103)
         imuMsg.angular_velocity.y = -float(words[7])
-        #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103) 
+        #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
         imuMsg.angular_velocity.z = -float(words[8])
 
     ############# more stuff kazu added
@@ -324,6 +324,6 @@ while not rospy.is_shutdown():
         diag_msg.values.append(KeyValue('sequence number', str(seq)))
         diag_arr.status.append(diag_msg)
         diag_pub.publish(diag_arr)
-        
+
 ser.close
 #f.close
