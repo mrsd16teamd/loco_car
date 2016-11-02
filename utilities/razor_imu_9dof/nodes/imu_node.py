@@ -217,6 +217,9 @@ for x in range(0, 200):
     line = ser.readline()
 
 ###################
+rospy.loginfo("Taking initial accelerometer offsets in 2 seconds, please leave robot stationary...")
+rospy.sleep(2.)
+line = ser.readline()
 line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
     #f.write(line)                     # Write to the output log file
 words = string.split(line,",")    # Fields split
