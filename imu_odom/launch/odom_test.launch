@@ -16,8 +16,8 @@
 <arg name="base2lidar_y" default="0.0"/>
 <arg name="base2lidar_z" default="126.0"/>
 
-<node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="$(arg base2imu_x) $(arg base2imu_y) $(arg base2imu_z) 0 0 0 base_link laser 100"/>
-<node pkg="tf" type="static_transform_publisher" name="base_to_imu_broadcaster" args="$(arg base2lidar_x) $(arg base2lidar_y) $(arg base2lidar_z) 0 0 0 base_link base_imu_link 100"/>
+<node pkg="tf" type="static_transform_publisher" name="base_to_imu_broadcaster" args="$(arg base2imu_x) $(arg base2imu_y) $(arg base2imu_z) 0 0 0 base_link base_imu_link 100"/>
+<node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="$(arg base2lidar_x) $(arg base2lidar_y) $(arg base2lidar_z) 0 0 0 base_link laser 100"/>
 
 <node pkg="imu_odom" type="odometry_publisher" name="odometry_publisher" output="screen" />
 
