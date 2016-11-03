@@ -13,6 +13,7 @@
   <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
 
     <param name="pub_odometry" value="true" />
+    <remap from="map" to="hector_map" />
 
     <!-- Frame names -->
     <param name="map_frame" value="map" />
