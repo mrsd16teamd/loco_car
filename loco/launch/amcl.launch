@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="base2lidar_x" default="0.105"/> <!-- mm? x=105.0, z=126.0 -->
+  <arg name="base2lidar_y" default="0.0"/>
+  <arg name="base2lidar_z" default="0.126"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="$(arg base2lidar_x) $(arg base2lidar_y) $(arg base2lidar_z) 0 0 0 base_link laser 100"/>
+
+  <arg name="lidar_path" default="/dev/ttyACM0/" />
+  <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/>
+
+  <include file="$(find hector_mapping)/launch/hector_odom.launch" />
+
+  <node pkg="map_server" type="map_server" name="map_server" args="$(find loco)/maps/lab.yaml" />
+
+  <node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <param name="scan" value="scan" />
+  </node>
+
+</launch>
