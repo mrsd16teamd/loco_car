@@ -7,6 +7,4 @@
   <node pkg="razor_imu_9dof" type="imu_node.py" name="imu_node" output="screen">
     <rosparam file="$(arg razor_config_file)" command="load"/>
   </node>
-
-  <!-- <node pkg="imu_odom" type="fake_imu_data" name="fake_imu_data" output="screen" /> -->
 </launch>

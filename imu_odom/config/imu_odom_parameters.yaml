@@ -1,6 +1,6 @@
 imu:
-  lp_alpha: 0.3
+  lp_alpha: 0.5
   threshold: 0.1
 
 odom:
-  inactive_timeout: 0.5
+  inactive_timeout: 0.25
