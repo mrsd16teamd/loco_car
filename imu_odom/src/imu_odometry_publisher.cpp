@@ -4,8 +4,9 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <cmath>
+#include <string>
 
-#define LOWPASS false
+#define LOWPASS true
 
 class ImuData{
   public:
@@ -40,6 +41,7 @@ class ImuOdometryPublisher {
     float inactive_timeout_;
 
     ros::Time last_active_time;
+    ros::Time last_update_time;
 
     ros::Subscriber imu_sub;
     ros::Publisher odom_pub;
@@ -59,11 +61,15 @@ ImuOdometryPublisher::ImuOdometryPublisher() {
       nh.getParam("odom/inactive_time", inactive_timeout_);
       lp_beta_ = 1-lp_alpha_;
       ROS_INFO("Loaded imu_odometry parameters");
+      ROS_INFO("threshold=%f",threshold_);
   }
   else{ ROS_INFO("parameters not found!"); }
 
   imu_sub = nh.subscribe("imu",1, &ImuOdometryPublisher::SensorCallback, this);
   odom_pub = nh.advertise<nav_msgs::Odometry>("odom",50);
+
+  last_update_time = ros::Time::now(); //TODO this isn't right.. where should it go?
+  last_active_time = ros::Time::now();
 }
 
 ImuOdometryPublisher::~ImuOdometryPublisher() { }
@@ -112,10 +118,13 @@ void ImuOdometryPublisher::PublishOdometry(){
 void ImuOdometryPublisher::CalculateOdometry(){
   //Update current_state, publish
 
+  ros::Time current_time = ros::Time::now();
+  float h = current_time.toSec() - last_update_time.toSec();
+
   //update position, heading
-  current_state.x += current_state.vx;
-  current_state.y += current_state.vy;
-  current_state.t += current_state.w;
+  current_state.x += current_state.vx * h;
+  current_state.y += current_state.vy * h;
+  current_state.t += current_state.w  * h;
 
   //update velocities
   float ax = latest_imu.linear_acceleration[0]*cos(latest_imu.orientation[1])
@@ -123,22 +132,28 @@ void ImuOdometryPublisher::CalculateOdometry(){
   float ay = latest_imu.linear_acceleration[1]*cos(-latest_imu.orientation[0])
     + latest_imu.linear_acceleration[2]*sin(-latest_imu.orientation[0]);
 
-  current_state.vx += ax;
-  current_state.vy += ay;
+  current_state.vx += ax * h;
+  current_state.vy += ay * h;
   current_state.w = latest_imu.angular_velocity[2];
   //w_z is approximate; it doesn't take into account orientation
 
+  //ROS_INFO("roll= %f pitch=%f yaw=%f",latest_imu.orientation[0], latest_imu.orientation[1], latest_imu.orientation[2]);
+  //ROS_INFO("vx= %f vy=%f w= %f",current_state.vx, current_state.vy, current_state.w);
+  //ROS_INFO("ax= %f ay=%f",ax, ay);
+
   //check ifrobot is (close to) not moving
-  if(!((abs(ax)<threshold_) && (abs(ay)<threshold_) &&
-    (abs(latest_imu.angular_velocity[2])<threshold_)))
+  if((std::abs(ax)>threshold_) || (std::abs(ay)>threshold_) ||
+    (std::abs(latest_imu.angular_velocity[2])>threshold_))
   {
     last_active_time = ros::Time::now();
+    //ROS_INFO("updated last_active_time");
   }
 
-  ros::Time current_time = ros::Time::now();
   if((current_time.toSec() - last_active_time.toSec()) > inactive_timeout_){
     current_state.vx = current_state.vy = current_state.w = 0;
   }
+
+  last_update_time = current_time;
 
   PublishOdometry();
 
@@ -182,9 +197,15 @@ void ImuOdometryPublisher::SensorCallback(const sensor_msgs::Imu::ConstPtr& msg)
     latest_imu.angular_velocity[2] = lp_alpha_*(msg->angular_velocity.z) +
       lp_beta_*latest_imu.angular_velocity[2];
 
-    latest_imu.linear_acceleration[0] = msg->linear_acceleration.x;
-    latest_imu.linear_acceleration[1] = msg->linear_acceleration.y;
-    latest_imu.linear_acceleration[2] = msg->linear_acceleration.z;
+    latest_imu.linear_acceleration[0] = lp_alpha_*(msg->linear_acceleration.x) +
+      lp_beta_*(latest_imu.linear_acceleration[0]);
+    latest_imu.linear_acceleration[1] = lp_alpha_*(msg->linear_acceleration.y) +
+      lp_beta_*(latest_imu.linear_acceleration[1]);
+    latest_imu.linear_acceleration[2] = lp_alpha_*(msg->linear_acceleration.z) +
+      lp_beta_*(latest_imu.linear_acceleration[2]);
+
+    ROS_INFO("imu: %f",latest_imu.linear_acceleration[0]);
+
   }
 
   CalculateOdometry();
@@ -195,10 +216,7 @@ int main(int argc, char** argv) {
 
   ImuOdometryPublisher imu_odometry_publisher;
 
-  printf("starting spin...");
   ros::spin();
-
-  printf("ok, i'm done");
 
   return 0;
 }

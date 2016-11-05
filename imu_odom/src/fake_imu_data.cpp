@@ -10,7 +10,9 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 50);
 
-  ros::Rate r(1.0);
+  ros::Rate r(50);
+
+  int i = 0;
 
   while(nh.ok()){
     //populate the imu message
@@ -22,19 +24,19 @@ int main(int argc, char** argv){
     geometry_msgs::Vector3 ang_vel;
     geometry_msgs::Vector3 lin_acc;
 
-    ang_vel.x=0; ang_vel.y=0; ang_vel.z=0.1;
-    lin_acc.x=0.05; lin_acc.y=0.0; lin_acc.z=0;
+    ang_vel.x=0; ang_vel.y=0; ang_vel.z=0.0;
+    lin_acc.x=0.15; lin_acc.y=0.0; lin_acc.z=0;
+
+    i++;
+    if ((i%500)<250) { lin_acc.x=0.5;}
 
     imu_data.angular_velocity = ang_vel;
     imu_data.linear_acceleration = lin_acc;
 
     //Stuff we don't know
     geometry_msgs::Quaternion imu_orient;
-    imu_orient.x = -1; imu_orient.y = 0; imu_orient.z = 0; imu_orient.w = 0;
+    imu_orient.x = 0.0; imu_orient.y = 0; imu_orient.z = 0; imu_orient.w = 1.0;
     imu_data.orientation =  imu_orient;
-
-
-    imu_data.orientation_covariance[0] = -1;
 
     //Datasheet says "Zero-Rate Output Variation Over Temperature"=40deg/s
     //Total RMS noise = 0.38deg/s-rms
