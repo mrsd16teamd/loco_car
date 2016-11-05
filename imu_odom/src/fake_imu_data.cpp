@@ -25,10 +25,10 @@ int main(int argc, char** argv){
     geometry_msgs::Vector3 lin_acc;
 
     ang_vel.x=0; ang_vel.y=0; ang_vel.z=0.0;
-    lin_acc.x=0.15; lin_acc.y=0.0; lin_acc.z=0;
+    lin_acc.x=-0.15; lin_acc.y=0.0; lin_acc.z=0;
 
     i++;
-    if ((i%500)<250) { lin_acc.x=0.5;}
+    if ((i%500)<250) { lin_acc.x=0.15;}
 
     imu_data.angular_velocity = ang_vel;
     imu_data.linear_acceleration = lin_acc;

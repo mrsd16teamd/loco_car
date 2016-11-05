@@ -45,6 +45,7 @@ class ImuOdometryPublisher {
 
     ros::Subscriber imu_sub;
     ros::Publisher odom_pub;
+    tf::TransformBroadcaster odom_broadcaster;
 
     void SensorCallback(const sensor_msgs::Imu::ConstPtr& msg);
     void PublishOdometry();
@@ -76,24 +77,25 @@ ImuOdometryPublisher::~ImuOdometryPublisher() { }
 
 void ImuOdometryPublisher::PublishOdometry(){
   //Publish stuff
-  ros::Time current_time = ros::Time::now();
 
   //since all odometry is 6DOF we need a quaternion created from yaw
   geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(current_state.t);
 
+  ros::Time current_time = ros::Time::now();
+
   //Publish TF transform
-  tf::TransformBroadcaster odom_broadcaster;
   geometry_msgs::TransformStamped odom_tf;
   odom_tf.header.stamp = current_time;
   odom_tf.header.frame_id = "odom";
   odom_tf.child_frame_id = "base_link";
   odom_tf.transform.translation.x = current_state.x;
   odom_tf.transform.translation.y = current_state.y;
+  odom_tf.transform.translation.z = 0.0;
   odom_tf.transform.rotation = odom_quat;
 
   //send the transform
+  ROS_INFO("trying to send base_link to odom transform");
   odom_broadcaster.sendTransform(odom_tf);
-
 
   // Publish odometry message
   nav_msgs::Odometry odom_msg;
@@ -137,11 +139,6 @@ void ImuOdometryPublisher::CalculateOdometry(){
   current_state.w = latest_imu.angular_velocity[2];
   //w_z is approximate; it doesn't take into account orientation
 
-  ROS_INFO("roll= %f pitch=%f yaw=%f",latest_imu.orientation[0], latest_imu.orientation[1], latest_imu.orientation[2]);
-  ROS_INFO("x= %f y=%f t= %f",current_state.x, current_state.y, current_state.t);
-  ROS_INFO("vx= %f vy=%f w= %f",current_state.vx, current_state.vy, current_state.w);
-  ROS_INFO("ax= %f ay=%f",ax, ay);
-
   //check ifrobot is (close to) not moving
   if((std::abs(ax)>threshold_) || (std::abs(ay)>threshold_) ||
     (std::abs(latest_imu.angular_velocity[2])>threshold_))
@@ -155,6 +152,11 @@ void ImuOdometryPublisher::CalculateOdometry(){
   }
 
   last_update_time = current_time;
+
+  ROS_INFO("roll= %f pitch=%f yaw=%f",latest_imu.orientation[0], latest_imu.orientation[1], latest_imu.orientation[2]);
+  ROS_INFO("x= %f y=%f t= %f",current_state.x, current_state.y, current_state.t);
+  ROS_INFO("vx= %f vy=%f w= %f",current_state.vx, current_state.vy, current_state.w);
+  ROS_INFO("ax= %f ay=%f",ax, ay);
 
   PublishOdometry();
 
