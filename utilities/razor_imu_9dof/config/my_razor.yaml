@@ -12,12 +12,12 @@ port: /dev/ttyUSB0
 #accel_z_max: 250.0
 
 ### Calibration Values ###
-accel_x_min: -261.7
-accel_x_max: 251.0
-accel_y_min: -261.0
-accel_y_max: 268.0
-accel_z_min: -276.0
-accel_z_max: 238.7
+accel_x_min: -264.0
+accel_x_max: 254.09
+accel_y_min: -258.0
+accel_y_max: 266.0
+accel_z_min: -274.0
+accel_z_max: 233.0
 
 ### magnetometer
 # standard calibration
@@ -38,9 +38,9 @@ imu_yaw_calibration: 0.0
 
 ### gyroscope
 ### Calibration Values ###
-gyro_average_offset_x: -68.08
-gyro_average_offset_y: -6.84
-gyro_average_offset_z: 5.54
+gyro_average_offset_x: -65.22
+gyro_average_offset_y: -11.42
+gyro_average_offset_z: 4.79
 
 #gyro_average_offset_x: 0.0
 #gyro_average_offset_y: 0.0

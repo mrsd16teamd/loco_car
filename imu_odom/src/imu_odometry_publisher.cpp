@@ -61,7 +61,7 @@ ImuOdometryPublisher::ImuOdometryPublisher() {
       nh.getParam("odom/inactive_time", inactive_timeout_);
       lp_beta_ = 1-lp_alpha_;
       ROS_INFO("Loaded imu_odometry parameters");
-      ROS_INFO("threshold=%f",threshold_);
+      ROS_INFO("alpha=%f, threshold=%f, inactive_t=%f",lp_alpha_, threshold_, inactive_timeout_);
   }
   else{ ROS_INFO("parameters not found!"); }
 
@@ -137,9 +137,10 @@ void ImuOdometryPublisher::CalculateOdometry(){
   current_state.w = latest_imu.angular_velocity[2];
   //w_z is approximate; it doesn't take into account orientation
 
-  //ROS_INFO("roll= %f pitch=%f yaw=%f",latest_imu.orientation[0], latest_imu.orientation[1], latest_imu.orientation[2]);
+  ROS_INFO("roll= %f pitch=%f yaw=%f",latest_imu.orientation[0], latest_imu.orientation[1], latest_imu.orientation[2]);
+  ROS_INFO("x= %f y=%f t= %f",current_state.x, current_state.y, current_state.t);
   //ROS_INFO("vx= %f vy=%f w= %f",current_state.vx, current_state.vy, current_state.w);
-  //ROS_INFO("ax= %f ay=%f",ax, ay);
+  ROS_INFO("ax= %f ay=%f",ax, ay);
 
   //check ifrobot is (close to) not moving
   if((std::abs(ax)>threshold_) || (std::abs(ay)>threshold_) ||
@@ -161,8 +162,6 @@ void ImuOdometryPublisher::CalculateOdometry(){
 
 void ImuOdometryPublisher::SensorCallback(const sensor_msgs::Imu::ConstPtr& msg) {
   // update latest_imu, call publish
-
-  //TODO add linacc offsets?
 
   // orientation is originally in geometry_msgs/Quaternion
   tf::Quaternion quat;

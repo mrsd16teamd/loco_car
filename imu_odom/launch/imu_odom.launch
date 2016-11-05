@@ -2,5 +2,11 @@
   <rosparam file="$(find imu_odom)/config/imu_odom_parameters.yaml" command="load" />
 
   <node pkg="imu_odom" type="imu_odometry_publisher" name="imu_odometry_publisher" output="screen" />
+
+<arg name="razor_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
+  <node pkg="razor_imu_9dof" type="imu_node.py" name="imu_node" output="screen">
+    <rosparam file="$(arg razor_config_file)" command="load"/>
+  </node>
+
   <!-- <node pkg="imu_odom" type="fake_imu_data" name="fake_imu_data" output="screen" /> -->
 </launch>
