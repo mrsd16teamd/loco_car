@@ -147,8 +147,8 @@ pitch=0
 yaw=0
 seq=0
 accel_factor = 9.806 / 256.0    # sensor reports accel as 256.0 = 1G (9.8m/s^2). Convert to m/s^2.
-rospy.loginfo("Giving the razor IMU board 5 seconds to boot...")
-rospy.sleep(5) # Sleep for 5 seconds to wait for the board to boot
+rospy.loginfo("Giving the razor IMU board 3 seconds to boot...")
+rospy.sleep(3) # Sleep for 5 seconds to wait for the board to boot
 
 ### configure board ###
 #stop datastream
@@ -217,29 +217,21 @@ for x in range(0, 200):
     line = ser.readline()
 
 ###################
-rospy.loginfo("Taking initial accelerometer offsets in 2 seconds, please leave robot stationary...")
-rospy.sleep(2.)
-line = ser.readline()
-line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
-    #f.write(line)                     # Write to the output log file
-words = string.split(line,",")    # Fields split
-linaccx_offset = -(float(words[3])) * accel_factor
-linaccy_offset = float(words[4]) * accel_factor
-rospy.loginfo("Accelerometer offsets: x:%f, y:%f", linaccx_offset, linaccy_offset)
+# rospy.loginfo("Taking initial accelerometer offsets in 2 seconds, please leave robot stationary...")
+# rospy.sleep(2.)
+# line = ser.readline()
+# line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
+#     #f.write(line)                     # Write to the output log file
+# words = string.split(line,",")    # Fields split
+# linaccx_offset = -(float(words[3])) * accel_factor
+# linaccy_offset = float(words[4]) * accel_factor
+# rospy.loginfo("Accelerometer offsets: x:%f, y:%f", linaccx_offset, linaccy_offset)
+linaccx_offset = 0
+linaccy_offset = 0
 ###################
 
 rospy.loginfo("Publishing IMU data...")
 #f = open("raw_imu_data.log", 'w')
-
-######## stuff kazu added
-# Initialize low-pass filter
-linacc_x = 0
-linacc_y = 0
-angvel_z = 0
-
-alpha = 0.25 #parameter for low-pass filter; lower = more low-pass
-sensor_thres = 0.15 #threshold for sensor readings, under which it's set to zero
-########
 
 while not rospy.is_shutdown():
     line = ser.readline()
@@ -271,32 +263,6 @@ while not rospy.is_shutdown():
         imuMsg.angular_velocity.y = -float(words[7])
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
         imuMsg.angular_velocity.z = -float(words[8])
-
-    ############# more stuff kazu added
-
-    #COMPENSATING FOR STEADY STATE OFFSET HERE
-    imuMsg.linear_acceleration.x = imuMsg.linear_acceleration.x - linaccx_offset;
-    imuMsg.linear_acceleration.y = imuMsg.linear_acceleration.y - linaccy_offset;
-
-    #low-pass filter all readings
-    linacc_x = (alpha*imuMsg.linear_acceleration.x) + ((1-alpha)*linacc_x)
-    linacc_y = (alpha*imuMsg.linear_acceleration.y) + ((1-alpha)*linacc_y)
-    angvel_z = (alpha*imuMsg.angular_velocity.z) + ((1-alpha)*angvel_z)
-
-    #threshold sensor readings to reduce effect of noise on odometry
-    if(abs(linacc_x)<sensor_thres):
-	imuMsg.linear_acceleration.x=0
-    else:
-	imuMsg.linear_acceleration.x=linacc_x
-    if(abs(linacc_y)<sensor_thres):
-	imuMsg.linear_acceleration.y=0
-    else:
-	imuMsg.linear_acceleration.y=linacc_y
-    if(abs(angvel_z)<sensor_thres):
-	imuMsg.angular_velocity.z=0
-    else:
-	imuMsg.angular_velocity.z=angvel_z
-    ###########
 
     q = quaternion_from_euler(roll,pitch,yaw)
     imuMsg.orientation.x = q[0]
