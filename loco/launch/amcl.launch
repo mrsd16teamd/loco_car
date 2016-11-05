@@ -8,7 +8,10 @@
 
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
     <param name="scan" value="scan" />
-    <param name="odom_frame_id" value="scanmatcher_frame" />
+    <param name="odom_frame_id" value="odom" />
+
+    <param name="update_min_d" value="0.1" />   
+    <param name="update_min_a" value="0.1" />
 
     <!--
     <param name="initial_cov_xx" value="25.0" />

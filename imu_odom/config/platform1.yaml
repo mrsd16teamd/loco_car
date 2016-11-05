@@ -1,6 +1,7 @@
 base2imu_x: 61.0
 base2imu_y: 37.0
 base2imu_z: 110.0
+base2imu_roll: 3.1415
 
 base2lidar_x: 105.0
 base2lidar_y: 0.0

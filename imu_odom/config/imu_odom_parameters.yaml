@@ -3,4 +3,4 @@ imu:
   threshold: 0.1
 
 odom:
-  inactive_timeout: 0.25
+  inactive_timeout: 0.5
