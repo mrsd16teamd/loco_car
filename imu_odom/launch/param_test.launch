@@ -1,0 +1,3 @@
+<launch>
+  <rosparam file="$(find imu_odom)/config/imu_odom_parameters.yaml" command="load" />
+</launch>

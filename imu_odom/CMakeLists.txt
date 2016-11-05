@@ -140,9 +140,11 @@ target_link_libraries(fake_imu_data ${catkin_LIBRARIES})
 add_executable(imu_listener src/imu_listener.cpp)
 target_link_libraries(imu_listener ${catkin_LIBRARIES})
 
-add_executable(odometry_publisher src/odometry_publisher.cpp)
-target_link_libraries(odometry_publisher ${catkin_LIBRARIES})
+add_executable(old_odometry_publisher src/old_odometry_publisher.cpp)
+target_link_libraries(old_odometry_publisher ${catkin_LIBRARIES})
 
+add_executable(imu_odometry_publisher src/imu_odometry_publisher.cpp)
+target_link_libraries(imu_odometry_publisher ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above

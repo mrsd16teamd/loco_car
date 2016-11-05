@@ -1,0 +1,6 @@
+imu:
+  lp_alpha: 0.3
+  threshold: 0.15
+
+odom:
+  inactive_timeout: 0.5

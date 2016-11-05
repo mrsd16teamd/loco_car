@@ -1,0 +1,5 @@
+<launch>
+  <rosparam file="$(find imu_odom)/config/imu_odom_parameters.yaml" command="load" />
+
+  <node pkg="imu_odom" type="imu_odometry_publisher" name="imu_odometry_publisher" output="screen"/>
+</launch>
