@@ -2,7 +2,6 @@
 
 <launch>
 
-  <include file="$(find loco)/launch/robot_tf.launch" />
   <include file="$(find loco)/launch/odometry.launch" />
 
   <node pkg="map_server" type="map_server" name="map_server" args="$(find loco)/maps/lab.yaml" />
@@ -15,7 +14,7 @@
     <param name="initial_cov_xx" value="25.0" />
     <param name="initial_cov_yy" value="25.0" />
     <param name="initial_cov_aa" value="9.0" />
-  -->
+     -->
 
   </node>
 
