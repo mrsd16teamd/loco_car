@@ -203,10 +203,9 @@ void ImuOdometryPublisher::SensorCallback(const sensor_msgs::Imu::ConstPtr& msg)
       lp_beta_*(latest_imu.linear_acceleration[1]);
     latest_imu.linear_acceleration[2] = lp_alpha_*(msg->linear_acceleration.z) +
       lp_beta_*(latest_imu.linear_acceleration[2]);
-
-    ROS_INFO("imu: %f",latest_imu.linear_acceleration[0]);
-
   }
+
+  //ROS_INFO("imu: %f",latest_imu.linear_acceleration[0]);
 
   CalculateOdometry();
 }
