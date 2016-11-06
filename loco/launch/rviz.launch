@@ -1,0 +1,5 @@
+<launch>
+
+<node pkg="rviz" name="rviz" type="rviz" args="-d $(find loco)/config/rviz_map.rviz" />
+
+</launch>
