@@ -4,7 +4,7 @@
 
   <include file="$(find loco)/launch/odometry.launch" />
 
-  <node pkg="map_server" type="map_server" name="map_server" args="$(find loco)/maps/lab.yaml" />
+  <node pkg="map_server" type="map_server" name="map_server" args="$(find loco)/maps/fve_map.yaml" />
 
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
     <param name="scan" value="scan" />
