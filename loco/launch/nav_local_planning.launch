@@ -37,23 +37,8 @@
 	</node>
 
 
-	<!--  ****** Maps *****  -->
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find loco)/maps/fve_map.yaml" output="screen">
-		<param name="frame_id" value="/map"/>
-	</node>
+  <include file="$(find loco)/launch/amcl.launch" />
 
-	<node pkg="amcl" type="amcl" name="amcl" output="screen">
-		<rosparam file="$(find loco)/config/amcl_params.yaml" command="load" />
-
-	  <param name="initial_pose_x"            value="0.5"/>
-		<param name="initial_pose_y"            value="0.5"/>
-		<param name="initial_pose_a"            value="0"/>
-
-    <param name="scan" value="scan" />
-    <param name="odom_frame_id" value="odom" />
-    <param name="update_min_d" value="0.1" />
-    <param name="update_min_a" value="0.1" />
-	</node>
 
 	  <!--  **************** Visualisation ****************  -->
 	  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find loco)/config/rviz_navigation.rviz"/>
