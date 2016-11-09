@@ -10,14 +10,14 @@
     <param name="scan" value="scan" />
     <param name="odom_frame_id" value="odom" />
 
-    <param name="update_min_d" value="0.1" />   
+    <param name="update_min_d" value="0.1" />
     <param name="update_min_a" value="0.1" />
 
-    <!--
-    <param name="initial_cov_xx" value="25.0" />
-    <param name="initial_cov_yy" value="25.0" />
-    <param name="initial_cov_aa" value="9.0" />
-     -->
+    <param name="m" value="diff" />
+    <param name="odom_alpha1" value="0.1" />
+    <param name="odom_alpha2" value="0.1" />
+
+    <param name="initial_cov_aa" value="0.5" />
 
   </node>
 
