@@ -21,4 +21,6 @@
 
   </node>
 
+  <node pkg="loco" name="amcl_globalinit" type="amcl_globalinit"/>
+
 </launch>
