@@ -1,0 +1,37 @@
+<launch>
+
+<arg name="bag_path" default="/home/parallels/ros_bags/fvelab_amcl1.bag" />
+
+  <node pkg="rosbag" type="play" name="rosbag_play"
+    args="$(arg bag_path) --topics /scan /map /map_metadata /scanmatch_odom /tf /clock -r 5"/>
+
+  <node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <param name="scan" value="scan" />
+    <param name="odom_frame_id" value="odom" />
+
+    <param name="use_map_topic" value="true" /> <!-- only for bag --> 
+
+    <param name="recovery_alpha_slow" value="0.001" />
+    <param name="recovery_alpha_fast" value="0.1" />
+
+
+    <!-- <param name="update_min_d" value="0.1" />
+    <param name="update_min_a" value="0.1" /> -->
+
+
+    <!--
+    <param name="initial_cov_xx" value="25.0" />
+    <param name="initial_cov_yy" value="25.0" />
+    <param name="initial_cov_aa" value="9.0" />
+     -->
+
+  </node>
+
+  <include file="$(find loco)/launch/rviz.launch" />
+
+
+
+
+
+
+</launch>
