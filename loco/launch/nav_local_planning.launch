@@ -34,9 +34,11 @@
 
   <include file="$(find loco)/launch/amcl.launch" />
 
+
    <node pkg="rosserial_python" name="rosserial_python" type="serial_node.py">
 	<param name="port" value="/dev/ttyACM1" />
    </node>
+
 
    <node pkg="rosbag" type="record" name="rosbag_record_main"
      	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>

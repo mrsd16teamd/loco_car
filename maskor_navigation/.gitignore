@@ -1,9 +1,0 @@
-*~
-build/
-bin/
-*.o
-*.so
-*MakeFiles/
-*CMakeCache.txt
-*.cproject
-*.user
