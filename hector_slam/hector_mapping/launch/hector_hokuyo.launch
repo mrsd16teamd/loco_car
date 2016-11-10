@@ -2,7 +2,7 @@
 
 <launch>
 
-  <arg name="lidar_path" default="/dev/ttyACM0/" />
+  <arg name="lidar_path" default="/dev/hokuyo/" />
 
   <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/>
 
