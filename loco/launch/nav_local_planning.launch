@@ -9,13 +9,8 @@
  -->
 <launch>
 
-        <!--  ************** Global Parameters ***************  -->
-        <param name="/use_sim_time" value="true"/>
+    <node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>
 
-        <!--  ************** Stage Simulator ***************  -->
-	<!-- node pkg="stage_ros" type="stageros" name="stageros" args="$(find teb_local_planner)/stage/fve_map_carlike.world">
-		<remap from="base_scan" to="scan"/>
-  	</node -->
 
         <!--  ************** Navigation ***************  -->
 	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
@@ -37,26 +32,14 @@
 	</node>
 
 
-	<!--  ****** Maps *****  -->
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find loco)/maps/fve_map.yaml" output="screen">
-		<param name="frame_id" value="/map"/>
-	</node>
+  <include file="$(find loco)/launch/amcl.launch" />
 
-	<node pkg="amcl" type="amcl" name="amcl" output="screen">
-		<rosparam file="$(find loco)/config/amcl_params.yaml" command="load" />
+   <node pkg="rosserial_python" name="rosserial_python" type="serial_node.py">
+	<param name="port" value="/dev/ttyACM1" />
+   </node>
 
-	  <param name="initial_pose_x"            value="0.5"/>
-		<param name="initial_pose_y"            value="0.5"/>
-		<param name="initial_pose_a"            value="0"/>
-
-    <param name="scan" value="scan" />
-    <param name="odom_frame_id" value="odom" />
-    <param name="update_min_d" value="0.1" />
-    <param name="update_min_a" value="0.1" />
-	</node>
-
-	  <!--  **************** Visualisation ****************  -->
-	  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find loco)/config/rviz_navigation.rviz"/>
+   <node pkg="rosbag" type="record" name="rosbag_record_main"
+     	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>
 
 
 </launch>

@@ -26,7 +26,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(ackermann_drive_pub src/cmd_vel_to_ackermann_drive.cpp)
-target_link_libraries(ackermann_drive_pub ${catkin_LIBRARIES} )
+add_executable(cmd_vel_to_ackermann_drive src/cmd_vel_to_ackermann_drive.cpp)
+target_link_libraries(cmd_vel_to_ackermann_drive ${catkin_LIBRARIES} )
 
 

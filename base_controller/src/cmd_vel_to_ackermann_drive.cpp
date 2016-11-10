@@ -49,7 +49,7 @@ public:
     ack_msg.header.stamp = ros::Time::now();
     ack_msg.header.frame_id = "base_link";
 
-    ack_msg.drive.speed = lin_vel;
+    ack_msg.drive.speed = 2*lin_vel;
     ack_msg.drive.steering_angle = vel_to_steering_angle(lin_vel, twist_msg.angular.z);
 
     vel_pub.publish(ack_msg);
