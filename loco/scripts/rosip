@@ -26,15 +26,17 @@ case $OS in
    SunOS) IP=`ifconfig -a | grep inet | grep -v '127.0.0.1' | awk '{ print $2} '` ;;
    *) IP="Unknown";;
 esac
-echo "IP address found is: $IP"
+
+echo "Local IP address found is: $IP"
 echo "Please 'hostname -I' to double-check."
 
-export ROS_MASTER_URI=http://${IP}:11311
+#export ROS_MASTER_URI=http://${IP}:11311
+export ROS_MASTER_URI=http://tegra-ubuntu:11311
 export ROS_IP=${IP}
 
-echo " "
-echo "If you're currently on Jetson: run this script on local machine, then copy and paste the line below"
-echo "ROS_MASTER_URI=http://$IP:11311"
+#echo " "
+#echo "If you're currently on Jetson: run this script on local machine, then copy and paste the line below"
+#echo "ROS_MASTER_URI=http://$IP:11311"
 #echo "ROS_IP=$IP"
 
 
