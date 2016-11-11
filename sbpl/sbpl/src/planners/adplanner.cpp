@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2008, Maxim Likhachev
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Carnegie Mellon University nor the names of its
+ *     * Neither the name of the University of Pennsylvania nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,8 +28,6 @@
  */
 
 #include <cmath>
-#include <sstream>
-
 #include <sbpl/discrete_space_information/environment.h>
 #include <sbpl/planners/adplanner.h>
 #include <sbpl/utils/heap.h>
@@ -60,7 +58,8 @@ ADPlanner::ADPlanner(DiscreteSpaceInformation* environment, bool bForwardSearch)
 #endif
     fDeb = SBPL_FOPEN(debug, "w");
     if (fDeb == NULL) {
-        throw SBPL_Exception("ERROR: could not open planner debug file");
+        SBPL_ERROR("ERROR: could not open planner debug file\n");
+        throw new SBPL_Exception();
     }
     SBPL_PRINTF("debug on\n");
 
@@ -107,7 +106,8 @@ CMDPSTATE* ADPlanner::CreateState(int stateID, ADSearchStateSpace_t* pSearchStat
 
 #if DEBUG
     if (environment_->StateID2IndexMapping[stateID][ADMDP_STATEID2IND] != -1) {
-        throw SBPL_Exception("ERROR in CreateState: state already created");
+        SBPL_ERROR("ERROR in CreateState: state already created\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -121,7 +121,8 @@ CMDPSTATE* ADPlanner::CreateState(int stateID, ADSearchStateSpace_t* pSearchStat
     if (state !=
         pSearchStateSpace->searchMDP.StateArray[environment_->StateID2IndexMapping[stateID][ADMDP_STATEID2IND]])
     {
-        throw SBPL_Exception("ERROR in CreateState: invalid state index");
+        SBPL_ERROR("ERROR in CreateState: invalid state index\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -136,7 +137,8 @@ CMDPSTATE* ADPlanner::CreateState(int stateID, ADSearchStateSpace_t* pSearchStat
 CMDPSTATE* ADPlanner::GetState(int stateID, ADSearchStateSpace_t* pSearchStateSpace)
 {
     if (stateID >= (int)environment_->StateID2IndexMapping.size()) {
-        throw SBPL_Exception("ERROR in GetState: stateID is invalid");
+        SBPL_ERROR("ERROR int GetState: stateID is invalid\n");
+        throw new SBPL_Exception();
     }
 
     if (environment_->StateID2IndexMapping[stateID][ADMDP_STATEID2IND] == -1)
@@ -298,7 +300,7 @@ void ADPlanner::Recomputegval(ADState* state)
     state->g = INFINITECOST;
     for (int pind = 0; pind < (int)searchpredsIDV.size(); pind++) {
         //skip the states that do not exist - they can not be used to improve g-value anyway
-        if (environment_->StateID2IndexMapping[searchpredsIDV[pind]][ADMDP_STATEID2IND] == -1) continue;
+        if (environment_->StateID2IndexMapping[searchpredsIDV[pind]][ADMDP_STATEID2IND] == -1) continue; 
 
         CMDPSTATE* predMDPState = GetState(searchpredsIDV[pind], pSearchStateSpace_);
         int cost = costV[pind];
@@ -477,7 +479,8 @@ int ADPlanner::ComputePath(ADSearchStateSpace_t* pSearchStateSpace, double MaxNu
     expands = 0;
 
     if (pSearchStateSpace->searchgoalstate == NULL) {
-        throw SBPL_Exception("ERROR searching: no goal state is set");
+        SBPL_ERROR("ERROR searching: no goal state is set\n");
+        throw new SBPL_Exception();
     }
 
     //goal state
@@ -492,7 +495,7 @@ int ADPlanner::ComputePath(ADSearchStateSpace_t* pSearchStateSpace, double MaxNu
     //expand states until done
     minkey = pSearchStateSpace->heap->getminkeyheap();
     CKey oldkey = minkey;
-    while (!pSearchStateSpace->heap->emptyheap() && minkey.key[0] < INFINITECOST &&
+    while (!pSearchStateSpace->heap->emptyheap() && minkey.key[0] < INFINITECOST && 
            (goalkey > minkey || searchgoalstate->g > searchgoalstate->v) &&
            (clock() - TimeStarted) < MaxNumofSecs * (double)CLOCKS_PER_SEC &&
                (pSearchStateSpace->eps_satisfied == INFINITECOST ||
@@ -514,20 +517,22 @@ int ADPlanner::ComputePath(ADSearchStateSpace_t* pSearchStateSpace, double MaxNu
         }
         //SBPL_FFLUSH(fDeb);
         if (state->listelem[AD_INCONS_LIST_ID] != NULL) {
-            throw SBPL_Exception("ERROR: expanding state from INCONS list");
+            SBPL_ERROR("ERROR: expanding state from INCONS list\n");
+            throw new SBPL_Exception();
         }
 #endif
 
 #if DEBUG
         if (minkey.key[0] < oldkey.key[0] && fabs(this->finitial_eps - 1.0) < ERR_EPS) {
             SBPL_PRINTF("WARN in search: the sequence of keys decreases in an optimal search\n");
-            //throw SBPL_Exception("WARN in search: the sequence of keys decreases in an optimal search");
+            //throw new SBPL_Exception();
         }
         oldkey = minkey;
 #endif
 
         if (state->v == state->g) {
-            throw SBPL_Exception("ERROR: consistent state is being expanded");
+            SBPL_ERROR("ERROR: consistent state is being expanded\n");
+            throw new SBPL_Exception();
         }
 
         //new expand
@@ -750,7 +755,7 @@ void ADPlanner::ReInitializeSearchStateSpace(ADSearchStateSpace_t* pSearchStateS
     pSearchStateSpace->heap->makeemptyheap();
     pSearchStateSpace->inconslist->makeemptylist(AD_INCONS_LIST_ID);
 
-    //reset
+    //reset 
     pSearchStateSpace->eps = this->finitial_eps;
     pSearchStateSpace->eps_satisfied = INFINITECOST;
 
@@ -775,7 +780,8 @@ void ADPlanner::ReInitializeSearchStateSpace(ADSearchStateSpace_t* pSearchStateS
 int ADPlanner::InitializeSearchStateSpace(ADSearchStateSpace_t* pSearchStateSpace)
 {
     if (pSearchStateSpace->heap->currentsize != 0 || pSearchStateSpace->inconslist->currentsize != 0) {
-        throw SBPL_Exception("ERROR in InitializeSearchStateSpace: heap or list is not empty");
+        SBPL_ERROR("ERROR in InitializeSearchStateSpace: heap or list is not empty\n");
+        throw new SBPL_Exception();
     }
 
     pSearchStateSpace->eps = this->finitial_eps;
@@ -805,12 +811,12 @@ int ADPlanner::SetSearchGoalState(int SearchGoalStateID, ADSearchStateSpace_t* p
         //current solution may be invalid
         pSearchStateSpace->eps_satisfied = INFINITECOST;
         pSearchStateSpace_->eps = this->finitial_eps;
-
+	
 	    //it will be a new search iteration
 	    pSearchStateSpace_->searchiteration++;
 	    pSearchStateSpace_->bRebuildOpenList = true;
 
-
+        
 #if USE_HEUR
 	    //recompute heuristic for the heap if heuristics are used
         pSearchStateSpace->bReevaluatefvals = true;
@@ -848,12 +854,14 @@ int ADPlanner::ReconstructPath(ADSearchStateSpace_t* pSearchStateSpace)
             stateinfo = (ADState*)MDPstate->PlannerSpecificData;
 
             if (stateinfo->g == INFINITECOST) {
-                //throw SBPL_Exception("ERROR in ReconstructPath: g of the state on the path is INFINITE");
+                //SBPL_ERROR("ERROR in ReconstructPath: g of the state on the path is INFINITE\n");
+                //throw new SBPL_Exception();
                 return -1;
             }
 
             if (stateinfo->bestpredstate == NULL) {
-                throw SBPL_Exception("ERROR in ReconstructPath: bestpred is NULL");
+                SBPL_ERROR("ERROR in ReconstructPath: bestpred is NULL\n");
+                throw new SBPL_Exception();
             }
 
             //get the parent state
@@ -865,7 +873,8 @@ int ADPlanner::ReconstructPath(ADSearchStateSpace_t* pSearchStateSpace)
 
             //check the decrease of g-values along the path
             if (predstateinfo->v >= stateinfo->g) {
-                throw SBPL_Exception("ERROR in ReconstructPath: g-values are non-decreasing");
+                SBPL_ERROR("ERROR in ReconstructPath: g-values are non-decreasing\n");
+                throw new SBPL_Exception();
             }
 
             //transition back
@@ -953,17 +962,15 @@ void ADPlanner::PrintSearchPath(ADSearchStateSpace_t* pSearchStateSpace, FILE* f
 
 #if DEBUG
         if (searchstateinfo->g > searchstateinfo->v) {
-            std::stringstream ss; ss << "ERROR: underconsistent state " << state->StateID << " is encountered";
-            SBPL_FPRINTF(fOut, "%s\n", ss.str().c_str());
-            throw SBPL_Exception(ss.str());
+            SBPL_FPRINTF(fOut, "ERROR: underconsistent state %d is encountered\n", state->StateID);
+            throw new SBPL_Exception();
         }
 
         if (!bforwardsearch) { //otherwise this cost is not even set
             if(nextstate->PlannerSpecificData != NULL && searchstateinfo->g < searchstateinfo->costtobestnextstate + ((ADState*)(nextstate->PlannerSpecificData))->g)
             {
-                const char* msg = "ERROR: g(source) < c(source,target) + g(target)";
-                SBPL_FPRINTF(fOut, "%s\n", msg);
-                throw SBPL_Exception(msg);
+                SBPL_FPRINTF(fOut, "ERROR: g(source) < c(source,target) + g(target)\n");
+                throw new SBPL_Exception();
             }
         }
 #endif
@@ -1025,7 +1032,8 @@ vector<int> ADPlanner::GetSearchPath(ADSearchStateSpace_t* pSearchStateSpace, in
 
     FILE* fOut = stdout;
     if (fOut == NULL) {
-        throw SBPL_Exception("ERROR: could not open file");
+        SBPL_ERROR("ERROR: could not open file\n");
+        throw new SBPL_Exception();
     }
     int steps = 0;
     const int max_steps = 100000;
@@ -1058,12 +1066,11 @@ vector<int> ADPlanner::GetSearchPath(ADSearchStateSpace_t* pSearchStateSpace, in
         solcost += actioncost;
 
         if (searchstateinfo->v < searchstateinfo->g) {
-            const char* msg = "ERROR: underconsistent state on the path";
-            SBPL_ERROR("%s\n", msg);
+            SBPL_ERROR("ERROR: underconsistent state on the path\n");
             PrintSearchState(searchstateinfo, stdout);
             //SBPL_FPRINTF(fDeb, "ERROR: underconsistent state on the path\n");
             //PrintSearchState(searchstateinfo, fDeb);
-            throw SBPL_Exception(msg);
+            throw new SBPL_Exception();
         }
 
         //SBPL_FPRINTF(fDeb, "actioncost=%d between states %d and %d\n",
@@ -1107,9 +1114,9 @@ bool ADPlanner::Search(ADSearchStateSpace_t* pSearchStateSpace, vector<int>& pat
         Reevaluatehvals(pSearchStateSpace);
     }
 
-
+    
     if (pSearchStateSpace->bReinitializeSearchStateSpace == true) {
-        //re-initialize state space
+        //re-initialize state space 
         ReInitializeSearchStateSpace(pSearchStateSpace);
     }
 
@@ -1239,7 +1246,7 @@ void ADPlanner::Update_SearchSuccs_of_ChangedEdges(vector<int> const * statesIDV
 
     //will need to rebuild open list
     pSearchStateSpace_->bRebuildOpenList = true;
-
+    
     //recompute heuristic for the heap
     pSearchStateSpace_->bReevaluatefvals = true;
 
@@ -1450,7 +1457,7 @@ void ADPlanner::costs_changed(StateChangeQuery const & stateChange)
     pSearchStateSpace_->bReevaluatefvals = true;
 
     //no processing if no search efforts anyway
-    if (pSearchStateSpace_->bReinitializeSearchStateSpace == true || pSearchStateSpace_->searchiteration == 0) return;
+    if (pSearchStateSpace_->bReinitializeSearchStateSpace == true || pSearchStateSpace_->searchiteration == 0) return; 
 
     if (bforwardsearch)
         Update_SearchSuccs_of_ChangedEdges(stateChange.getSuccessors());

@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2008, Maxim Likhachev
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Carnegie Mellon University nor the names of its
+ *     * Neither the name of the University of Pennsylvania nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,9 +28,6 @@
  */
 
 #include <sbpl/discrete_space_information/environment_XXX.h>
-
-#include <sstream>
-
 #include <sbpl/planners/planner.h>
 #include <sbpl/utils/mdp.h>
 #include <sbpl/utils/mdpconfig.h>
@@ -59,7 +56,7 @@ static unsigned int inthash(unsigned int key)
 }
 
 //examples of hash functions: map state coordinates onto a hash value
-//#define GETHASHBIN(X, Y) (Y*WIDTH_Y+X)
+//#define GETHASHBIN(X, Y) (Y*WIDTH_Y+X) 
 //here we have state coord: <X1, X2, X3, X4>
 unsigned int EnvironmentXXX::GETHASHBIN(unsigned int X1, unsigned int X2, unsigned int X3, unsigned int X4)
 {
@@ -167,7 +164,8 @@ EnvXXXHashEntry_t* EnvironmentXXX::CreateNewHashEntry(unsigned int X1, unsigned 
     }
 
     if (HashEntry->stateID != (int)StateID2IndexMapping.size() - 1) {
-        throw SBPL_Exception("ERROR in Env... function: last state has incorrect stateID");
+        SBPL_ERROR("ERROR in Env... function: last state has incorrect stateID\n");
+        throw new SBPL_Exception();
     }
 
     //time_createhash += clock()-currenttime;
@@ -233,9 +231,8 @@ void EnvironmentXXX::AddAllOutcomes(unsigned int SourceX1, unsigned int SourceX2
     } //while
 
     if (CumProb != 1.0) {
-        std::stringstream ss("ERROR in EnvXXX... function: prob. of all action outcomes=");
-        ss << CumProb;
-        throw SBPL_Exception(ss.str());
+        SBPL_ERROR("ERROR in EnvXXX... function: prob. of all action outcomes=%f\n", CumProb);
+        throw new SBPL_Exception();
     }
 }
 
@@ -257,9 +254,8 @@ bool EnvironmentXXX::InitializeEnv(const char* sEnvFile)
 {
     FILE* fCfg = fopen(sEnvFile, "r");
     if (fCfg == NULL) {
-        std::stringstream ss("ERROR: unable to open ");
-        ss << sEnvFile;
-        throw SBPL_Exception(ss.str());
+        SBPL_ERROR("ERROR: unable to open %s\n", sEnvFile);
+        throw new SBPL_Exception();
     }
     ReadConfiguration(fCfg);
     fclose(fCfg);
@@ -295,13 +291,15 @@ int EnvironmentXXX::GetFromToHeuristic(int FromStateID, int ToStateID)
     if(FromStateID >= (int)EnvXXX.StateID2CoordTable.size() ||
        ToStateID >= (int)EnvXXX.StateID2CoordTable.size())
     {
-        throw SBPL_Exception("ERROR in EnvXXX... function: stateID illegal");
+        SBPL_ERROR("ERROR in EnvXXX... function: stateID illegal\n");
+        throw new SBPL_Exception();
     }
 #endif
 
     //define this function if it is used in the planner
 
-    throw SBPL_Exception("ERROR in EnvXXX.. function: FromToHeuristic is undefined");
+    SBPL_ERROR("ERROR in EnvXXX.. function: FromToHeuristic is undefined\n");
+    throw new SBPL_Exception();
 
     return 0;
 }
@@ -314,13 +312,15 @@ int EnvironmentXXX::GetGoalHeuristic(int stateID)
 
 #if DEBUG
     if (stateID >= (int)EnvXXX.StateID2CoordTable.size()) {
-        throw SBPL_Exception("ERROR in EnvXXX... function: stateID illegal");
+        SBPL_ERROR("ERROR in EnvXXX... function: stateID illegal\n");
+        throw new SBPL_Exception();
     }
 #endif
 
     //define this function if it used in the planner (heuristic forward search would use it)
 
-    throw SBPL_Exception("ERROR in EnvXXX.. function: GetGoalHeuristic is undefined");
+    SBPL_ERROR("ERROR in EnvXXX..function: GetGoalHeuristic is undefined\n");
+    throw new SBPL_Exception();
 }
 
 int EnvironmentXXX::GetStartHeuristic(int stateID)
@@ -331,13 +331,15 @@ int EnvironmentXXX::GetStartHeuristic(int stateID)
 
 #if DEBUG
     if (stateID >= (int)EnvXXX.StateID2CoordTable.size()) {
-        throw SBPL_Exception("ERROR in EnvXXX... function: stateID illegal");
+        SBPL_ERROR("ERROR in EnvXXX... function: stateID illegal\n");
+        throw new SBPL_Exception();
     }
 #endif
 
     //define this function if it used in the planner (heuristic backward search would use it)
 
-    throw SBPL_Exception("ERROR in EnvXXX.. function: GetStartHeuristic is undefined");
+    SBPL_ERROR("ERROR in EnvXXX.. function: GetStartHeuristic is undefined\n");
+    throw new SBPL_Exception();
 
     return 0;
 }
@@ -347,11 +349,13 @@ void EnvironmentXXX::SetAllActionsandAllOutcomes(CMDPSTATE* state)
 
 #if DEBUG
     if (state->StateID >= (int)EnvXXX.StateID2CoordTable.size()) {
-        throw SBPL_Exception("ERROR in EnvXXX... function: stateID illegal");
+        SBPL_ERROR("ERROR in EnvXXX... function: stateID illegal\n");
+        throw new SBPL_Exception();
     }
 
     if ((int)state->Actions.size() != 0) {
-        throw SBPL_Exception("ERROR in Env_setAllActionsandAllOutcomes: actions already exist for the state");
+        SBPL_ERROR("ERROR in Env_setAllActionsandAllOutcomes: actions already exist for the state\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -382,17 +386,20 @@ void EnvironmentXXX::SetAllPreds(CMDPSTATE* state)
 {
     //implement this if the planner needs access to predecessors
 
-    throw SBPL_Exception("ERROR in EnvXXX... function: SetAllPreds is undefined");
+    SBPL_ERROR("ERROR in EnvXXX... function: SetAllPreds is undefined\n");
+    throw new SBPL_Exception();
 }
 
 void EnvironmentXXX::GetSuccs(int SourceStateID, vector<int>* SuccIDV, vector<int>* CostV)
 {
-    throw SBPL_Exception("ERROR in EnvXXX... function: GetSuccs is undefined");
+    SBPL_ERROR("ERROR in EnvXXX... function: GetSuccs is undefined\n");
+    throw new SBPL_Exception();
 }
 
 void EnvironmentXXX::GetPreds(int TargetStateID, vector<int>* PredIDV, vector<int>* CostV)
 {
-    throw SBPL_Exception("ERROR in EnvXXX... function: GetPreds is undefined");
+    SBPL_ERROR("ERROR in EnvXXX... function: GetPreds is undefined\n");
+    throw new SBPL_Exception();
 }
 
 int EnvironmentXXX::SizeofCreatedEnv()
@@ -405,7 +412,8 @@ void EnvironmentXXX::PrintState(int stateID, bool bVerbose, FILE* fOut /*=NULL*/
 #if DEBUG
     if(stateID >= (int)EnvXXX.StateID2CoordTable.size())
     {
-        throw SBPL_Exception("ERROR in EnvXXX... function: stateID illegal (2)");
+        SBPL_ERROR("ERROR in EnvXXX... function: stateID illegal (2)\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -423,7 +431,9 @@ void EnvironmentXXX::PrintState(int stateID, bool bVerbose, FILE* fOut /*=NULL*/
 void EnvironmentXXX::PrintEnv_Config(FILE* fOut)
 {
     //implement this if the planner needs to print out EnvXXX. configuration
-    throw SBPL_Exception("ERROR in EnvXXX... function: PrintEnv_Config is undefined");
+
+    SBPL_ERROR("ERROR in EnvXXX... function: PrintEnv_Config is undefined\n");
+    throw new SBPL_Exception();
 }
 
 //------------------------------------------------------------------------------

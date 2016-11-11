@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2008, Maxim Likhachev
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Carnegie Mellon University nor the names of its
+ *     * Neither the name of the University of Pennsylvania nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,72 +29,22 @@
 
 #include <cstdio>
 #include <ctime>
-#include <sstream>
-
 #include <sbpl/utils/2Dgridsearch.h>
 #include <sbpl/utils/heap.h>
 #include <sbpl/utils/list.h>
 
 using namespace std;
 
-// Creating custom getCost functions that will combine multiple cells in the main grid
-// into a single cell in the 2D grid.
-// Using templates for common cases so the compiler can generate faster code
-template<int N>
-unsigned char getCostT(unsigned char **Grid2D, int x, int y, int /*resample*/)
-{
-    if(N == 1) // the compiler will optimize out this if statement
-    {
-        return Grid2D[x][y];
-    }
-    else
-    {
-        x *= N;
-        y *= N;
-        unsigned char maximum = Grid2D[x][y];
-        for(int dy=0; dy<N; dy++)
-            for(int dx=0; dx<N; dx++)
-                maximum = __max(maximum, Grid2D[x+dx][y+dy]);
-
-        return maximum;
-    }
-}
-
-// fallback for unforseen cases
-unsigned char getCostN(unsigned char **Grid2D, int x, int y, int resample)
-{
-    x *= resample;
-    y *= resample;
-    unsigned char maximum = Grid2D[x][y];
-    for(int dy=0; dy<resample; dy++)
-        for(int dx=0; dx<resample; dx++)
-            maximum = __max(maximum, Grid2D[x+dx][y+dy]);
-
-    return maximum;
-}
-
 //---------------------initialization and destruction routines--------------------------------------------------------
-SBPL2DGridSearch::SBPL2DGridSearch(int width_x, int height_y, float cellsize_m, int downsample, int initial_dynamic_bucket_size)
+
+SBPL2DGridSearch::SBPL2DGridSearch(int width_x, int height_y, float cellsize_m)
 {
     iteration_ = 0;
     searchStates2D_ = NULL;
-    downsample_ = __max(1, downsample);
 
-    width_ = width_x / downsample;
-    height_ = height_y / downsample;
-    cellSize_m_ = cellsize_m * downsample;
-
-    // choose appropriate hard-coded getCost for resample amount
-    switch(downsample_)
-    {
-    case 1: getCost = &getCostT<1>; break;
-    case 2: getCost = &getCostT<2>; break;
-    case 3: getCost = &getCostT<3>; break;
-    case 4: getCost = &getCostT<4>; break;
-    case 5: getCost = &getCostT<5>; break;
-    default:
-        getCost = &getCostN;
-    }
+    width_ = width_x;
+    height_ = height_y;
+    cellSize_m_ = cellsize_m;
 
     startX_ = -1;
     startY_ = -1;
@@ -109,16 +59,15 @@ SBPL2DGridSearch::SBPL2DGridSearch(int width_x, int height_y, float cellsize_m, 
     term_condition_usedlast = SBPL_2DGRIDSEARCH_TERM_CONDITION_ALLCELLS;
 
     //allocate memory
-    OPEN2D_ = new CIntHeap(width_ * height_);
+    OPEN2D_ = new CIntHeap(width_x * height_y);
     if (!createSearchStates2D()) {
-        throw SBPL_Exception("ERROR: failed to create searchstatespace2D");
+        SBPL_ERROR("ERROR: failed to create searchstatespace2D\n");
+        throw new SBPL_Exception();
     }
 
     //by default, OPEN is implemented as heap
     OPEN2DBLIST_ = NULL;
     OPENtype_ = SBPL_2DGRIDSEARCH_OPENTYPE_HEAP;
-
-    initial_dynamic_bucket_size_ = initial_dynamic_bucket_size;
 }
 
 bool SBPL2DGridSearch::setOPENdatastructure(SBPL_2DGRIDSEARCH_OPENTYPE OPENtype)
@@ -142,7 +91,7 @@ bool SBPL2DGridSearch::setOPENdatastructure(SBPL_2DGRIDSEARCH_OPENTYPE OPENtype)
             int numofbuckets = 255 * maxdistance;
             SBPL_PRINTF("creating sliding bucket-based OPEN2D %d buckets, each bucket of size %d ...", numofbuckets,
                         bucketsize);
-            OPEN2DBLIST_ = new CSlidingBucket(numofbuckets, bucketsize, initial_dynamic_bucket_size_);
+            OPEN2DBLIST_ = new CSlidingBucket(numofbuckets, bucketsize);
             SBPL_PRINTF("done\n");
         }
         //delete other data structures
@@ -154,9 +103,8 @@ bool SBPL2DGridSearch::setOPENdatastructure(SBPL_2DGRIDSEARCH_OPENTYPE OPENtype)
 
         break;
     default:
-        std::stringstream ss("ERROR: unknown data structure type = ");
-        ss << OPENtype_ << " for OPEN2D";
-        throw SBPL_Exception(ss.str());
+        SBPL_ERROR("ERROR: unknown data structure type = %d for OPEN2D\n", OPENtype_);
+        throw new SBPL_Exception();
     };
 
     return true;
@@ -251,7 +199,7 @@ void SBPL2DGridSearch::computedxy()
     dx0intersects_[7] = -1;
     dy0intersects_[7] = -1;
 
-    //Note: these actions have to be starting at 8 and through 15, since they
+    //Note: these actions have to be starting at 8 and through 15, since they 
     //get multiplied correspondingly in Dijkstra's search based on index
 #if SBPL_2DGRIDSEARCH_NUMOF2DDIRS == 16
     dx_[8] = 2; dy_[8] = 1;
@@ -270,7 +218,7 @@ void SBPL2DGridSearch::computedxy()
     dx0intersects_[14] = 0; dy0intersects_[14] = -1; dx1intersects_[14] = 1; dy1intersects_[14] = -1;
     dx_[15] = 2; dy_[15] = -1;
     dx0intersects_[15] = 1; dy0intersects_[15] = 0; dx1intersects_[15] = 1; dy1intersects_[15] = -1;
-#endif
+#endif		
 
     //compute distances
     for (int dind = 0; dind < SBPL_2DGRIDSEARCH_NUMOF2DDIRS; dind++) {
@@ -278,10 +226,10 @@ void SBPL2DGridSearch::computedxy()
         if (dx_[dind] != 0 && dy_[dind] != 0) {
             if (dind <= 7)
                 //the cost of a diagonal move in millimeters
-                dxy_distance_mm_[dind] = (int)(cellSize_m_ * 1414);
+                dxy_distance_mm_[dind] = (int)(cellSize_m_ * 1414); 
             else
                 //the cost of a move to 1,2 or 2,1 or so on in millimeters
-                dxy_distance_mm_[dind] = (int)(cellSize_m_ * 2236);
+                dxy_distance_mm_[dind] = (int)(cellSize_m_ * 2236); 
         }
         else
             dxy_distance_mm_[dind] = (int)(cellSize_m_ * 1000); //the cost of a horizontal move in millimeters
@@ -304,10 +252,6 @@ void SBPL2DGridSearch::printvalues()
 bool SBPL2DGridSearch::search(unsigned char** Grid2D, unsigned char obsthresh, int startx_c, int starty_c, int goalx_c,
                               int goaly_c, SBPL_2DGRIDSEARCH_TERM_CONDITION termination_condition)
 {
-    startx_c /= downsample_;
-    starty_c /= downsample_;
-    goalx_c /= downsample_;
-    goaly_c /= downsample_;
 
     switch (OPENtype_) {
     case SBPL_2DGRIDSEARCH_OPENTYPE_HEAP:
@@ -319,9 +263,8 @@ bool SBPL2DGridSearch::search(unsigned char** Grid2D, unsigned char obsthresh, i
                                                            termination_condition);
         break;
     default:
-        std::stringstream ss("ERROR: unknown data structure type = ");
-        ss << OPENtype_ << " for OPEN2D";
-        throw SBPL_Exception(ss.str());
+        SBPL_ERROR("ERROR: unknown data structure type = %d for OPEN2D\n", OPENtype_);
+        throw new SBPL_Exception();
     };
     return false;
 }
@@ -370,7 +313,7 @@ bool SBPL2DGridSearch::search_withheap(unsigned char** Grid2D, unsigned char obs
     key = searchExpState->g;
     if (termination_condition == SBPL_2DGRIDSEARCH_TERM_CONDITION_OPTPATHFOUND)
         //use h-values only if we are NOT computing all state values
-        key = key + SBPL_2DGRIDSEARCH_HEUR2D(startX_, startY_);
+        key = key + SBPL_2DGRIDSEARCH_HEUR2D(startX_, startY_); 
 
     OPEN2D_->insertheap(searchExpState, key);
 
@@ -414,7 +357,7 @@ bool SBPL2DGridSearch::search_withheap(unsigned char** Grid2D, unsigned char obs
         pbClosed[exp_x + width_ * exp_y] = 1;
 
         //iterate over successors
-        int expcost =  getCost(Grid2D, exp_x, exp_y, downsample_);
+        int expcost = Grid2D[exp_x][exp_y];
         for (int dir = 0; dir < SBPL_2DGRIDSEARCH_NUMOF2DDIRS; dir++) {
             int newx = exp_x + dx_[dir];
             int newy = exp_y + dy_[dir];
@@ -425,13 +368,13 @@ bool SBPL2DGridSearch::search_withheap(unsigned char** Grid2D, unsigned char obs
             if (pbClosed[newx + width_ * newy] == 1) continue;
 
             //compute the cost
-            int mapcost = __max(getCost(Grid2D, newx, newy, downsample_), expcost);
+            int mapcost = __max(Grid2D[newx][newy], expcost);
 
 #if SBPL_2DGRIDSEARCH_NUMOF2DDIRS > 8
             if(dir > 7) {
                 //check two more cells through which the action goes
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx0intersects_[dir], exp_y + dy0intersects_[dir], downsample_));
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx1intersects_[dir], exp_y + dy1intersects_[dir], downsample_));
+                mapcost = __max(mapcost, Grid2D[exp_x + dx0intersects_[dir]][exp_y + dy0intersects_[dir]]);
+                mapcost = __max(mapcost, Grid2D[exp_x + dx1intersects_[dir]][exp_y + dy1intersects_[dir]]);
             }
 #endif
 
@@ -449,7 +392,7 @@ bool SBPL2DGridSearch::search_withheap(unsigned char** Grid2D, unsigned char obs
                 key = searchPredState->g;
                 if (termination_condition == SBPL_2DGRIDSEARCH_TERM_CONDITION_OPTPATHFOUND)
                     //use h-values only if we are NOT computing all state values
-                    key = key + SBPL_2DGRIDSEARCH_HEUR2D(searchPredState->x, searchPredState->y);
+                    key = key + SBPL_2DGRIDSEARCH_HEUR2D(searchPredState->x, searchPredState->y); 
 
                 if (searchPredState->heapindex == 0)
                     OPEN2D_->insertheap(searchPredState, key);
@@ -465,7 +408,7 @@ bool SBPL2DGridSearch::search_withheap(unsigned char** Grid2D, unsigned char obs
     else
         largestcomputedoptf_ = INFINITECOST;
 
-    free(pbClosed);
+    delete[] pbClosed;
 
     SBPL_PRINTF( "# of expands during 2dgridsearch=%d time=%d msecs 2Dsolcost_inmm=%d "
                 "largestoptfval=%d (start=%d %d goal=%d %d)\n",
@@ -535,13 +478,13 @@ bool SBPL2DGridSearch::search_exp(unsigned char** Grid2D, unsigned char obsthres
             if (!withinMap(newx, newy)) continue;
 
             //compute the cost
-            int mapcost = __max( getCost(Grid2D, newx, newy, downsample_), getCost(Grid2D, exp_x, exp_y, downsample_));
+            int mapcost = __max(Grid2D[newx][newy], Grid2D[exp_x][exp_y]);
 
 #if SBPL_2DGRIDSEARCH_NUMOF2DDIRS > 8
             if(dir > 7) {
                 //check two more cells through which the action goes
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx0intersects_[dir], exp_y + dy0intersects_[dir], downsample_));
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx1intersects_[dir], exp_y + dy1intersects_[dir], downsample_));
+                mapcost = __max(mapcost, Grid2D[exp_x + dx0intersects_[dir]][exp_y + dy0intersects_[dir]]);
+                mapcost = __max(mapcost, Grid2D[exp_x + dx1intersects_[dir]][exp_y + dy1intersects_[dir]]);
             }
 #endif
 
@@ -562,7 +505,8 @@ bool SBPL2DGridSearch::search_exp(unsigned char** Grid2D, unsigned char obsthres
                 searchPredState->g = __min(INFINITECOST, cost + searchExpState->g);
 
                 if (searchPredState->g >= INFINITECOST) {
-                    throw SBPL_Exception("ERROR: infinite g");
+                    SBPL_ERROR("ERROR: infinite g\n");
+                    throw new SBPL_Exception();
                 }
 
                 //put it into the list if not there already
@@ -648,13 +592,13 @@ bool SBPL2DGridSearch::search_withbuckets(unsigned char** Grid2D, unsigned char 
             if (!withinMap(newx, newy)) continue;
 
             //compute the cost
-            int mapcost = __max( getCost(Grid2D, newx, newy, downsample_), getCost(Grid2D, exp_x, exp_y, downsample_));
+            int mapcost = __max(Grid2D[newx][newy], Grid2D[exp_x][exp_y]);
 
 #if SBPL_2DGRIDSEARCH_NUMOF2DDIRS > 8
             if(dir > 7) {
                 //check two more cells through which the action goes
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx0intersects_[dir], exp_y + dy0intersects_[dir], downsample_));
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx1intersects_[dir], exp_y + dy1intersects_[dir], downsample_));
+                mapcost = __max(mapcost, Grid2D[exp_x + dx0intersects_[dir]][exp_y + dy0intersects_[dir]]);
+                mapcost = __max(mapcost, Grid2D[exp_x + dx1intersects_[dir]][exp_y + dy1intersects_[dir]]);
             }
 #endif
 
@@ -675,7 +619,8 @@ bool SBPL2DGridSearch::search_withbuckets(unsigned char** Grid2D, unsigned char 
                 searchPredState->g = __min(INFINITECOST, cost + searchExpState->g);
 
                 if (searchPredState->g >= INFINITECOST) {
-                    throw SBPL_Exception("ERROR: infinite g");
+                    SBPL_ERROR("ERROR: infinite g\n");
+                    throw new SBPL_Exception();
                 }
 
                 //put it into the list if not there already
@@ -815,7 +760,7 @@ bool SBPL2DGridSearch::search_withslidingbuckets(unsigned char** Grid2D, unsigne
         numofExpands++;
 
         //iterate over successors
-        int expcost = getCost(Grid2D, exp_x, exp_y, downsample_);
+        int expcost = Grid2D[exp_x][exp_y];
         for (int dir = 0; dir < SBPL_2DGRIDSEARCH_NUMOF2DDIRS; dir++) {
             int newx = exp_x + dx_[dir];
             int newy = exp_y + dy_[dir];
@@ -826,13 +771,13 @@ bool SBPL2DGridSearch::search_withslidingbuckets(unsigned char** Grid2D, unsigne
             if (pbClosed[newx + width_ * newy] == 1) continue;
 
             //compute the cost
-            int mapcost = __max( getCost(Grid2D, newx, newy, downsample_), expcost);
+            int mapcost = __max(Grid2D[newx][newy], expcost);
 
 #if SBPL_2DGRIDSEARCH_NUMOF2DDIRS > 8
             if(dir > 7) {
                 //check two more cells through which the action goes
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx0intersects_[dir], exp_y + dy0intersects_[dir], downsample_));
-                mapcost = __max(mapcost, getCost(Grid2D, exp_x + dx1intersects_[dir], exp_y + dy1intersects_[dir], downsample_));
+                mapcost = __max(mapcost, Grid2D[exp_x + dx0intersects_[dir]][exp_y + dy0intersects_[dir]]);
+                mapcost = __max(mapcost, Grid2D[exp_x + dx1intersects_[dir]][exp_y + dy1intersects_[dir]]);
             }
 #endif
 

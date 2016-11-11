@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2008, Maxim Likhachev
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Carnegie Mellon University nor the names of its
+ *     * Neither the name of the University of Pennsylvania nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,8 +28,6 @@
  */
 
 #include <cmath>
-#include <sstream>
-
 #include <sbpl/discrete_space_information/environment.h>
 #include <sbpl/planners/rstarplanner.h>
 #include <sbpl/utils/list.h>
@@ -61,7 +59,8 @@ RSTARPlanner::RSTARPlanner(DiscreteSpaceInformation* environment, bool bSearchFo
 #endif
     fDeb = SBPL_FOPEN(debug, "w");
     if (fDeb == NULL) {
-        throw SBPL_Exception("ERROR: could not open planner debug file");
+        SBPL_ERROR("ERROR: could not open planner debug file\n");
+        throw new SBPL_Exception();
     }
     SBPL_PRINTF("debug on\n");
 
@@ -111,7 +110,8 @@ CMDPSTATE* RSTARPlanner::CreateState(int stateID)
 #if DEBUG
     if(environment_->StateID2IndexMapping[stateID][RSTARMDP_STATEID2IND] != -1)
     {
-        throw SBPL_Exception("ERROR in CreateState: state already created");
+        SBPL_ERROR("ERROR in CreateState: state already created\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -126,7 +126,8 @@ CMDPSTATE* RSTARPlanner::CreateState(int stateID)
     if(state !=
        pSearchStateSpace->searchMDP.StateArray[environment_->StateID2IndexMapping[stateID][RSTARMDP_STATEID2IND]])
     {
-        throw SBPL_Exception("ERROR in CreateState: invalid state index");
+        SBPL_ERROR("ERROR in CreateState: invalid state index\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -142,9 +143,7 @@ CMDPSTATE* RSTARPlanner::GetState(int stateID)
 {
     if (stateID >= (int)environment_->StateID2IndexMapping.size()) {
         SBPL_ERROR("ERROR int GetState: stateID %d is invalid\n", stateID);
-        std::stringstream ss("ERROR int GetState: stateID ");
-        ss << stateID << " is invalid";
-        throw SBPL_Exception(ss.str());
+        throw new SBPL_Exception();
     }
 
     if (environment_->StateID2IndexMapping[stateID][RSTARMDP_STATEID2IND] == -1)
@@ -180,7 +179,8 @@ CMDPSTATE* RSTARPlanner::CreateLSearchState(int stateID)
 
 #if DEBUG
     if (environment_->StateID2IndexMapping[stateID][RSTARMDP_LSEARCH_STATEID2IND] != -1) {
-        throw SBPL_Exception("ERROR in CreateState: state already created");
+        SBPL_ERROR("ERROR in CreateState: state already created\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -195,7 +195,8 @@ CMDPSTATE* RSTARPlanner::CreateLSearchState(int stateID)
     if(state !=
        pLSearchStateSpace->MDP.StateArray[environment_->StateID2IndexMapping[stateID][RSTARMDP_LSEARCH_STATEID2IND]])
     {
-        throw SBPL_Exception("ERROR in CreateState: invalid state index");
+        SBPL_ERROR("ERROR in CreateState: invalid state index\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -209,7 +210,8 @@ CMDPSTATE* RSTARPlanner::CreateLSearchState(int stateID)
 CMDPSTATE* RSTARPlanner::GetLSearchState(int stateID)
 {
     if (stateID >= (int)environment_->StateID2IndexMapping.size()) {
-        throw SBPL_Exception("ERROR int GetLSearchState: stateID is invalid");
+        SBPL_ERROR("ERROR int GetLSearchState: stateID is invalid\n");
+        throw new SBPL_Exception();
     }
 
     if (environment_->StateID2IndexMapping[stateID][RSTARMDP_LSEARCH_STATEID2IND] == -1)
@@ -355,7 +357,7 @@ bool RSTARPlanner::ComputeLocalPath(int StartStateID, int GoalStateID, int maxc,
             pathcost += rstarlsearchstate->bestpredstateactioncost;
             rstarlsearchstate = (RSTARLSearchState*)rstarlsearchstate->bestpredstate->PlannerSpecificData;
         }
-        //store into pPathIDs so that the path is always forward path w.r.t. the original graph
+        //store into pPathIDs so that the path is always forward path w.r.t. the original graph 
         //this requires us to reverse order in case of forward search
         for (int i = 0; i < (int)tempPathID.size(); i++) {
             if (bforwardsearch == false)
@@ -398,7 +400,8 @@ bool RSTARPlanner::DestroyLocalSearchMemory()
     }
     //now we can delete the states themselves
     if (pLSearchStateSpace->MDP.Delete() == false) {
-        throw SBPL_Exception("ERROR: failed to delete local search MDP");
+        SBPL_ERROR("ERROR: failed to delete local search MDP\n");
+        throw new SBPL_Exception();
     }
 
     //TODO - ask Env to delete the new memory allocated during the local
@@ -415,7 +418,7 @@ int RSTARPlanner::ComputeHeuristic(CMDPSTATE* MDPstate)
     //compute heuristic for search
 
     //the heuristics will be re-computed anyway when searchgoalstate is updated
-    if (pSearchStateSpace->searchgoalstate == NULL) return 0;
+    if (pSearchStateSpace->searchgoalstate == NULL) return 0; 
 
     if (bforwardsearch) {
 #if MEM_CHECK == 1
@@ -588,7 +591,8 @@ int RSTARPlanner::ImprovePath(double MaxNumofSecs)
     expands = 0;
 
     if (pSearchStateSpace->searchgoalstate == NULL) {
-        throw SBPL_Exception("ERROR searching: no goal state is set");
+        SBPL_ERROR("ERROR searching: no goal state is set\n");
+        throw new SBPL_Exception();
     }
 
     //goal state
@@ -814,7 +818,7 @@ int RSTARPlanner::ImprovePath(double MaxNumofSecs)
 
                 //if(rstarSuccState->MDPstate->StateID == 3838){
                 //    SBPL_FPRINTF(fDeb, "generating state %d with g=%d bp=%d:\n",
-                //                 rstarSuccState->MDPstate->StateID, rstarSuccState->g,
+                //                 rstarSuccState->MDPstate->StateID, rstarSuccState->g, 
                 //            (rstarSuccState->bestpredaction==NULL?-1:rstarSuccState->bestpredaction->SourceStateID));
                 //    Env_PrintState(rstarSuccState->MDPstate->StateID, true, false, fDeb);
                 //}
@@ -1018,7 +1022,8 @@ int RSTARPlanner::InitializeSearchStateSpace()
     if (pSearchStateSpace->OPEN->currentsize != 0)
     //		|| pSearchStateSpace->inconslist->currentsize != 0)
     {
-        throw SBPL_Exception("ERROR in InitializeSearchStateSpace: OPEN or INCONS is not empty");
+        SBPL_ERROR("ERROR in InitializeSearchStateSpace: OPEN or INCONS is not empty\n");
+        throw new SBPL_Exception();
     }
 
     pSearchStateSpace->eps = this->finitial_eps;
@@ -1142,7 +1147,7 @@ vector<int> RSTARPlanner::GetSearchPath(int& solcost)
                         rstarstate->g, rstarstate->callnumberaccessed, rstarstate->iterationclosed, rstarstate->h);
             fflush(fDeb);
 
-            throw SBPL_Exception();
+            throw new SBPL_Exception();
         }
 
         //store the action and its cost
@@ -1154,9 +1159,9 @@ vector<int> RSTARPlanner::GetSearchPath(int& solcost)
 
         //another check
         if (pathcost + rstarstate->g > rstargoalstate->g) {
-            std::stringstream ss("ERROR: pathcost+rstarstate.g = ");
-            ss << pathcost + rstarstate->g << " > goalstate.g = " << rstargoalstate->g;
-            throw SBPL_Exception(ss.str());
+            SBPL_ERROR("ERROR: pathcost+rstarstate.g = %d > goalstate.g = %d\n", pathcost + rstarstate->g,
+                       rstargoalstate->g);
+            throw new SBPL_Exception();
         }
     }
 
@@ -1165,14 +1170,14 @@ vector<int> RSTARPlanner::GetSearchPath(int& solcost)
     for (int aind = 0; aind < (int)tempPathID.size(); aind++) {
         if (bforwardsearch)
             //getting path in reverse
-            actiondata = (RSTARACTIONDATA*)tempPathID.at(tempPathID.size() - aind - 1)->PlannerSpecificData;
+            actiondata = (RSTARACTIONDATA*)tempPathID.at(tempPathID.size() - aind - 1)->PlannerSpecificData; 
         else
             actiondata = (RSTARACTIONDATA*)tempPathID.at(aind)->PlannerSpecificData; //getting path in reverse
 
         //get the states that correspond to the high-level action
         for (int j = 0; j < (int)actiondata->pathIDs.size(); j++) {
             //note: path corresponding to the action is already in right direction
-            wholePathIds.push_back(actiondata->pathIDs.at(j));
+            wholePathIds.push_back(actiondata->pathIDs.at(j)); 
         }
     }
     //add the goal state
@@ -1227,7 +1232,7 @@ bool RSTARPlanner::Search(vector<int>& pathIds, int & PathCost, bool bFirstSolut
     pSearchStateSpace->eps_satisfied = INFINITECOST;
 
     if (pSearchStateSpace->bReinitializeSearchStateSpace == true) {
-        //re-initialize state space
+        //re-initialize state space 
         ReInitializeSearchStateSpace();
     }
 
@@ -1305,7 +1310,7 @@ bool RSTARPlanner::Search(vector<int>& pathIds, int & PathCost, bool bFirstSolut
         {
             //the path to the goal is not found, it is just goal has been
             //generated but the last edge to it wasn't computed yet
-            CurrentPathCost = INFINITECOST;
+            CurrentPathCost = INFINITECOST; 
         }
         else {
             //get the found path
