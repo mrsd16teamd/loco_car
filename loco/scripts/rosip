@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Shell script scripts to read ip address
+# -------------------------------------------------------------------------
+# Copyright (c) 2005 nixCraft project <http://cyberciti.biz/fb/>
+# This script is licensed under GNU GPL version 2.0 or above
+# -------------------------------------------------------------------------
+# This script is part of nixCraft shell script collection (NSSC)
+# Visit http://bash.cyberciti.biz/ for more information.
+# -------------------------------------------------------------------------
+# https://bash.cyberciti.biz/misc-shell/read-local-ip-address/
+# Get OS name
+
+# Uncomment this to 
+# set -x
+
+echo "---------------------------------"
+echo "Setting ROS_MASTER_URI and ROS_IP"
+echo "---------------------------------"
+
+OS=`uname`
+IO="" # store IP
+case $OS in
+   Linux) IP=`ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`;;
+   FreeBSD|OpenBSD) IP=`ifconfig  | grep -E 'inet.[0-9]' | grep -v '127.0.0.1' | awk '{ print $2}'` ;;
+   SunOS) IP=`ifconfig -a | grep inet | grep -v '127.0.0.1' | awk '{ print $2} '` ;;
+   *) IP="Unknown";;
+esac
+
+echo "Local IP address found is: $IP"
+echo "Please 'hostname -I' to double-check."
+
+#export ROS_MASTER_URI=http://${IP}:11311
+export ROS_MASTER_URI=http://tegra-ubuntu:11311
+export ROS_IP=${IP}
+
+#echo " "
+#echo "If you're currently on Jetson: run this script on local machine, then copy and paste the line below"
+#echo "ROS_MASTER_URI=http://$IP:11311"
+#echo "ROS_IP=$IP"
+
+
