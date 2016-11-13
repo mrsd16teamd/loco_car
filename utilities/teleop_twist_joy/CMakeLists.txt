@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(teleop_twist_joy)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp sensor_msgs)
+find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp sensor_msgs ackermann_msgs)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS geometry_msgs roscpp sensor_msgs
+  CATKIN_DEPENDS geometry_msgs roscpp sensor_msgs ackermann_msgs
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
@@ -15,7 +15,14 @@ add_library(${PROJECT_NAME} src/${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 add_executable(${PROJECT_NAME}_node src/teleop_node.cpp)
+
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+# add_executable(ack_joy_node src/ack_joy.cpp)
+# target_link_libraries(ack_joy_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+
+
 set_target_properties(${PROJECT_NAME}_node
   PROPERTIES OUTPUT_NAME teleop_node PREFIX "")
 

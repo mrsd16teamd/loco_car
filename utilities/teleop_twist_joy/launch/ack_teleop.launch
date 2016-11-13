@@ -5,13 +5,13 @@
   
   <node pkg="joy" type="joy_node" name="joy_node">
     <param name="dev" value="$(arg joy_dev)" />
-    <param name="deadzone" value="0.05" />
-    <param name="autorepeat_rate" value="20" />
+    <param name="deadzone" value="0.0" />
+    <param name="autorepeat_rate" value="0.0" />
   </node>
 
   <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
     <rosparam command="load" file="$(arg config_filepath)" />
-    <param name="scale_angular" value="-1.0"/>
+    <param name="scale_angular" value="1.0"/>
     <param name="scale_linear" value="0.5"/>
     <param name="scale_linear_turbo" value="1.5"/>
     <param name="enable_button" value="4"/>
