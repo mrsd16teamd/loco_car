@@ -1,5 +1,5 @@
 image: fve_map.png
-resolution: 0.039000
+resolution: 0.048000
 origin: [0.000000, 0.000000, 0.000000]
 negate: 0
 occupied_thresh: 0.75

@@ -10,7 +10,7 @@
 %  *     * Redistributions in binary form must reproduce the above copyright
 %  *       notice, this list of conditions and the following disclaimer in the
 %  *       documentation and/or other materials provided with the distribution.
-%  *     * Neither the name of the Carnegie Mellon University nor the names of its
+%  *     * Neither the name of the University of Pennsylvania nor the names of its
 %  *       contributors may be used to endorse or promote products derived from
 %  *       this software without specific prior written permission.
 %  * 
@@ -41,7 +41,7 @@ UNICYCLE_MPRIM_16DEGS = 1;
 
 
 if UNICYCLE_MPRIM_16DEGS == 1
-    resolution = 0.025;
+    resolution = 0.05;
     numberofangles = 16; %preferably a power of 2, definitely multiple of 8
     numberofprimsperangle = 5;
 
@@ -50,7 +50,7 @@ if UNICYCLE_MPRIM_16DEGS == 1
     backwardcostmult = 5;
     forwardandturncostmult = 2;
     sidestepcostmult = 10;
-    turninplacecostmult = 5;
+    turninplacecostmult = 5000;
     
     %note, what is shown x,y,theta changes (not absolute numbers)
     

@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2008, Maxim Likhachev
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Carnegie Mellon University nor the names of its
+ *     * Neither the name of the University of Pennsylvania nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -60,7 +60,8 @@ CMDPSTATE* VIPlanner::CreateState(int stateID)
 
 #if DEBUG
     if (environment_->StateID2IndexMapping[stateID][VIMDP_STATEID2IND] != -1) {
-        throw SBPL_Exception("ERROR in CreateState: state already created");
+        SBPL_ERROR("ERROR in CreateState: state already created\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -72,7 +73,8 @@ CMDPSTATE* VIPlanner::CreateState(int stateID)
 
 #if DEBUG
     if (state != viPlanner.MDP.StateArray[environment_->StateID2IndexMapping[stateID][VIMDP_STATEID2IND]]) {
-        throw SBPL_Exception("ERROR in CreateState: invalid state index");
+        SBPL_ERROR("ERROR in CreateState: invalid state index\n");
+        throw new SBPL_Exception();
     }
 #endif
 
@@ -86,7 +88,8 @@ CMDPSTATE* VIPlanner::CreateState(int stateID)
 CMDPSTATE* VIPlanner::GetState(int stateID)
 {
     if (stateID >= (int)environment_->StateID2IndexMapping.size()) {
-        throw SBPL_Exception("ERROR in GetState: stateID is invalid");
+        SBPL_ERROR("ERROR int GetState: stateID is invalid\n");
+        throw new SBPL_Exception();
     }
 
     if (environment_->StateID2IndexMapping[stateID][VIMDP_STATEID2IND] == -1)
