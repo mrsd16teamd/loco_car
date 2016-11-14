@@ -53,6 +53,9 @@
     <param name="update_min_a" value="0.1" />
 	</node>
 
+	<!--  **************** base controller ****************  -->
+	<node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>
+
 	  <!--  **************** Visualisation ****************  -->
 	  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find teb_local_planner)/cfg/rviz_navigation.rviz"/>
 

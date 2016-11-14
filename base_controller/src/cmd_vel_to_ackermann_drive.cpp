@@ -1,5 +1,4 @@
 #include <ros/ros.h>
-
 #include <math.h>
 #include <geometry_msgs/Twist.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
@@ -20,7 +19,7 @@ public:
     ros::Subscriber vel_sub;
 
     // Initialize parameters
-    float wheelbase = 0.15;
+    float wheelbase = 0.255;
     /*
     if (n_.getParam("chassis/wheelbase",wheelbase)) {
       n_.getParam("chassis/wheelbase",wheelbase);
@@ -35,7 +34,6 @@ public:
   float vel_to_steering_angle(float v, double omega) {
     if(omega==0 || v==0)
       return 0;
-
     float radius = v/omega;
     float steering_angle = atan(wheelbase/radius);
     return steering_angle;
@@ -44,7 +42,7 @@ public:
   void velCallback(const geometry_msgs::Twist& twist_msg) {
     ackermann_msgs::AckermannDriveStamped ack_msg;
 
-    float wheelbase = 0.15;
+    float wheelbase = 0.255;
     float lin_vel = twist_msg.linear.x;
     ack_msg.header.stamp = ros::Time::now();
     ack_msg.header.frame_id = "base_link";
