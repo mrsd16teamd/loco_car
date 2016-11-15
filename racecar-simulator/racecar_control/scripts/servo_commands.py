@@ -19,8 +19,11 @@ def set_throttle_steer(data):
     pub_pos_left_steering_hinge = rospy.Publisher('/racecar/left_steering_hinge_position_controller/command', Float64, queue_size=1)
     pub_pos_right_steering_hinge = rospy.Publisher('/racecar/right_steering_hinge_position_controller/command', Float64, queue_size=1)
 
-    throttle = data.drive.speed/0.1
-    steer = data.drive.steering_angle
+    throttle = data.drive.speed/0.06
+    steer = min(data.drive.steering_angle, 1)
+
+    if data.drive.speed < 0:
+    	steer = -1*steer
 
     pub_vel_left_rear_wheel.publish(throttle)
     pub_vel_right_rear_wheel.publish(throttle)
@@ -33,7 +36,7 @@ def servo_commands():
 
     rospy.init_node('servo_commands', anonymous=True)
 
-    rospy.Subscriber("/racecar/ackermann_cmd_mux/output", AckermannDriveStamped, set_throttle_steer)
+    rospy.Subscriber("/cmd_vel_ack", AckermannDriveStamped, set_throttle_steer)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
