@@ -14,8 +14,8 @@
     <param name="update_min_a" value="0.1" />
 
     <param name="m" value="diff" />
-    <param name="odom_alpha1" value="0.1" />
-    <param name="odom_alpha2" value="0.1" />
+    <param name="odom_alpha1" value="0.2" />
+    <param name="odom_alpha2" value="0.2" />
 
     <param name="initial_cov_aa" value="0.5" />
 
