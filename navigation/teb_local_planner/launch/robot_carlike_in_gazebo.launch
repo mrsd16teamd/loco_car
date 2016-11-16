@@ -40,7 +40,7 @@
 		<param name="frame_id" value="/map"/>
 	</node>
 
-	<node pkg="amcl" type="amcl" name="amcl" output="screen">
+	<!-- <node pkg="amcl" type="amcl" name="amcl" output="screen">
 		<rosparam file="$(find teb_local_planner)/cfg/amcl_params.yaml" command="load" />
 
 	  <param name="initial_pose_x"            value="0"/>
@@ -51,7 +51,9 @@
     <param name="odom_frame_id" value="odom" />
     <param name="update_min_d" value="0.1" />
     <param name="update_min_a" value="0.1" />
-	</node>
+	</node> -->
+
+  <include file="$(find loco)/launch/amcl_sim.launch"/>
 
 	<!--  **************** base controller ****************  -->
 	<node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>

@@ -23,6 +23,6 @@
   </node>
 
   <!-- Allow for Gazebo to broadcast odom -->
-  <node pkg="racecar_gazebo" name="gazebo_odometry_node" type="gazebo_odometry.py"/>
+  <!--<node pkg="racecar_gazebo" name="gazebo_odometry_node" type="gazebo_odometry.py"/> -->
 
 </launch>
