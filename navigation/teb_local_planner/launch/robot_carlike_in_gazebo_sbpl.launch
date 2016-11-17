@@ -24,13 +24,14 @@
   		<rosparam file="$(find teb_local_planner)/cfg/carlike/teb_local_planner_w_sbpl_params.yaml" command="load" />
 
 		<param name="base_global_planner" value="SBPLLatticePlanner" />
-    <param name="SBPLLatticePlanner/primitive_filename" value="$(find sbpl)/matlab/mprim/testing_loco_sim.mprim" />
+    <param name="SBPLLatticePlanner/primitive_filename" value="$(find sbpl)/matlab/mprim/testing_loco_sim2.mprim" />
     <rosparam file="$(find sbpl_lattice_planner)/launch/sbpl_global_params.yaml" command="load" />
 		<param name="planner_frequency" value="1.0" />
 		<param name="planner_patience" value="5.0" />
 
-    <!-- <rosparam file="$(find base_local_planner)/cfg/base_local_planner_params.yaml" command="load" /> -->
-		<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    <rosparam file="$(find base_local_planner)/cfg/base_local_planner_params.yaml" command="load" />
+    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+		<!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" /> -->
 		<param name="controller_frequency" value="5.0" />
 		<param name="controller_patience" value="15.0" />
 
@@ -62,7 +63,7 @@
 	<node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>
 
 	  <!--  **************** Visualisation ****************  -->
-	  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find teb_local_planner)/cfg/rviz_navigation.rviz"/>
+	  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find teb_local_planner)/cfg/rviz_sbpl.rviz"/>
 
 
 </launch>

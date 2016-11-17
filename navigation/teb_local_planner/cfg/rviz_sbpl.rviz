@@ -6,10 +6,11 @@ Panels:
       Expanded:
         - /Global Options1
         - /Local Planner1
-        - /Local Planner1/TebPoses1
+        - /Local Planner1/LocalPath1
         - /Global Planner1
         - /Global Planner1/GlobalPath1
         - /Robot1
+        - /Robot1/LaserScan1
         - /Robot1/AMCL Particles1
       Splitter Ratio: 0.605096
     Tree Height: 376
@@ -64,7 +65,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Group
       Displays:
-        - Arrow Length: 0.1
+        - Arrow Length: 0.3
           Class: rviz/PoseArray
           Color: 255; 25; 0
           Enabled: true
@@ -73,13 +74,13 @@ Visualization Manager:
           Unreliable: false
           Value: true
         - Class: rviz/Marker
-          Enabled: false
+          Enabled: true
           Marker Topic: /move_base/TebLocalPlannerROS/teb_markers
           Name: TebMarker
           Namespaces:
             {}
           Queue Size: 100
-          Value: false
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -99,7 +100,7 @@ Visualization Manager:
           Radius: 0.03
           Shaft Diameter: 0.1
           Shaft Length: 0.1
-          Topic: /move_base/TebLocalPlannerROS/local_plan
+          Topic: /move_base/TrajectoryPlannerROS/local_plan
           Unreliable: false
           Value: true
         - Alpha: 0.4
@@ -134,7 +135,7 @@ Visualization Manager:
           Radius: 0.03
           Shaft Diameter: 0.1
           Shaft Length: 0.1
-          Topic: /move_base/TebLocalPlannerROS/global_plan
+          Topic: /move_base/TrajectoryPlannerROS/global_plan
           Unreliable: false
           Value: true
         - Alpha: 0.7
@@ -190,12 +191,12 @@ Visualization Manager:
           Value: true
         - Arrow Length: 0.05
           Class: rviz/PoseArray
-          Color: 85; 255; 255
-          Enabled: true
+          Color: 85; 255; 0
+          Enabled: false
           Name: AMCL Particles
           Topic: /particlecloud
           Unreliable: false
-          Value: true
+          Value: false
         - Class: rviz/TF
           Enabled: false
           Frame Timeout: 15
@@ -246,22 +247,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.94965
+      Distance: 12.4509
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.00187
-        Y: 2.67172
-        Z: -1.51778
+        X: 5.60141
+        Y: 3.23896
+        Z: -1.41216
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.5698
+      Pitch: 1.5648
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.67043
+      Yaw: 4.71043
     Saved: ~
 Window Geometry:
   Displays:
