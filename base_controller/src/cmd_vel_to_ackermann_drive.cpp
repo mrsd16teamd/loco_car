@@ -36,6 +36,9 @@ public:
       return 0;
     float radius = v/omega;
     float steering_angle = atan(wheelbase/radius);
+    if(v<0){
+	steering_angle *= -1;
+    } 
     return steering_angle;
   }
 
@@ -45,7 +48,7 @@ public:
     float wheelbase = 0.255;
     float lin_vel = twist_msg.linear.x;
     ack_msg.header.stamp = ros::Time::now();
-    ack_msg.header.frame_id = "base_link";
+    ack_msg.header.frame_id = "base_link";    
 
     ack_msg.drive.speed = lin_vel;
     ack_msg.drive.steering_angle = vel_to_steering_angle(lin_vel, twist_msg.angular.z);
