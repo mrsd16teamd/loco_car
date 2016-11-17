@@ -171,9 +171,9 @@ void ImuOdometryPublisher::CalculateOdometry()
 
   // ROS_INFO("roll= %f pitch=%f yaw=%f",latest_imu.orientation[0], latest_imu.orientation[1],
   // latest_imu.orientation[2]);
-  ROS_INFO("x= %f y=%f t= %f", current_state.x, current_state.y, current_state.t);
-  ROS_INFO("vx= %f vy=%f w= %f", current_state.vx, current_state.vy, current_state.w);
-  ROS_INFO("ax= %f ay=%f, w=%f", ax, ay, latest_imu.angular_velocity[2]);
+  //ROS_INFO("x= %f y=%f t= %f", current_state.x, current_state.y, current_state.t);
+  //ROS_INFO("vx= %f vy=%f w= %f", current_state.vx, current_state.vy, current_state.w);
+  //ROS_INFO("ax= %f ay=%f, w=%f", ax, ay, latest_imu.angular_velocity[2]);
 
   PublishOdometry();
 }
