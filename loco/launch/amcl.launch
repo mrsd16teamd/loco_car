@@ -10,6 +10,9 @@
     <param name="scan" value="scan" />
     <param name="odom_frame_id" value="odom" />
 
+    <param name="recovery_alpha_slow" value="0.0005" />
+    <param name="recovery_alpha_fast" value="0.1" />
+
     <param name="update_min_d" value="0.1" />
     <param name="update_min_a" value="0.1" />
 

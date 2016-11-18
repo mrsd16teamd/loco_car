@@ -1,11 +1,16 @@
 <launch>
 
-<arg name="bag_path" default="/home/parallels/ros_bags/fvelab_amcl1.bag" />
+<arg name="bag_path" default="/home/parallels/ros_bags/amcl_fail.bag" />
 
-<param name="use_sim_time" value="true" />
+<include file="$(find loco)/launch/rviz.launch"/>
+
+<!-- <param name="use_sim_time" value="true" /> -->
 
   <node pkg="rosbag" type="play" name="rosbag_play"
-    args="$(arg bag_path) --topics /scan /map /map_metadata /scanmatch_odom /tf /clock -r 5"/>
+    args="$(arg bag_path) --topics /scan /map /map_metadata /scanmatch_odom /tf /clock
+    /move_base/global_costmap/costmap /move_base/local_costmap/costmap  /move_base/local_costmap/footprint
+    /move_base/TebLocalPlannerROS/local_plan /move_base/TebLocalPlannerROS/global_plan /move_base/GlobalPlanner/plan
+    -r 2" output="screen"/>
 
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
     <param name="scan" value="scan" />
@@ -23,8 +28,8 @@
     <param name="update_min_a" value="0.1" />
 
     <param name="m" value="diff" />
-    <param name="odom_alpha1" value="0.1" />
-    <param name="odom_alpha2" value="0.1" />
+    <param name="odom_alpha1" value="0.4" />
+    <param name="odom_alpha2" value="0.4" />
 
     <param name="initial_cov_aa" value="0.5" />
 
@@ -51,8 +56,8 @@
 
   <!-- <include file="$(find loco)/launch/rviz.launch" /> -->
 
-  <node pkg="loco" name="amcl_eval" type="amcl_score.py" output="screen"/>
+  <!-- <node pkg="loco" name="amcl_eval" type="amcl_score.py" output="screen"/> -->
 
-  <node pkg="loco" name="amcl_globalinit" type="amcl_globalinit" />
+  <!-- <node pkg="loco" name="amcl_globalinit" type="amcl_globalinit" /> -->
 
 </launch>
