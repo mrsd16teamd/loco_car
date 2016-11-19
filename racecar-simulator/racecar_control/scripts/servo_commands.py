@@ -19,11 +19,12 @@ def set_throttle_steer(data):
     pub_pos_left_steering_hinge = rospy.Publisher('/racecar/left_steering_hinge_position_controller/command', Float64, queue_size=1)
     pub_pos_right_steering_hinge = rospy.Publisher('/racecar/right_steering_hinge_position_controller/command', Float64, queue_size=1)
 
-    throttle = data.drive.speed/0.06
-    steer = min(data.drive.steering_angle, 1)
+    throttle = data.drive.speed*50
+    #steer = min(data.drive.steering_angle, 1)
+    steer = data.drive.steering_angle
 
-    if data.drive.speed < 0:
-    	steer = -1*steer
+    #if data.drive.speed < 0:
+    #	steer = -1*steer
 
     pub_vel_left_rear_wheel.publish(throttle)
     pub_vel_right_rear_wheel.publish(throttle)
