@@ -1,12 +1,3 @@
-<!--
-  Simulate a carlike robot with the teb_local_planner in stage:
-  - stage
-  - map_server
-  - move_base
-  - static map
-  - amcl
-  - rviz view
- -->
 <launch>
 
     <node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>
@@ -37,8 +28,8 @@
   <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
 
 
-<!--   <node pkg="rosbag" type="record" name="rosbag_record_main"
-     	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/> --> 
+   <node pkg="rosbag" type="record" name="rosbag_record_main"
+     	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>  
 
 
 </launch>
