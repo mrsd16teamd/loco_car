@@ -129,7 +129,7 @@ void loop(){
     else if (x < 0) {
 //      throttle = mapf(x, -0.4, 0, 1410, 1430); //hand tuned values. default to 1500, 2000 if problems
       if( x > -0.394) {
-        throttle = 1430; //minimum to start moving
+        throttle = 1440; //minimum to start moving
       }
       else if (x == -1.6 && (w > 0.8 || w < - 0.8)) {  //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
         throttle = 1300;
