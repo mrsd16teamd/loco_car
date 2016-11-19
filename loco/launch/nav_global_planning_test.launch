@@ -1,12 +1,3 @@
-<!--
-  Simulate a carlike robot with the teb_local_planner in stage:
-  - stage
-  - map_server
-  - move_base
-  - static map
-  - amcl
-  - rviz view
- -->
 <launch>
 
     <node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>
@@ -40,7 +31,6 @@
   <node pkg="razor_imu_9dof" type="imu_node.py" name="imu_node" output="screen">
     <rosparam file="$(arg razor_config_file)" command="load"/>
   </node>
-
 
    <node pkg="rosbag" type="record" name="rosbag_record_main"
      	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/> 

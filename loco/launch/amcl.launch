@@ -20,7 +20,9 @@
     <param name="odom_alpha1" value="0.4" />
     <param name="odom_alpha2" value="0.4" />
 
-    <param name="initial_cov_aa" value="0.25" />
+    <param name="initial_cov_xx" value="0.125" /> <!-- originall 0.25 -->
+    <param name="initial_cov_yy" value="0.125" />
+    <param name="initial_cov_aa" value="0.5" />
 
   </node>
 

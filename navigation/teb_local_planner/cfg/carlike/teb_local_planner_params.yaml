@@ -14,15 +14,15 @@ TebLocalPlannerROS:
 
  # Robot
 
- max_vel_x: 0.3
- max_vel_x_backwards: 0.3
+ max_vel_x: 1.5
+ max_vel_x_backwards: 0.5
  max_vel_y: 0.0
- max_vel_theta: 0.11 # the angular velocity is also bounded by min_turning_radius in case of a carlike robot (r = v / omega)
- acc_lim_x: 0.11
- acc_lim_theta: 0.11
+ max_vel_theta: 0.2 # the angular velocity is also bounded by min_turning_radius in case of a carlike robot (r = v / omega)
+ acc_lim_x: 0.2
+ acc_lim_theta: 0.2
 
  # ********************** Carlike robot parameters ********************
- min_turning_radius: 0.55        # Min turning radius of the carlike robot (compute value using a model or adjust with rqt_reconfigure manually)
+ min_turning_radius: 0.255        # Min turning radius of the carlike robot (compute value using a model or adjust with rqt_reconfigure manually)
  wheelbase: 0.255                 # Wheelbase of our robot
  cmd_angle_instead_rotvel: True # stage simulator takes the angle instead of the rotvel as input (twist message)
  # ********************************************************************
@@ -40,13 +40,13 @@ TebLocalPlannerROS:
 
  # GoalTolerance
 
- xy_goal_tolerance: 0.2
- yaw_goal_tolerance: 0.1
+ xy_goal_tolerance: 0.1
+ yaw_goal_tolerance: 0.2
  free_goal_vel: False
 
  # Obstacles
 
- min_obstacle_dist: 0.27 # This value must also include our robot's expansion, since footprint_model is set to "line".
+ min_obstacle_dist: 0.35 # This value must also include our robot's expansion, since footprint_model is set to "line".
  include_costmap_obstacles: True
  costmap_obstacles_behind_robot_dist: 0.5
  obstacle_poses_affected: 8
