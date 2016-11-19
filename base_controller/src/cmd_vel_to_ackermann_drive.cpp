@@ -30,7 +30,7 @@ public:
       ROS_INFO("parameters not found!");
       */
 
-
+/*
   float vel_to_steering_angle(float v, double omega) {
     if(omega==0 || v==0)
       return 0;
@@ -40,6 +40,11 @@ public:
 	steering_angle *= -1;
     } 
     return steering_angle;
+  } 
+*/
+
+  float vel_to_steering_angle(float v, double omega) {
+     return omega;
   }
 
   void velCallback(const geometry_msgs::Twist& twist_msg) {
