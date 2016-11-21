@@ -106,7 +106,7 @@ void loop(){
 
   if (!disabled) {
     
-    steer = mapf(w, 1.0, -1.0, 1200,1800); //maxes out at +/- 0.8
+    steer = mapf(w, 0.8, -0.8, 1100,1900); //maxes out at +/- 0.8
     servo.attach(servo_pin,1000,2000);
     
 //    servo.writeMicroseconds(steer); 
@@ -120,7 +120,7 @@ void loop(){
         throttle = 1540; //minimum to start moving
       }
  
-      else if (x == 1.6 && (w > 0.8 || w < - 0.8)) {   //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
+      else if (x == 1.6 && (w > 0.6 || w < - 0.6)) {   //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
         throttle = 1700;
       }
       
@@ -136,9 +136,9 @@ void loop(){
     else if (x < 0) {
 //      throttle = mapf(x, -0.4, 0, 1410, 1430); //hand tuned values. default to 1500, 2000 if problems
       if( x > -0.394) {
-        throttle = 1430; //minimum to start moving
+        throttle = 1435; //minimum to start moving
       }
-      else if (x == -1.6 && (w > 0.8 || w < - 0.8)) {  //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
+      else if (x == -1.6 && (w > 0.6 || w < - 0.6)) {  //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
         throttle = 1300;
       }
       else if  (x < -1.5) {
@@ -146,7 +146,7 @@ void loop(){
       }
 
       else {
-       throttle = (float(x)*20.08)+1438.032; //emperically determined equation for forward motion transformed for backward motion UNSTABLE
+       throttle = (float(x)*20.08)+1443.032; //emperically determined equation for forward motion transformed for backward motion UNSTABLE
       }
       
     }
