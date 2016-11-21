@@ -10,18 +10,18 @@
     <param name="scan" value="scan" />
     <param name="odom_frame_id" value="odom" />
 
-    <param name="recovery_alpha_slow" value="0.0005" />
-    <param name="recovery_alpha_fast" value="0.1" />
+<!--    <param name="recovery_alpha_slow" value="0.0005" />
+    <param name="recovery_alpha_fast" value="0.1" /> -->
 
     <param name="update_min_d" value="0.1" />
     <param name="update_min_a" value="0.1" />
 
     <param name="m" value="diff" />
-    <param name="odom_alpha1" value="0.4" />
-    <param name="odom_alpha2" value="0.4" />
+    <param name="odom_alpha1" value="0.2" />
+    <param name="odom_alpha2" value="0.2" />
 
-    <param name="initial_cov_xx" value="0.125" /> <!-- originall 0.25 -->
-    <param name="initial_cov_yy" value="0.125" />
+    <param name="initial_cov_xx" value="0.1" /> <!-- originall 0.25 -->
+    <param name="initial_cov_yy" value="0.1" />
     <param name="initial_cov_aa" value="0.5" />
 
   </node>
