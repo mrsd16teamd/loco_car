@@ -9,8 +9,8 @@ public:
   VelMsgConverter()
   {
     // Initialize the publisher and subscriber
-    vel_pub = n_.advertise<ackermann_msgs::AckermannDriveStamped>("/cmd_vel_ack", 1);
-    vel_sub = n_.subscribe("/cmd_vel",1,&VelMsgConverter::velCallback,this);
+    vel_pub = n_.advertise<ackermann_msgs::AckermannDriveStamped>("/cmd_vel_ack", 10);
+    vel_sub = n_.subscribe("/cmd_vel",10,&VelMsgConverter::velCallback,this);
   }
 
   private:
