@@ -12,7 +12,7 @@ obstacle_layer:
  enabled: true
  obstacle_range: 3.0
  raytrace_range: 3.5
- inflation_radius: 0.2
+ inflation_radius: 0.4
  track_unknown_space: false
  combination_method: 1
 
@@ -22,8 +22,8 @@ obstacle_layer:
 
 inflation_layer:
   enabled:              true
-  cost_scaling_factor:  10.0  # exponential rate at which the obstacle cost drops off (default: 10)
-  inflation_radius:     0.3  # max. distance from an obstacle at which costs are incurred for planning paths.
+  cost_scaling_factor:  5.0  # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius:     0.4  # max. distance from an obstacle at which costs are incurred for planning paths.
 
 static_layer:
   enabled:              true

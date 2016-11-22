@@ -22,7 +22,7 @@ TebLocalPlannerROS:
  acc_lim_theta: 0.2
 
  # ********************** Carlike robot parameters ********************
- min_turning_radius: 0.283 #0.255 for 45deg       # Min turning radius of the carlike robot (compute value using a model or adjust with rqt_reconfigure manually)
+ min_turning_radius: 0.5 #0.283 #0.255 for 45deg       # Min turning radius of the carlike robot (compute value using a model or adjust with rqt_reconfigure manually)
  wheelbase: 0.255                 # Wheelbase of our robot
  cmd_angle_instead_rotvel: True # stage simulator takes the angle instead of the rotvel as input (twist message)
  # ********************************************************************
@@ -40,13 +40,13 @@ TebLocalPlannerROS:
 
  # GoalTolerance
 
- xy_goal_tolerance: 0.05
- yaw_goal_tolerance: 1.0
+ xy_goal_tolerance: 0.1
+ yaw_goal_tolerance: 0.5
  free_goal_vel: False
 
  # Obstacles
 
- min_obstacle_dist: 0.35 # This value must also include our robot's expansion, since footprint_model is set to "line".
+ min_obstacle_dist: 0.25 # This value must also include our robot's expansion, since footprint_model is set to "line".
  include_costmap_obstacles: True
  costmap_obstacles_behind_robot_dist: 0.5
  obstacle_poses_affected: 8
@@ -56,8 +56,8 @@ TebLocalPlannerROS:
 
  # Optimization
 
- no_inner_iterations: 3
- no_outer_iterations: 3
+ no_inner_iterations: 5
+ no_outer_iterations: 4
  optimization_activate: True
  optimization_verbose: False
  penalty_epsilon: 0.1
@@ -66,9 +66,9 @@ TebLocalPlannerROS:
  weight_acc_lim_x: 0.0
  weight_acc_lim_theta: 0.0
  weight_kinematics_nh: 1000
- weight_kinematics_forward_drive: 1
- weight_kinematics_turning_radius: 1
- weight_optimaltime: 1
+ weight_kinematics_forward_drive: 1 #1
+ weight_kinematics_turning_radius: 1 #1
+ weight_optimaltime: 1.0
  weight_obstacle: 50
  weight_dynamic_obstacle: 10 # not in use yet
 
