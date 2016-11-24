@@ -1,6 +1,6 @@
 <launch>
 
-    <node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>
+    <!--<node pkg="base_controller" type="cmd_vel_to_ackermann_drive" name="cmd_vel_to_ackermann_drive"/>-->
 
         <!--  ************** Navigation ***************  -->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">

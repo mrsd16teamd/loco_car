@@ -26,7 +26,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include "ros/ros.h"
 #include "sensor_msgs/Joy.h"
 #include "teleop_twist_joy/teleop_twist_joy.h"
-#include "ackermann_msgs/AckermannDriveStamped.h"
+
 #include <map>
 #include <string>
 
@@ -69,7 +69,7 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle* nh, ros::NodeHandle* nh_param)
 {
   pimpl_ = new Impl;
 
-  pimpl_->cmd_vel_pub = nh->advertise<ackermann_msgs::AckermannDriveStamped>("cmd_vel_ack", 1, true);
+  pimpl_->cmd_vel_pub = nh->advertise<geometry_msgs::Twist>("cmd_vel", 1, true);
   pimpl_->joy_sub = nh->subscribe<sensor_msgs::Joy>("joy", 1, &TeleopTwistJoy::Impl::joyCallback, pimpl_);
 
   nh_param->param<int>("enable_button", pimpl_->enable_button, 0);
@@ -130,34 +130,33 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle* nh, ros::NodeHandle* nh_param)
 void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::Joy::ConstPtr& joy_msg)
 {
   // Initializes with zeros by default.
-  // geometry_msgs::Twist cmd_vel_msg;
-  ackermann_msgs::AckermannDriveStamped cmd_vel_msg;
+  geometry_msgs::Twist cmd_vel_msg;
 
   if (enable_turbo_button >= 0 && joy_msg->buttons[enable_turbo_button])
   {
     if (axis_linear_map.find("x") != axis_linear_map.end())
     {
-      cmd_vel_msg.drive.speed = joy_msg->axes[axis_linear_map["x"]] * scale_linear_turbo_map["x"];
+      cmd_vel_msg.linear.x = joy_msg->axes[axis_linear_map["x"]] * scale_linear_turbo_map["x"];
     }
     if (axis_linear_map.find("y") != axis_linear_map.end())
     {
-      // cmd_vel_msg.linear.y = joy_msg->axes[axis_linear_map["y"]] * scale_linear_turbo_map["y"];
+      cmd_vel_msg.linear.y = joy_msg->axes[axis_linear_map["y"]] * scale_linear_turbo_map["y"];
     }
     if  (axis_linear_map.find("z") != axis_linear_map.end())
     {
-      // cmd_vel_msg.linear.z = joy_msg->axes[axis_linear_map["z"]] * scale_linear_turbo_map["z"];
+      cmd_vel_msg.linear.z = joy_msg->axes[axis_linear_map["z"]] * scale_linear_turbo_map["z"];
     }
     if  (axis_angular_map.find("yaw") != axis_angular_map.end())
     {
-      cmd_vel_msg.drive.steering_angle = joy_msg->axes[axis_angular_map["yaw"]] * scale_angular_turbo_map["yaw"];
+      cmd_vel_msg.angular.z = joy_msg->axes[axis_angular_map["yaw"]] * scale_angular_turbo_map["yaw"];
     }
     if  (axis_angular_map.find("pitch") != axis_angular_map.end())
     {
-      // cmd_vel_msg.angular.y = joy_msg->axes[axis_angular_map["pitch"]] * scale_angular_turbo_map["pitch"];
+      cmd_vel_msg.angular.y = joy_msg->axes[axis_angular_map["pitch"]] * scale_angular_turbo_map["pitch"];
     }
     if  (axis_angular_map.find("roll") != axis_angular_map.end())
     {
-      // cmd_vel_msg.angular.x = joy_msg->axes[axis_angular_map["roll"]] * scale_angular_turbo_map["roll"];
+      cmd_vel_msg.angular.x = joy_msg->axes[axis_angular_map["roll"]] * scale_angular_turbo_map["roll"];
     }
 
     cmd_vel_pub.publish(cmd_vel_msg);
@@ -167,27 +166,27 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::Joy::ConstPtr& joy_msg
   {
     if  (axis_linear_map.find("x") != axis_linear_map.end())
     {
-      cmd_vel_msg.drive.speed = joy_msg->axes[axis_linear_map["x"]] * scale_linear_map["x"];
+      cmd_vel_msg.linear.x = joy_msg->axes[axis_linear_map["x"]] * scale_linear_map["x"];
     }
     if  (axis_linear_map.find("y") != axis_linear_map.end())
     {
-      // cmd_vel_msg.linear.y = joy_msg->axes[axis_linear_map["y"]] * scale_linear_map["y"];
+      cmd_vel_msg.linear.y = joy_msg->axes[axis_linear_map["y"]] * scale_linear_map["y"];
     }
     if  (axis_linear_map.find("z") != axis_linear_map.end())
     {
-      // cmd_vel_msg.linear.z = joy_msg->axes[axis_linear_map["z"]] * scale_linear_map["z"];
+      cmd_vel_msg.linear.z = joy_msg->axes[axis_linear_map["z"]] * scale_linear_map["z"];
     }
     if  (axis_angular_map.find("yaw") != axis_angular_map.end())
     {
-      cmd_vel_msg.drive.steering_angle = joy_msg->axes[axis_angular_map["yaw"]] * scale_angular_map["yaw"];
+      cmd_vel_msg.angular.z = joy_msg->axes[axis_angular_map["yaw"]] * scale_angular_map["yaw"];
     }
     if  (axis_angular_map.find("pitch") != axis_angular_map.end())
     {
-      // cmd_vel_msg.angular.y = joy_msg->axes[axis_angular_map["pitch"]] * scale_angular_map["pitch"];
+      cmd_vel_msg.angular.y = joy_msg->axes[axis_angular_map["pitch"]] * scale_angular_map["pitch"];
     }
     if  (axis_angular_map.find("roll") != axis_angular_map.end())
     {
-      // cmd_vel_msg.angular.x = joy_msg->axes[axis_angular_map["roll"]] * scale_angular_map["roll"];
+      cmd_vel_msg.angular.x = joy_msg->axes[axis_angular_map["roll"]] * scale_angular_map["roll"];
     }
 
     cmd_vel_pub.publish(cmd_vel_msg);
@@ -203,8 +202,6 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::Joy::ConstPtr& joy_msg
       sent_disable_msg = true;
     }
   }
-
+}
 
 }  // namespace teleop_twist_joy
-
-}
