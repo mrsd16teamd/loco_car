@@ -15,10 +15,10 @@ TebLocalPlannerROS:
  # Robot
 
  max_vel_x: 1.5
- max_vel_x_backwards: 1.0
+ max_vel_x_backwards: 0.5
  max_vel_y: 0.0
  max_vel_theta: 3.0 # the angular velocity is also bounded by min_turning_radius in case of a carlike robot (r = v / omega)
- acc_lim_x: 0.4
+ acc_lim_x: 1.0
  acc_lim_theta: 0.5
 
  # ********************** Carlike robot parameters ********************
@@ -40,7 +40,7 @@ TebLocalPlannerROS:
 
  # GoalTolerance
 
- xy_goal_tolerance: 0.05
+ xy_goal_tolerance: 0.1
  yaw_goal_tolerance: 0.5
  free_goal_vel: False
 
@@ -63,13 +63,13 @@ TebLocalPlannerROS:
  penalty_epsilon: 0.1
  weight_max_vel_x: 1
  weight_max_vel_theta: 1
- weight_acc_lim_x: 0.0
+ weight_acc_lim_x: 1.0
  weight_acc_lim_theta: 0.0
  weight_kinematics_nh: 1000
- weight_kinematics_forward_drive: 1  #1
+ weight_kinematics_forward_drive: 5  #1
  weight_kinematics_turning_radius: 1 #1
- weight_optimaltime: 1.0
- weight_obstacle: 50
+ weight_optimaltime: 100.0
+ weight_obstacle: 100
  weight_dynamic_obstacle: 10 # not in use yet
 
  # Homotopy Class Planner
