@@ -59,8 +59,6 @@ int main(int argc, char** argv)
     dist_msg.data = distance;
     dist_pub.publish(dist_msg);
 
-    r.sleep();
-
 
 	geometry_msgs::PointStamped circle_msg;
 	circle_msg.point.x = last_goal_x;
@@ -71,9 +69,11 @@ int main(int argc, char** argv)
 
 	circle_pub.publish(circle_msg);
 
-  }
 
-  ros::spin();
+    r.sleep();
+
+
+  }
 
   return 0;
 }
