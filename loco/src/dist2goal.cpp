@@ -12,9 +12,9 @@ ros::Subscriber goal_sub;
 ros::Publisher dist_pub;
 
 void GoalCallback(const move_base_msgs::MoveBaseActionGoal::ConstPtr& msg){
+  ROS_INFO("dist2goal_node: received goal");
   last_goal_x = msg->goal.target_pose.pose.position.x;
   last_goal_y = msg->goal.target_pose.pose.position.y;
-  ROS_INFO("dist2goal_node: received goal");
 }
 
 int main(int argc, char** argv)
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
   ros::NodeHandle nh;
 
-  goal_sub = nh.subscribe("move_base/goal", 1, &GoalCallback);
+  goal_sub = nh.subscribe("move_base/goal", 1, GoalCallback);
   dist_pub = nh.advertise<std_msgs::Float64>("dist2goal_metric", 50);
 
   tf::TransformListener listener;
@@ -31,10 +31,11 @@ int main(int argc, char** argv)
   ros::Rate r(1);
 
   while(ros::ok()){
+    ros::spinOnce();
+
     float current_x, current_y;
 
     tf::StampedTransform transform;
-
 
     try{
        listener.lookupTransform("map", "base_link", ros::Time(0), transform);
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
        //ROS_INFO("Currently at: %f , %f ", current_x, current_y);
     }
     catch (tf::TransformException ex){
-      ROS_ERROR("dist2goal_node: map to base_link transform not found.");
+      ROS_ERROR("dist2goal_node: map to base_link transform not found on this cycle");
     }
 
     float distance = sqrt( pow((last_goal_x-current_x),2) + pow((last_goal_y-current_y),2) );
