@@ -68,7 +68,7 @@ TebLocalPlannerROS:
  weight_kinematics_nh: 1000
  weight_kinematics_forward_drive: 5  #1
  weight_kinematics_turning_radius: 1 #1
- weight_optimaltime: 100.0
+ weight_optimaltime: 50.0
  weight_obstacle: 100
  weight_dynamic_obstacle: 10 # not in use yet
 
