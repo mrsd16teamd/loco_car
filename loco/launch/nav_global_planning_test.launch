@@ -33,6 +33,7 @@
   </node>
 
 
+<node pkg="loco" type="dist2goal" name="dist2goal_node" output="screen"/>
 
 
 <!--   <node pkg="rosbag" type="record" name="rosbag_record_main"
