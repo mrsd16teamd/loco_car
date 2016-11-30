@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 	circle_msg.point.z = 0.0;
 
 	circle_msg.header.stamp = ros::Time::now();
-
+	circle_msg.header.frame_id = "map";
 	circle_pub.publish(circle_msg);
 
 
