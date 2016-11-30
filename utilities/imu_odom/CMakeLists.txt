@@ -149,6 +149,10 @@ target_link_libraries(imu_odometry_publisher ${catkin_LIBRARIES})
 add_executable(scanmatch_augment src/scanmatch_augment.cpp)
 target_link_libraries(scanmatch_augment ${catkin_LIBRARIES})
 
+add_executable(drift_checker src/drift_checker.cpp)
+target_link_libraries(drift_checker ${catkin_LIBRARIES})
+
+
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(imu_odom_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
