@@ -6,8 +6,8 @@
 #include <cmath>
 #include <string>
 
-float last_goal_x = 0.0;
-float last_goal_y = 0.0;
+double last_goal_x = 0.0;
+double last_goal_y = 0.0;
 ros::Subscriber goal_sub;
 ros::Publisher dist_pub;
 
@@ -24,16 +24,16 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
 
   goal_sub = nh.subscribe("move_base/goal", 1, GoalCallback);
-  dist_pub = nh.advertise<std_msgs::Float64>("dist2goal_metric", 50);
+  dist_pub = nh.advertise<std_msgs::Float64>("dist2goal_metric", 1);
 
   tf::TransformListener listener;
 
-  ros::Rate r(1);
+  ros::Rate r(10);
 
   while(ros::ok()){
     ros::spinOnce();
 
-    float current_x, current_y;
+    double current_x, current_y;
 
     tf::StampedTransform transform;
 
@@ -48,7 +48,9 @@ int main(int argc, char** argv)
       ROS_ERROR("dist2goal_node: map to base_link transform not found on this cycle");
     }
 
-    float distance = sqrt( pow((last_goal_x-current_x),2) + pow((last_goal_y-current_y),2) );
+    double distance = sqrt( pow((last_goal_x-current_x),2) + pow((last_goal_y-current_y),2) );
+
+    ROS_INFO("error x:%.2f y:%.2f abs:%.2f ", (last_goal_x-current_x), (last_goal_y-current_y), distance); 
 
     std_msgs::Float64 dist_msg;
     dist_msg.data = distance;
