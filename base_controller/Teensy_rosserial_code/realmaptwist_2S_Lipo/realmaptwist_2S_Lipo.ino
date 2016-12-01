@@ -122,7 +122,7 @@ void loop(){
  
       else if (x > 1.55 && (w > 0.60 || w < - 0.60)) {   //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
 //      else if (x > 1.55) {
-        throttle = 1700;
+        throttle = 1666;
       }
       
       else if  (x > 1.5) {
@@ -142,7 +142,7 @@ void loop(){
       }
       else if (x < -1.55 && (w > 0.60 || w < - 0.60)) {  //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
 //     else if (x < -1.55) { 
-        throttle = 1300;
+        throttle = 1324;
     }
       else if  (x < -1.5) {
         throttle = 1424;  //maximum that's safe to go
