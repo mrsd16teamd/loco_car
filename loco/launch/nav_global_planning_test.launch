@@ -27,10 +27,11 @@
 
   <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
 
-<arg name="razor_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
+
+<!-- <arg name="razor_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>
   <node pkg="razor_imu_9dof" type="imu_node.py" name="imu_node" output="screen">
-    <rosparam file="$(arg razor_config_file)" command="load"/>
-  </node>
+    <rosparam file="$(arg razor_config_file)" command="load"/> 
+  </node> -->
 
 
 <!-- <node pkg="loco" type="dist2goal" name="dist2goal_node" output="screen"/> -->
