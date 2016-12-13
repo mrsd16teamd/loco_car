@@ -6,7 +6,7 @@
   <node pkg="joy" type="joy_node" name="joy_node">
     <param name="dev" value="$(arg joy_dev)" />
     <param name="deadzone" value="0.0" />
-    <param name="autorepeat_rate" value="0.0" />
+    <param name="autorepeat_rate" value="60.0" />
   </node>
 
   <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">

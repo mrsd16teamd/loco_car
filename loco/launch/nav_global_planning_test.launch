@@ -25,7 +25,7 @@
 
   <include file="$(find loco)/launch/amcl.launch" />
 
-  <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
+  <include file="$(find teleop_twist_joy)/launch/teensy_nav.launch" />
 
 
 <!-- <arg name="razor_config_file" default="$(find razor_imu_9dof)/config/my_razor.yaml"/>

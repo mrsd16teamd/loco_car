@@ -6,7 +6,8 @@
   <arg name="hector" default="true" />
   <arg name="csm" default="false" />
 
-  <arg name="lidar_path" default="/dev/hokuyo" />
+  <!--  <arg name="lidar_path" default="/dev/hokuyo" /> -->
+  <arg name="lidar_path" default="_serial_port:='/dev/hokuyo'" />
 
   <group if="$(arg imu)">
     <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
