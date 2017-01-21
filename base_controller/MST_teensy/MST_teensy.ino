@@ -121,7 +121,7 @@ void loop(){
         }
 
         else {
-             throttle = mapf(x, 0, 1.5, 1500, 1250); //hand tuned values. default to 1500, 2000 if problems
+             throttle = mapf(x, 0, 1.5, 1500, 1300); //hand tuned values. default to 1500, 2000 if problems
 
         }
 //      if( x < 0.394) {
@@ -148,8 +148,12 @@ void loop(){
       if ( x < -1.55) {
           throttle = mapf(x, -1.6 , 0, 2000, 1500);
        }
+
+      else {
+          throttle = mapf(x, -1.5, 0, 1700, 1500); //hand tuned values. default to 1500, 2000 if problems
+      }
+
       
-      throttle = mapf(x, -1.5, 0, 1700, 1500); //hand tuned values. default to 1500, 2000 if problems
 //      if( x > -0.394) {
 //        throttle = 1433; //minimum to start moving
 //      }
