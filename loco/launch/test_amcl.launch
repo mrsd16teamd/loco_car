@@ -1,16 +1,21 @@
 <launch>
 
-<arg name="bag_path" default="/home/parallels/ros_bags/amcl_fail.bag" />
+<arg name="bag_path" default="/home/parallels/ros_bags/mst_test.bag" />
 
 <include file="$(find loco)/launch/rviz.launch"/>
 
-<!-- <param name="use_sim_time" value="true" /> -->
+<param name="use_sim_time" value="true" />
 
   <node pkg="rosbag" type="play" name="rosbag_play"
-    args="$(arg bag_path) --topics /scan /map /map_metadata /scanmatch_odom /tf /clock
+    args="$(arg bag_path) --topics /scan /map /map_metadata /clock
     /move_base/global_costmap/costmap /move_base/local_costmap/costmap  /move_base/local_costmap/footprint
-    /move_base/TebLocalPlannerROS/local_plan /move_base/TebLocalPlannerROS/global_plan /move_base/GlobalPlanner/plan
+    /cmd_vel 
     -r 2" output="screen"/>
+
+  <node pkg="loco" type="cmd_vel_odom" name="cmd_vel_odom" output="screen"/>
+  <include file="$(find loco)/launch/robot_tf.launch" />
+  <!-- <node pkg="map_server" type="map_server" name="map_server" args="$(find loco)/maps/fve_map.yaml" /> -->
+
 
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
     <param name="scan" value="scan" />

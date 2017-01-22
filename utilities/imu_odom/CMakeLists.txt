@@ -94,6 +94,9 @@ find_package(catkin REQUIRED COMPONENTS
 #   cfg/DynReconf2.cfg
 # )
 
+include_directories(include
+                    ${catkin_INCLUDE_DIRS} )
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -143,7 +146,7 @@ target_link_libraries(imu_listener ${catkin_LIBRARIES})
 add_executable(old_odometry_publisher src/old_odometry_publisher.cpp)
 target_link_libraries(old_odometry_publisher ${catkin_LIBRARIES})
 
-add_executable(imu_odometry_publisher src/imu_odometry_publisher.cpp)
+add_executable(imu_odometry_publisher src/imu_odometry_publisher.cpp include/imu_odometry_publisher.h)
 target_link_libraries(imu_odometry_publisher ${catkin_LIBRARIES})
 
 add_executable(scanmatch_augment src/scanmatch_augment.cpp)
