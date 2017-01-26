@@ -10,6 +10,7 @@ try:
     file = open(filepath, "w")
 except IOError:
     rospy.logerr("Could not open '%s' to write.", command_file)
+file.write('dt 16.7\n') # Assuming 60Hz output 
 
 def callback(data):
     vx = data.linear.x

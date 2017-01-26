@@ -25,11 +25,16 @@ def talker():
 
     while not rospy.is_shutdown():
         # Read file line by line
-        line = file.readline().rstrip().split()
+        try:
+            line = file.readline().rstrip().split()
+            assert(line[0]=="u")
+        except AssertionError:
+            rospy.loginfo("Reached end of file, or invalid input.")
+
         if (line[0]=="end"):
             rospy.loginfo("Finished executing control inputs.")
             break
-        assert(line[0]=="u")
+
         vx = float(line[1])
         steer = float(line[2])
         rospy.loginfo("vx: " + str(vx) + ", steer: " + str(steer))
