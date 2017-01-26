@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(loco)
-find_package(catkin REQUIRED roscpp std_msgs tf move_base_msgs geometry_msgs sensor_msgs nav_msgs)
+find_package(catkin REQUIRED roscpp std_msgs tf move_base_msgs geometry_msgs sensor_msgs nav_msgs rospy)
 
 
 include_directories(
@@ -8,8 +8,8 @@ include_directories(
 )
 catkin_package()
 
-
-
+catkin_python_setup()
+catkin_install_python(PROGRAMS scripts/open_loop_playback.py                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 add_executable(amcl_globalinit src/amcl_globalinit.cpp)
 target_link_libraries(amcl_globalinit ${catkin_LIBRARIES})

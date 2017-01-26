@@ -1,3 +1,4 @@
+
 #include "ros/ros.h"
 #include <math.h>
 #include "tf/transform_datatypes.h"
@@ -38,7 +39,10 @@ private:
 void cmdVelOdomPublisher::UpdateOdom(const geometry_msgs::Twist::ConstPtr& msg)
 {
   //Read commanded velocity, and calculate expected angular velocity
-  float wz_expected = 1/wheelbase * msg->angular.z * msg->linear.x;
+  if (msg->linear.x == 0)
+    float wz_expected = 0;
+  else
+    float wz_expected = 1/wheelbase * msg->angular.z * msg->linear.x;
 
   // Guess time until next odom update
   ros::Time current_time = ros::Time::now();
