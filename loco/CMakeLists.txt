@@ -9,7 +9,7 @@ include_directories(
 catkin_package()
 
 catkin_python_setup()
-catkin_install_python(PROGRAMS scripts/open_loop_playback.py                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+catkin_install_python(PROGRAMS scripts/open_loop_playback.py scripts/traj_recorder.py                      DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 add_executable(amcl_globalinit src/amcl_globalinit.cpp)
 target_link_libraries(amcl_globalinit ${catkin_LIBRARIES})

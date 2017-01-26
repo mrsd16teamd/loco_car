@@ -21,7 +21,6 @@ def talker():
     rospy.loginfo("Starting open loop command play back at " + str(1/dt) + "Hz.")
     rospy.sleep(2.0)
 
-    # TODO read dt from first line
     rate = rospy.Rate(1/dt) # [Hz]. Change this according to dt
 
     while not rospy.is_shutdown():
