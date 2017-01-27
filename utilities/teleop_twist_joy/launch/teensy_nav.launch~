@@ -1,0 +1,28 @@
+<launch>
+  <arg name="joy_config" default="ps3" />
+  <arg name="joy_dev" default="/dev/input/js0" />
+  <arg name="config_filepath" default="$(find teleop_twist_joy)/config/$(arg joy_config).config.yaml" />
+  
+  <node pkg="joy" type="joy_node" name="joy_node">
+    <param name="dev" value="$(arg joy_dev)" />
+    <param name="deadzone" value="0.0" />
+    <param name="autorepeat_rate" value="0.0" />
+  </node>
+
+  <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
+    <rosparam command="load" file="$(arg config_filepath)" />
+    <param name="scale_angular" value="0.8"/>
+    <param name="scale_linear" value="1.5"/>
+    <param name="scale_linear_turbo" value="1.6"/>
+    <param name="enable_button" value="-1"/>
+    <param name="enable_turbo_button" value="5"/>
+    <param name="axis_linear" value="3"/>
+    <param name="axis_angular" value="0"/>
+  </node>
+
+   <node pkg="rosserial_python" name="rosserial_python" type="serial_node.py">
+	<param name="port" value="/dev/teensy" />
+	<param name="baud" value="115200" />
+   </node>
+
+</launch>

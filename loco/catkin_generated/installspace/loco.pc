@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: loco
+Description: Description of loco
+Version: 1.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

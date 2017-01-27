@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: hector_geotiff
+Description: Description of hector_geotiff
+Version: 0.3.5
+Cflags: -I/usr/local/include -I/usr/include/eigen3
+Libs: -L/usr/local/lib -lgeotiff_writer -l:/usr/lib/arm-linux-gnueabihf/libQtGui.so -l:/usr/lib/arm-linux-gnueabihf/libQtCore.so
+Requires: hector_map_tools hector_nav_msgs nav_msgs pluginlib roscpp std_msgs

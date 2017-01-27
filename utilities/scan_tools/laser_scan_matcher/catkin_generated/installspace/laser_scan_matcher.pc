@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: laser_scan_matcher
+Description: Description of laser_scan_matcher
+Version: 0.3.2
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -llaser_scan_matcher
+Requires: roscpp nodelet sensor_msgs tf pcl_ros pcl_conversions geometry_msgs nav_msgs

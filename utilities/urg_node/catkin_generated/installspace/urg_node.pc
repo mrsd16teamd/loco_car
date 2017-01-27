@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: urg_node
+Description: Description of urg_node
+Version: 0.1.9
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lurg_c_wrapper
+Requires: roscpp sensor_msgs urg_c rosconsole nodelet dynamic_reconfigure laser_proc

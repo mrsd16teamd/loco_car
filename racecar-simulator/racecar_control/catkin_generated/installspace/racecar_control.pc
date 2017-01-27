@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: racecar_control
+Description: Description of racecar_control
+Version: 0.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

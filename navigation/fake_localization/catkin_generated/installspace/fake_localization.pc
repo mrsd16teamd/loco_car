@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: fake_localization
+Description: Description of fake_localization
+Version: 1.13.1
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: roscpp rospy

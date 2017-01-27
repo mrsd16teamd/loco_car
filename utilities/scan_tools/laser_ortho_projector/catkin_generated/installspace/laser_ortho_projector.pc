@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: laser_ortho_projector
+Description: Description of laser_ortho_projector
+Version: 0.3.2
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -llaser_ortho_projector
+Requires: roscpp nodelet sensor_msgs tf pcl_ros pcl_conversions geometry_msgs message_filters

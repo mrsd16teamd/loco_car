@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: nav_core
+Description: Description of nav_core
+Version: 1.13.1
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib 
+Requires: std_msgs geometry_msgs tf costmap_2d

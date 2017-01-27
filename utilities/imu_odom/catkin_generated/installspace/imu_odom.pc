@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: imu_odom
+Description: Description of imu_odom
+Version: 0.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

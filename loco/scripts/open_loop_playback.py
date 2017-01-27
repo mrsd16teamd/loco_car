@@ -4,7 +4,7 @@ import rospy
 from geometry_msgs.msg import Twist
 import os
 
-command_file = "controls.txt"
+command_file = "record.txt"
 filepath = os.path.abspath(command_file)
 
 def talker():

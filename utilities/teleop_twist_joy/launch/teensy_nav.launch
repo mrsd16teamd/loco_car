@@ -11,9 +11,9 @@
 
   <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
     <rosparam command="load" file="$(arg config_filepath)" />
-    <param name="scale_angular" value="0.8"/>
-    <param name="scale_linear" value="1.5"/>
-    <param name="scale_linear_turbo" value="1.6"/>
+    <param name="scale_angular" value="0.96"/>
+    <param name="scale_linear" value="2.0"/>
+    <param name="scale_linear_turbo" value="4.0"/>
     <param name="enable_button" value="-1"/>
     <param name="enable_turbo_button" value="5"/>
     <param name="axis_linear" value="3"/>

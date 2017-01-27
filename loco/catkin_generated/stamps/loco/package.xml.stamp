@@ -1,0 +1,27 @@
+<package>
+
+<name>loco</name>
+<version>1.0.0</version>
+<description>Package for high-level launch file and other utilities for Team Lo-Co's project platform </description>
+<license>BSD</license>
+<maintainer email="kazuotani14@gmail.com">Kazu Otani</maintainer>
+
+<buildtool_depend>catkin</buildtool_depend>
+
+<build_depend>roscpp</build_depend>
+<build_depend>std_msgs</build_depend>
+<build_depend>tf</build_depend>
+<build_depend>move_base_msgs</build_depend>
+<build_depend>geometry_msgs</build_depend>
+<build_depend>sensor_msgs</build_depend>
+<build_depend>nav_msgs</build_depend>
+
+<run_depend>roscpp</run_depend>
+<run_depend>std_msgs</run_depend>
+<run_depend>tf</run_depend>
+<run_depend>move_base_msgs</run_depend>
+<run_depend>geometry_msgs</run_depend>
+<run_depend>sensor_msgs</run_depend>
+<run_depend>nav_msgs</run_depend>
+
+</package>

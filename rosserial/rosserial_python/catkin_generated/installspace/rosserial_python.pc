@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: rosserial_python
+Description: Description of rosserial_python
+Version: 0.6.4
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

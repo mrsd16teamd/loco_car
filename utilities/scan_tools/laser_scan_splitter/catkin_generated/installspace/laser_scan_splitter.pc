@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: laser_scan_splitter
+Description: Description of laser_scan_splitter
+Version: 0.3.2
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -llaser_scan_splitter
+Requires: roscpp nodelet sensor_msgs

@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: map_server
+Description: Description of map_server
+Version: 1.13.1
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lmap_server_image_loader
+Requires: roscpp tf nav_msgs

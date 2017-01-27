@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: hector_mapping
+Description: Description of hector_mapping
+Version: 0.3.5
+Cflags: -I/usr/local/include -I/usr/include/eigen3
+Libs: -L/usr/local/lib 
+Requires: roscpp nav_msgs visualization_msgs tf message_filters laser_geometry tf_conversions message_runtime

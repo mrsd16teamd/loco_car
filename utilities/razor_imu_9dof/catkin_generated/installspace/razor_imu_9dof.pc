@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: razor_imu_9dof
+Description: Description of razor_imu_9dof
+Version: 1.1.1
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib 
+Requires: dynamic_reconfigure

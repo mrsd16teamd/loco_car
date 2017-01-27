@@ -39,10 +39,9 @@ private:
 void cmdVelOdomPublisher::UpdateOdom(const geometry_msgs::Twist::ConstPtr& msg)
 {
   //Read commanded velocity, and calculate expected angular velocity
-  if (msg->linear.x == 0)
-    float wz_expected = 0;
-  else
-    float wz_expected = 1/wheelbase * msg->angular.z * msg->linear.x;
+  float wz_expected = 0.0;
+  if (msg->linear.x > 0.1)
+    wz_expected = 1/wheelbase * msg->angular.z * msg->linear.x;
 
   // Guess time until next odom update
   ros::Time current_time = ros::Time::now();
@@ -53,7 +52,10 @@ void cmdVelOdomPublisher::UpdateOdom(const geometry_msgs::Twist::ConstPtr& msg)
   // Update odom frame
   x += msg->linear.x * cos(theta) * dt;
   y += msg->linear.x * sin(theta) * dt;
-  theta += msg->angular.z * dt;
+  theta += wz_expected * dt;
+
+  vx = msg->linear.x;
+  w  = wz_expected;
 
   // Publish
   PublishOdom();

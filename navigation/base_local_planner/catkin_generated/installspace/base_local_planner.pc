@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: base_local_planner
+Description: Description of base_local_planner
+Version: 1.13.1
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lbase_local_planner -ltrajectory_planner_ros
+Requires: roscpp dynamic_reconfigure message_generation tf pluginlib costmap_2d nav_core angles

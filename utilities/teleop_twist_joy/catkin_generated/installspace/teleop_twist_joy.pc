@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: teleop_twist_joy
+Description: Description of teleop_twist_joy
+Version: 0.1.2
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lteleop_twist_joy
+Requires: geometry_msgs roscpp sensor_msgs

@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: hector_slam_launch
+Description: Description of hector_slam_launch
+Version: 0.3.5
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

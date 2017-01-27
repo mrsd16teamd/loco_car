@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: amcl
+Description: Description of amcl
+Version: 1.13.1
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lamcl_sensors -lamcl_map -lamcl_pf
+Requires: rosbag roscpp dynamic_reconfigure tf

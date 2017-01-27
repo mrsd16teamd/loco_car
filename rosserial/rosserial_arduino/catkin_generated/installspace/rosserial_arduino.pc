@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: rosserial_arduino
+Description: Description of rosserial_arduino
+Version: 0.6.4
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib 
+Requires: message_runtime

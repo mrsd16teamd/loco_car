@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: polar_scan_matcher
+Description: Description of polar_scan_matcher
+Version: 0.3.2
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lpolar_scan_matcher
+Requires: 

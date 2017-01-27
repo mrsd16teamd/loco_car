@@ -1,0 +1,6 @@
+set(rosserial_python_SETUP_PY_VERSION "0.6.4")
+set(rosserial_python_SETUP_PY_SCRIPTS "")
+set(rosserial_python_SETUP_PY_PACKAGES "rosserial_python")
+set(rosserial_python_SETUP_PY_PACKAGE_DIRS "src/rosserial_python")
+set(rosserial_python_SETUP_PY_MODULES "")
+set(rosserial_python_SETUP_PY_MODULE_DIRS "")
