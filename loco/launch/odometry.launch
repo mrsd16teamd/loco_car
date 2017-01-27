@@ -4,11 +4,12 @@
 
   <arg name="imu" default="false" />
   <arg name="hector" default="false" />
-  <arg name="csm" default="false" />
-  <arg name="cmd" default="true" />
+  <arg name="csm" default="true" />
+  <arg name="cmd" default="false" />
 
   <!--  <arg name="lidar_path" default="/dev/hokuyo" /> -->
-  <arg name="lidar_path" default="_serial_port:='/dev/hokuyo'" />
+  <!--  <arg name="lidar_path" default="_serial_port:='/dev/hokuyo'" /> -->
+  <arg name="lidar_path" default="_ip_address:=192.168.0.10" />
 
   <group if="$(arg imu)">
     <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />

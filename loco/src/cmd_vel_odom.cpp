@@ -41,7 +41,7 @@ void cmdVelOdomPublisher::UpdateOdom(const geometry_msgs::Twist::ConstPtr& msg)
   //Read commanded velocity, and calculate expected angular velocity
   float wz_expected = 0.0;
   if (msg->linear.x > 0.1)
-    wz_expected = 1/wheelbase * msg->angular.z * msg->linear.x;
+    wz_expected = 1/wheelbase *tan( msg->angular.z) * msg->linear.x;
 
   // Guess time until next odom update
   ros::Time current_time = ros::Time::now();
