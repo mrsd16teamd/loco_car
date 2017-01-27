@@ -3,8 +3,9 @@
 <launch>
 
   <arg name="imu" default="false" />
-  <arg name="hector" default="true" />
+  <arg name="hector" default="false" />
   <arg name="csm" default="false" />
+  <arg name="cmd" default="true" />
 
   <!--  <arg name="lidar_path" default="/dev/hokuyo" /> -->
   <arg name="lidar_path" default="_serial_port:='/dev/hokuyo'" />
@@ -29,7 +30,11 @@
       <param name="fixed_frame" value="odom" />
       <param name="max_iterations" value="10" />
     </node>
+  </group>
 
+  <group if="$arg(cmd)">
+    <include file="$(find loco)/launch/robot_tf.launch" />
+    <node pkg="loco" type="cmd_vel_odom" name="cmd_vel_odom" args="$(arg lidar_path)"/>
   </group>
 
 </launch>

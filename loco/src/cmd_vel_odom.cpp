@@ -21,8 +21,8 @@ public:
   }
 
 private:
-  const double wheelbase = 0.255;
-  const double cmd_timesteps = 0.1;
+  static const double wheelbase = 0.255;
+  static const double cmd_timesteps = 0.1;
 
   double x, y, theta, vx, vy, w;
 
