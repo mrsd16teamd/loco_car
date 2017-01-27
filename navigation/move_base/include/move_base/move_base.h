@@ -105,7 +105,7 @@ namespace move_base {
     private:
       /**
        * @brief  A service call that clears the costmaps of obstacles
-       * @param req The service request 
+       * @param req The service request
        * @param resp The service response
        * @return True if the service call succeeds, false otherwise
        */
@@ -129,7 +129,7 @@ namespace move_base {
 
       /**
        * @brief  Load the recovery behaviors for the navigation stack from the parameter server
-       * @param node The ros::NodeHandle to be used for loading parameters 
+       * @param node The ros::NodeHandle to be used for loading parameters
        * @return True if the recovery behaviors were loaded successfully, false otherwise
        */
       bool loadRecoveryBehaviors(ros::NodeHandle node);
@@ -163,6 +163,8 @@ namespace move_base {
       void executeCb(const move_base_msgs::MoveBaseGoalConstPtr& move_base_goal);
 
       bool isQuaternionValid(const geometry_msgs::Quaternion& q);
+
+      bool getRobotPose(tf::Stamped<tf::Pose>& global_posee, costmap_2d::Costmap2DROS* costmap);
 
       double distance(const geometry_msgs::PoseStamped& p1, const geometry_msgs::PoseStamped& p2);
 
@@ -220,7 +222,7 @@ namespace move_base {
 
       boost::recursive_mutex configuration_mutex_;
       dynamic_reconfigure::Server<move_base::MoveBaseConfig> *dsrv_;
-      
+
       void reconfigureCB(move_base::MoveBaseConfig &config, uint32_t level);
 
       move_base::MoveBaseConfig last_config_;
@@ -230,4 +232,3 @@ namespace move_base {
   };
 };
 #endif
-

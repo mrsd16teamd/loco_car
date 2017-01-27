@@ -50,7 +50,7 @@ namespace move_base {
     as_(NULL),
     planner_costmap_ros_(NULL), controller_costmap_ros_(NULL),
     bgp_loader_("nav_core", "nav_core::BaseGlobalPlanner"),
-    blp_loader_("nav_core", "nav_core::BaseLocalPlanner"), 
+    blp_loader_("nav_core", "nav_core::BaseLocalPlanner"),
     recovery_loader_("nav_core", "nav_core::RecoveryBehavior"),
     planner_plan_(NULL), latest_plan_(NULL), controller_plan_(NULL),
     runPlanner_(false), setup_(false), p_freq_change_(false), c_freq_change_(false), new_global_plan_(false) {
@@ -272,7 +272,7 @@ namespace move_base {
     tf::Stamped<tf::Pose> global_pose;
 
     //clear the planner's costmap
-    planner_costmap_ros_->getRobotPose(global_pose);
+    getRobotPose(global_pose, planner_costmap_ros_);
 
     std::vector<geometry_msgs::Point> clear_poly;
     double x = global_pose.getOrigin().x();
@@ -298,7 +298,7 @@ namespace move_base {
     planner_costmap_ros_->getCostmap()->setConvexPolygonCost(clear_poly, costmap_2d::FREE_SPACE);
 
     //clear the controller's costmap
-    controller_costmap_ros_->getRobotPose(global_pose);
+    getRobotPose(global_pose, controller_costmap_ros_);
 
     clear_poly.clear();
     x = global_pose.getOrigin().x();
@@ -342,7 +342,7 @@ namespace move_base {
       return false;
     }
     tf::Stamped<tf::Pose> global_pose;
-    if(!planner_costmap_ros_->getRobotPose(global_pose)){
+    if(!getRobotPose(global_pose, planner_costmap_ros_)){
       ROS_ERROR("move_base cannot make a plan for you because it could not get the start pose of the robot");
       return false;
     }
@@ -359,7 +359,7 @@ namespace move_base {
     //first try to make a plan to the exact desired goal
     std::vector<geometry_msgs::PoseStamped> global_plan;
     if(!planner_->makePlan(start, req.goal, global_plan) || global_plan.empty()){
-      ROS_DEBUG_NAMED("move_base","Failed to find a plan to exact goal of (%.2f, %.2f), searching for a feasible goal within tolerance", 
+      ROS_DEBUG_NAMED("move_base","Failed to find a plan to exact goal of (%.2f, %.2f), searching for a feasible goal within tolerance",
           req.goal.pose.position.x, req.goal.pose.position.y);
 
       //search outwards for a feasible goal within the specified tolerance
@@ -774,7 +774,7 @@ namespace move_base {
 
     //update feedback to correspond to our curent position
     tf::Stamped<tf::Pose> global_pose;
-    planner_costmap_ros_->getRobotPose(global_pose);
+    getRobotPose(global_pose, planner_costmap_ros_);
     geometry_msgs::PoseStamped current_position;
     tf::poseStampedTFToMsg(global_pose, current_position);
 
@@ -789,7 +789,7 @@ namespace move_base {
       last_oscillation_reset_ = ros::Time::now();
       oscillation_pose_ = current_position;
 
-      //if our last recovery was caused by oscillation, we want to reset the recovery index 
+      //if our last recovery was caused by oscillation, we want to reset the recovery index
       if(recovery_trigger_ == OSCILLATION_R)
         recovery_index_ = 0;
     }
@@ -874,10 +874,10 @@ namespace move_base {
           state_ = CLEARING;
           recovery_trigger_ = OSCILLATION_R;
         }
-        
+
         {
          boost::unique_lock<costmap_2d::Costmap2D::mutex_t> lock(*(controller_costmap_ros_->getCostmap()->getMutex()));
-        
+
         if(tc_->computeVelocityCommands(cmd_vel)){
           ROS_DEBUG_NAMED( "move_base", "Got a valid command from the local planner: %.3lf, %.3lf, %.3lf",
                            cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.angular.z );
@@ -987,7 +987,7 @@ namespace move_base {
                     std::string name_i = behavior_list[i]["name"];
                     std::string name_j = behavior_list[j]["name"];
                     if(name_i == name_j){
-                      ROS_ERROR("A recovery behavior with the name %s already exists, this is not allowed. Using the default recovery behaviors instead.", 
+                      ROS_ERROR("A recovery behavior with the name %s already exists, this is not allowed. Using the default recovery behaviors instead.",
                           name_i.c_str());
                       return false;
                     }
@@ -1043,7 +1043,7 @@ namespace move_base {
         }
       }
       else{
-        ROS_ERROR("The recovery behavior specification must be a list, but is of XmlRpcType %d. We'll use the default recovery behaviors instead.", 
+        ROS_ERROR("The recovery behavior specification must be a list, but is of XmlRpcType %d. We'll use the default recovery behaviors instead.",
             behavior_list.getType());
         return false;
       }
@@ -1113,4 +1113,47 @@ namespace move_base {
       controller_costmap_ros_->stop();
     }
   }
+
+
+  bool MoveBase::getRobotPose(tf::Stamped<tf::Pose>& global_pose, costmap_2d::Costmap2DROS* costmap)
+   {
+     global_pose.setIdentity();
+     tf::Stamped < tf::Pose > robot_pose;
+     robot_pose.setIdentity();
+     robot_pose.frame_id_ = robot_base_frame_;
+     robot_pose.stamp_ = ros::Time(); // latest available
+     ros::Time current_time = ros::Time::now();  // save time for checking tf delay later
+
+     // get robot pose on the given costmap frame
+     try
+     {
+       tf_.transformPose(costmap->getGlobalFrameID(), robot_pose, global_pose);
+     }
+     catch (tf::LookupException& ex)
+     {
+       ROS_ERROR_THROTTLE(1.0, "No Transform available Error looking up robot pose: %s\n", ex.what());
+       return false;
+     }
+     catch (tf::ConnectivityException& ex)
+     {
+       ROS_ERROR_THROTTLE(1.0, "Connectivity Error looking up robot pose: %s\n", ex.what());
+       return false;
+     }
+     catch (tf::ExtrapolationException& ex)
+     {
+       ROS_ERROR_THROTTLE(1.0, "Extrapolation Error looking up robot pose: %s\n", ex.what());
+       return false;
+     }
+
+     // check if global_pose time stamp is within costmap transform tolerance
+     if (current_time.toSec() - global_pose.stamp_.toSec() > costmap->getTransformTolerance())
+     {
+       ROS_WARN_THROTTLE(1.0, "Transform timeout for %s. " \
+                        "Current time: %.4f, pose stamp: %.4f, tolerance: %.4f", costmap->getName().c_str(),
+                         current_time.toSec(), global_pose.stamp_.toSec(), costmap->getTransformTolerance());
+       return false;
+     }
+
+     return true;
+   }
 };
