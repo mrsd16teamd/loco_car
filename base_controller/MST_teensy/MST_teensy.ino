@@ -51,14 +51,20 @@ double mapf(double x, double in_min, double in_max, double out_min, double out_m
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 } 
 
-
+/*
+void cmd_vel_cb(const ackermann_msgs::AckermannDriveStamped& cmd_msg){
+  x = cmd_msg.drive.speed;
+  w = cmd_msg.drive.steering_angle;
+  last_received = millis();
+ 
+}*/
 void cmd_vel_cb(const geometry_msgs::Twist& cmd_msg){
   x = cmd_msg.linear.x;
   w = cmd_msg.angular.z;
   last_received = millis();
  
 }
-
+//ros::Subscriber<ackermann_msgs::AckermannDriveStamped> sub("cmd_vel_ack", cmd_vel_cb);
 ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", cmd_vel_cb);
 
 std_msgs::String out_msg;
@@ -80,14 +86,6 @@ void setup(){
   servo.attach(servo_pin,1000,2000); //attach it to pin A9/23
   esc.attach(esc_pin,1000,2000); //attach it to pin A8/22
 
-  // just to show it's alive
-  digitalWrite(led_pin, HIGH);
-  delay(100);
-  digitalWrite(led_pin, LOW);
-  delay(100);
-  digitalWrite(led_pin, HIGH);
-  delay(100);
-  digitalWrite(led_pin, LOW);
 }
 
 void loop(){
@@ -108,7 +106,7 @@ void loop(){
 
   if (!disabled) {
     
-    steer = mapf(w, 0.96, -0.96, 1000,2000); //maxes out at +/- 0.96 rads = +/- 55 degs
+    steer = mapf(w, 0.8, -0.8, 1000,2000); //maxes out at +/- 0.8
     servo.attach(servo_pin,1000,2000);
     
 //    servo.writeMicroseconds(steer); 
@@ -118,26 +116,60 @@ void loop(){
 
     if (x>0) {                                                
 
-        if ( x > 2.0) {
-          throttle = mapf(x, 0, 4.0, 1500, 1000);
+        if ( x > 1.55) {
+          throttle = mapf(x, 0, 1.6, 1500, 1000);
         }
 
         else {
-             throttle = mapf(x, 0, 2.0, 1500, 1250); //hand tuned values. default to 1500, 2000 if problems
+             throttle = mapf(x, 0, 1.5, 1500, 1300); //hand tuned values. default to 1500, 2000 if problems
 
         }
-
+//      if( x < 0.394) {
+//        throttle = 1550; //minimum to start moving
+//      }
+// 
+//      else if (x > 1.55 && (w > 0.60 || w < - 0.60)) {   //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
+////      else if (x > 1.55) {
+//        throttle = 1666 ;
+//      }
+//      
+//      else if  (x > 1.5) {
+//        throttle = 1570;  //maximum that's safe to go
+//      }
+//      
+//      else {
+//        
+//        throttle = (float(x)*20.08)+1542.06; //emperically determined equation for forward motion
+//      }
     }
 
     else if (x < 0) {
       
-      if ( x < -2.0) {
-          throttle = mapf(x, -4.0 , 0, 2000, 1500);
+      if ( x < -1.55) {
+          throttle = mapf(x, -1.6 , 0, 2000, 1500);
        }
 
       else {
-          throttle = mapf(x, -2.0, 0, 1750, 1500); //hand tuned values. default to 1500, 2000 if problems
+          throttle = mapf(x, -1.5, 0, 1700, 1500); //hand tuned values. default to 1500, 2000 if problems
       }
+
+      
+//      if( x > -0.394) {
+//        throttle = 1433; //minimum to start moving
+//      }
+//      else if (x < -1.55 && (w > 0.60 || w < - 0.60)) {  //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
+////     else if (x < -1.55) { 
+//        throttle = 1324;
+//    }
+//      else if  (x < -1.5) {
+//        throttle = 1424;  //maximum that's safe to go
+//      }
+//
+//      else {
+//  
+//        
+//          throttle = (float(x)*10.08)+1437.032; //emperically determined equation for forward motion transformed for backward motion UNSTABLE
+//      }
       
     }
 
