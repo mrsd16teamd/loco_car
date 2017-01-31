@@ -1,0 +1,27 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+
+  <!-- Optionally launch in GDB, for debugging -->
+  <arg name="debug" default="false" />
+  <arg if="$(arg debug)" name="launch_prefix" value="xterm -e gdb --args" />
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+
+
+
+<rosparam>
+  
+speed_to_erpm_gain: -1800
+speed_to_erpm_offset: 0
+steering_angle_to_servo_gain: 1
+steering_angle_to_servo_offset: 0
+wheelbase: 0.255
+</rosparam>
+
+
+
+  <!-- VESC to Odom node -->
+  <node pkg="vesc_ackermann" type="vesc_to_odom_node" name="vesc_to_odom_node"
+        output="screen" launch-prefix="$(arg launch_prefix)" >
+  </node>
+
+</launch>
