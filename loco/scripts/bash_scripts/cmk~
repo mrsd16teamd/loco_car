@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# This script provides a custon command to navigate
+# to the catkin_ws workspace and invokes catkin_make,
+# then retuns you to the current working directory
+
+# move this file to ~/bin then $chmod +x cmk
+
+# Note: If your workspace is not named catkin_ws
+# use workspace path as an argument. Example:
+# $ cmk loco_ws
+
+CUR_DIR=$PWD
+WS_PATH=${1:-~/catkin_ws}
+cd $WS_PATH
+catkin_make
+cd $CUR_DIR
