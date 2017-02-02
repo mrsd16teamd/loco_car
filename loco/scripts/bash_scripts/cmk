@@ -5,6 +5,7 @@
 # then retuns you to the current working directory
 
 # move this file to ~/bin then $chmod +x cmk
+# OR append "export PATH=$PATH:~/<ws_name>/src/loco/scripts/bash_scripts" to your .bashrc
 
 # Note: If your workspace is not named catkin_ws
 # use workspace path as an argument. Example:
