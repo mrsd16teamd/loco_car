@@ -26,10 +26,33 @@
   <group if="$(arg csm)">
     <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/>
     <include file="$(find loco)/launch/robot_tf.launch" />
+    <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />
 
     <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" output="screen">
-      <param name="fixed_frame" value="odom" />
-      <param name="max_iterations" value="10" />
+      <rosparam>
+	fixed_frame: odom
+
+	max_iterations: 10
+        epsilon_xy: 0.000001
+        epsilon_theta: 0.000001
+        
+        max_correspondence_dist: 0.3
+        max_angular_correction_deg: 10
+        max_linear_correction: 0.5
+        
+        outliers_maxPerc: 0.9  # always discard worst 10% of correspondences
+
+	use_imu: true
+	use_odom:false
+	use_vel: false
+
+        # Keyframe selection (set either to 0 to disable keyframing)
+        kf_dist_linear: 0.10
+        kf_dist_angular: 0.175
+
+      </rosparam>
+
+      <remap from="imu/data" to="imu" />
     </node>
   </group>
 
