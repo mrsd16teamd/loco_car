@@ -30,9 +30,9 @@
 
     <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" output="screen">
       <rosparam>
-	fixed_frame: odom
+        fixed_frame: odom
 
-	max_iterations: 10
+        max_iterations: 10
         epsilon_xy: 0.000001
         epsilon_theta: 0.000001
         
@@ -42,9 +42,9 @@
         
         outliers_maxPerc: 0.9  # always discard worst 10% of correspondences
 
-	use_imu: true
-	use_odom:false
-	use_vel: false
+        use_imu: true
+        use_odom: false
+        use_vel: false
 
         # Keyframe selection (set either to 0 to disable keyframing)
         kf_dist_linear: 0.10
