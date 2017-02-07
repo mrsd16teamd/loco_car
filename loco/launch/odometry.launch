@@ -35,11 +35,11 @@
         max_iterations: 10
         epsilon_xy: 0.000001
         epsilon_theta: 0.000001
-        
+
         max_correspondence_dist: 0.3
         max_angular_correction_deg: 10
         max_linear_correction: 0.5
-        
+
         outliers_maxPerc: 0.9  # always discard worst 10% of correspondences
 
         use_imu: true
