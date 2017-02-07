@@ -27,27 +27,34 @@ link_directories(${csm_LIBRARY_DIRS})
 # Declare info that other packages need to import library generated here
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES laser_scan_matcher
+    LIBRARIES laser_scan_matcher_odom 
+    # LIBRARIES laser_scan_matcher_odom laser_scan_matcher
     CATKIN_DEPENDS ${ROS_CXX_DEPENDENCIES}
 )
 
 #Create library
-add_library(laser_scan_matcher src/laser_scan_matcher.cpp)
+# add_library(laser_scan_matcher src/laser_scan_matcher.cpp)
+add_library(laser_scan_matcher_odom src/laser_scan_matcher_odom.cpp)
 
 #Note we don't link against pcl as we're using header-only parts of the library
-target_link_libraries( laser_scan_matcher ${catkin_LIBRARIES} ${csm_LIBRARIES})
-add_dependencies(laser_scan_matcher ${csm_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries( laser_scan_matcher ${catkin_LIBRARIES} ${csm_LIBRARIES})
+target_link_libraries( laser_scan_matcher_odom ${catkin_LIBRARIES} ${csm_LIBRARIES})
+# add_dependencies(laser_scan_matcher ${csm_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(laser_scan_matcher_odom ${csm_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #Create nodelet
 add_library(laser_scan_matcher_nodelet src/laser_scan_matcher_nodelet.cpp)
-target_link_libraries(laser_scan_matcher_nodelet laser_scan_matcher)
+# target_link_libraries(laser_scan_matcher_nodelet laser_scan_matcher)
+target_link_libraries(laser_scan_matcher_nodelet laser_scan_matcher_odom)
 
 #Create node
 add_executable(laser_scan_matcher_node src/laser_scan_matcher_node.cpp)
-target_link_libraries( laser_scan_matcher_node laser_scan_matcher )
+target_link_libraries( laser_scan_matcher_node laser_scan_matcher_odom)
+# target_link_libraries( laser_scan_matcher_node laser_scan_matcher laser_scan_matcher_odom)
 
 #Install library
-install(TARGETS laser_scan_matcher laser_scan_matcher_nodelet
+install(TARGETS laser_scan_matcher_odom laser_scan_matcher_nodelet
+  # install(TARGETS laser_scan_matcher laser_scan_matcher_odom laser_scan_matcher_nodelet
     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
