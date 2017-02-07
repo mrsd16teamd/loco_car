@@ -7,22 +7,31 @@
   <node pkg="map_server" type="map_server" name="map_server" args="$(find loco)/maps/fve_map.yaml" />
 
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
-    <param name="scan" value="scan" />
-    <param name="odom_frame_id" value="odom" />
+    <rosparam>
+      scan: scan
+      odom_frame_id: odom
+      global_frame_id: map
 
-   <param name="recovery_alpha_slow" value="0.005" />
-    <param name="recovery_alpha_fast" value="0.1" />
+      min_particles: 100
+      max_particles: 5000
 
-    <param name="update_min_d" value="0.1" />
-    <param name="update_min_a" value="0.1" />
+      recovery_alpha_slow: 0.005
+      recovery_alpha_fast: 0.1
 
-    <param name="m" value="diff" />
-    <param name="odom_alpha1" value="0.4" />
-    <param name="odom_alpha2" value="0.4" />
+      update_min_d: 0.2
+      update_min_a: 0.2
 
-    <param name="initial_cov_xx" value="0.1" /> <!-- original 0.25 -->
-    <param name="initial_cov_yy" value="0.1" />
-    <param name="initial_cov_aa" value="0.5" />
+      m: diff
+      odom_alpha1: 0.4
+      odom_alpha2: 0.4
+
+      initial_cov_xx: 0.1
+      initial_cov_yy: 0.1
+      initial_cov_aa: 0.5
+
+      save_pose_rate: 0.2
+
+    </rosparam>
 
   </node>
 
