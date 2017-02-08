@@ -10,57 +10,55 @@
 
   <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="0 0 0 0 0 0 base_footprint laser 100"/>
 
-  <arg name="tf_map_scanmatch_transform_frame_name" default="scanmatcher_frame"/>
-  <arg name="base_frame" default="base_footprint"/>
-  <arg name="odom_frame" default="base_footprint"/>
-  <arg name="pub_map_odom_transform" default="true"/>
-  <arg name="scan_subscriber_queue_size" default="5"/>
-  <arg name="scan_topic" default="scan"/>
-  <arg name="map_size" default="1024"/>
-
   <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
 
-    <!-- Frame names -->
-    <param name="map_frame" value="map" />
-    <param name="base_frame" value="$(arg base_frame)" />
-    <param name="odom_frame" value="$(arg odom_frame)" />
+    <rosparam>
+      map_frame: map
+      base_frame: base_footprint
+      odom_frame: odom
 
-    <!-- Tf use -->
-    <param name="use_tf_scan_transformation" value="true"/>
-    <param name="use_tf_pose_start_estimate" value="false"/>
-    <param name="pub_map_odom_transform" value="$(arg pub_map_odom_transform)"/>
+      # TF
+      use_tf_scan_transformation: true   # otherwise use scan matching
+      use_tf_pose_start_estimate: true
+      pub_map_odom_transform: true
 
-    <!-- Map size / start point -->
-    <param name="map_resolution" value="0.050"/>
-    <param name="map_size" value="$(arg map_size)"/>
-    <param name="map_start_x" value="0.5"/>
-    <param name="map_start_y" value="0.5" />
-    <param name="map_multi_res_levels" value="2" />
+      # Map size / start point
+      map_resolution: 0.05
+      map_size: 1024
+      map_start_x: 0.5
+      map_start_y: 0.5
+      map_multi_res_levels: 2
 
-    <!-- Map update parameters -->
-    <param name="update_factor_free" value="0.4"/>
-    <param name="update_factor_occupied" value="0.9" />
-    <param name="map_update_distance_thresh" value="0.4"/> <!--original=0.4-->
-    <param name="map_update_angle_thresh" value="0.9" /> <!--original=0.06-->
-    <param name="laser_z_min_value" value = "-1.0" />
-    <param name="laser_z_max_value" value = "1.0" />
+      # Map update parameters
+      update_factor_free: 0.4     # 0.5 means no change
+      update_factor_occupied: 0.9 # 0.5 means no change
+      scanmatch_max_translation: 9999.1  # 4 m/s
+      scanmatch_max_rotation:    9999.08 # 180 deg/s
+      map_update_distance_thresh: 0.2
+      map_update_altitude_thresh: 9999.2
+      map_update_angle_thresh: 0.06
+      map_update_time_thresh: 0
+      map_pub_period: 0.3
+      publish_map_incrementally: true # must match /planner/global_costmap/static_map/subscribe_to_updates
+      laser_z_min_value: -99    # absolute. SLAM starts when laser is 0.1m above this.
+      laser_z_max_value: 99     # absolute, ie: not relative to quad's altitue
+      laser_min_dist: 0.17      # probably want to set to just under inscribed radius
+      laser_max_dist: 25.0      # hokuyo reports no return as 65m, sim as ~20m
 
-    <!-- Laser parameters -->
-    <param name="laser_max_dist" value="5.5"/>
+      # Advertising config
+      advertise_map_service: true
 
-    <!-- Advertising config -->
-    <param name="advertise_map_service" value="true"/>
+      scan_subscriber_queue_size: 5
+      scan_topic: scan_filtered
 
-    <param name="scan_subscriber_queue_size" value="$(arg scan_subscriber_queue_size)"/>
-    <param name="scan_topic" value="$(arg scan_topic)"/>
+      # Debug parameters
+      output_timing: false
+      pub_drawings: false
+      pub_debug_output: false
 
-    <!-- Debug parameters -->
-    <!--
-      <param name="output_timing" value="false"/>
-      <param name="pub_drawings" value="true"/>
-      <param name="pub_debug_output" value="true"/>
-    -->
-    <param name="tf_map_scanmatch_transform_frame_name" value="$(arg tf_map_scanmatch_transform_frame_name)" />
+      tf_map_scanmatch_transform_frame_name: scanmatcher_frame
+    </rosparam>
+    
   </node>
 
 
