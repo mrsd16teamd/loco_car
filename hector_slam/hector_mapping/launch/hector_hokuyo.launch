@@ -6,20 +6,20 @@
   <!--  <arg name="lidar_path" default="_serial_port:='/dev/hokuyo'" /> -->
   <arg name="lidar_path" default="_ip_address:=192.168.0.10" />
 
-  <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/>
+<!--  <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/> -->
 
-  <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="0 0 0 0 0 0 base_footprint laser 100"/>
+<!--  <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="0 0 0 0 0 0 base_footprint laser 100"/> -->
 
   <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
 
     <rosparam>
       map_frame: map
-      base_frame: base_footprint
-      odom_frame: odom
+      base_frame: base_link
+      odom_frame: base_link
 
       # TF
       use_tf_scan_transformation: true   # otherwise use scan matching
-      use_tf_pose_start_estimate: true
+      use_tf_pose_start_estimate: false
       pub_map_odom_transform: true
 
       # Map size / start point
@@ -49,7 +49,7 @@
       advertise_map_service: true
 
       scan_subscriber_queue_size: 5
-      scan_topic: scan_filtered
+      scan_topic: scan
 
       # Debug parameters
       output_timing: false

@@ -8,8 +8,9 @@
 <arg name="bag"   default="false" />
 
 <group if="$(arg lidar)">
-    <include file="$(find hector_mapping)/launch/hector_hokuyo.launch" />
-    <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
+    <include file="$(find hector_mapping)/launch/hector_old.launch" />
+<!--    <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
+    <include file="$(find loco)/launch/odometry.launch" /> -->
 </group>
 
 <group if="$(arg imu)">

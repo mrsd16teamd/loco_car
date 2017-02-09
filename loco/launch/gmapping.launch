@@ -4,15 +4,30 @@
 
 <include file="$(find loco)/launch/odometry.launch" />
 
+    <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
+
 <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
-<!--	<param name="maxUrange" value="5.5" />
-	<param name="maxRange" value="5.5" />
-	<param name="minimumScore" value="50" />
-	<param name="linearUpdate" value="0.2" />
-	<param name="angularUpdate" value="0.25" />
-	<param name="temporalUpdate" value="5.0" />
-	<param name="delta" value="0.025" /> -->
-	<!-- <param name="map_update_interval" value="1.0" /> -->
+    <rosparam>
+      throttle_scans: 1
+      base_frame: base_link
+      map_frame: map
+      odom_frame: odom
+
+      map_update_interval: 1.0
+      linearUpdate: 0.4
+      angularUpdate: 0.06
+      temporalUpdate: -1.0
+      particles: 30
+      delta: 0.05 # resolution
+      
+      sigma: 0.05
+      srr: 0.1
+      srt: 0.2
+      str: 0.1
+      stt: 0.2
+      
+      maxRange: 10.0
+    </rosparam>
 
 </node>
 

@@ -37,7 +37,7 @@
         epsilon_theta: 0.000001
 
         max_correspondence_dist: 0.3
-        max_angular_correction_deg: 10
+        max_angular_correction_deg: 20
         max_linear_correction: 0.5
 
         outliers_maxPerc: 0.9  # always discard worst 10% of correspondences
@@ -47,8 +47,8 @@
         use_vel: false
 
         # Keyframe selection (set either to 0 to disable keyframing)
-        kf_dist_linear: 0.10
-        kf_dist_angular: 0.175
+        kf_dist_linear: 0.02
+        kf_dist_angular: 0.05
 
       </rosparam>
 
