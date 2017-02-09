@@ -217,15 +217,25 @@ for x in range(0, 200):
     line = ser.readline()
 
 ###################
-rospy.loginfo("Taking initial offsets in 2 seconds, please leave robot stationary...")
-rospy.sleep(2.0)
-line = ser.readline()
-line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
+rospy.loginfo("Taking initial offsets; please leave robot stationary...")
+
+a_x = []
+a_y = []
+w_z = []
+
+for i in range(50):
+    line = ser.readline()
+    line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
     #f.write(line)                     # Write to the output log file
-words = string.split(line,",")    # Fields split
-linaccx_offset = -(float(words[3])) * accel_factor
-linaccy_offset = float(words[4]) * accel_factor
-gyroz_offset   = -float(words[8])
+    words = string.split(line,",")    # Fields split
+    a_x.append(-(float(words[3])) * accel_factor)
+    a_y.append(float(words[4]) * accel_factor)
+    w_z.append(-float(words[8]))
+
+
+linaccx_offset = sum(a_x)/float(len(a_x))
+linaccy_offset = sum(a_y)/float(len(a_y))
+gyroz_offset   = sum(w_z)/float(len(w_z))
 
 rospy.loginfo("offsets: ax:%f, ay:%f, wz:%f", linaccx_offset, linaccy_offset, gyroz_offset)
 # linaccx_offset = 0
@@ -261,9 +271,9 @@ while not rospy.is_shutdown():
         imuMsg.linear_acceleration.z = float(words[5]) * accel_factor
 
         # Thresholding
-        if (abs(imuMsg.linear_acceleration.x)<0.1):
+        if (abs(imuMsg.linear_acceleration.x)<0.15):
             imuMsg.linear_acceleration.x = 0.0
-        if (abs(imuMsg.linear_acceleration.y)<0.1):
+        if (abs(imuMsg.linear_acceleration.y)<0.15):
             imuMsg.linear_acceleration.y = 0.0
 
         imuMsg.angular_velocity.x = float(words[6])
