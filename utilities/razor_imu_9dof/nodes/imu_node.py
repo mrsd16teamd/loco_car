@@ -147,8 +147,8 @@ pitch=0
 yaw=0
 seq=0
 accel_factor = 9.806 / 256.0    # sensor reports accel as 256.0 = 1G (9.8m/s^2). Convert to m/s^2.
-rospy.loginfo("Giving the razor IMU board 3 seconds to boot...")
-rospy.sleep(3) # Sleep for 5 seconds to wait for the board to boot
+rospy.loginfo("Giving the razor IMU board 2 seconds to boot...")
+rospy.sleep(2) # Sleep for 5 seconds to wait for the board to boot
 
 ### configure board ###
 #stop datastream
@@ -217,17 +217,19 @@ for x in range(0, 200):
     line = ser.readline()
 
 ###################
-# rospy.loginfo("Taking initial accelerometer offsets in 2 seconds, please leave robot stationary...")
-# rospy.sleep(2.)
-# line = ser.readline()
-# line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
-#     #f.write(line)                     # Write to the output log file
-# words = string.split(line,",")    # Fields split
-# linaccx_offset = -(float(words[3])) * accel_factor
-# linaccy_offset = float(words[4]) * accel_factor
-# rospy.loginfo("Accelerometer offsets: x:%f, y:%f", linaccx_offset, linaccy_offset)
-linaccx_offset = 0
-linaccy_offset = 0
+rospy.loginfo("Taking initial offsets in 2 seconds, please leave robot stationary...")
+rospy.sleep(2.0)
+line = ser.readline()
+line = line.replace("#YPRAG=","")   # Delete "#YPRAG="
+    #f.write(line)                     # Write to the output log file
+words = string.split(line,",")    # Fields split
+linaccx_offset = -(float(words[3])) * accel_factor
+linaccy_offset = float(words[4]) * accel_factor
+gyroz_offset   = -float(words[8])
+
+rospy.loginfo("offsets: ax:%f, ay:%f, wz:%f", linaccx_offset, linaccy_offset, gyroz_offset)
+# linaccx_offset = 0
+# linaccy_offset = 0
 ###################
 
 rospy.loginfo("Publishing IMU data...")
@@ -254,15 +256,15 @@ while not rospy.is_shutdown():
         # Publish message
         # AHRS firmware accelerations are negated
         # This means y and z are correct for ROS, but x needs reversing
-        imuMsg.linear_acceleration.x = -float(words[3]) * accel_factor
-        imuMsg.linear_acceleration.y = float(words[4]) * accel_factor
+        imuMsg.linear_acceleration.x = -float(words[3]) * accel_factor - linaccx_offset
+        imuMsg.linear_acceleration.y = float(words[4]) * accel_factor  - linaccy_offset
         imuMsg.linear_acceleration.z = float(words[5]) * accel_factor
 
         imuMsg.angular_velocity.x = float(words[6])
         #in AHRS firmware y axis points right, in ROS y axis points left (see REP 103)
         imuMsg.angular_velocity.y = -float(words[7])
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
-        imuMsg.angular_velocity.z = -float(words[8])
+        imuMsg.angular_velocity.z = -float(words[8]) - gyroz_offset
 
     q = quaternion_from_euler(roll,pitch,yaw)
     imuMsg.orientation.x = q[0]
