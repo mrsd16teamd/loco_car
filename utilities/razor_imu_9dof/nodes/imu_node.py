@@ -260,11 +260,21 @@ while not rospy.is_shutdown():
         imuMsg.linear_acceleration.y = float(words[4]) * accel_factor  - linaccy_offset
         imuMsg.linear_acceleration.z = float(words[5]) * accel_factor
 
+        # Thresholding
+        if (abs(imuMsg.linear_acceleration.x)<0.1):
+            imuMsg.linear_acceleration.x = 0.0
+        if (abs(imuMsg.linear_acceleration.y)<0.1):
+            imuMsg.linear_acceleration.y = 0.0
+
         imuMsg.angular_velocity.x = float(words[6])
         #in AHRS firmware y axis points right, in ROS y axis points left (see REP 103)
         imuMsg.angular_velocity.y = -float(words[7])
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103)
         imuMsg.angular_velocity.z = -float(words[8]) - gyroz_offset
+
+        # Thresholding
+        if (abs(imuMsg.angular_velocity.z)<0.1):
+            imuMsg.angular_velocity.z = 0.0
 
     q = quaternion_from_euler(roll,pitch,yaw)
     imuMsg.orientation.x = q[0]
