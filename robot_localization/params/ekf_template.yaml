@@ -132,17 +132,22 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # odom1_twist_rejection_threshold: 0.2
 # odom1_nodelay: false
 
-pose0: amcl_pose
-pose0_config: [true,  true,  false,
-               false, false, false,
-               false, false, false,
-               false, false, false,
-               false, false, false]
-pose0_differential: false
-pose0_relative: false
-pose0_queue_size: 5
-pose0_rejection_threshold: 2  # Note the difference in parameter name
-pose0_nodelay: false
+# x, y, z,
+# roll, pitch, yaw,
+# vx, vy, vz,
+# vroll, vpitch, vyaw,
+# ax, ay, az
+# pose0: amcl_pose
+# pose0_config: [true,  true,  false,
+#                false, false, false,
+#                false, false, false,
+#                false, false, false,
+#                false, false, false]
+# pose0_differential: false
+# pose0_relative: false
+# pose0_queue_size: 5
+# pose0_rejection_threshold: 2  # Note the difference in parameter name
+# pose0_nodelay: false
 
 # twist0: example/twist
 # twist0_config: [false, false, false,
@@ -160,19 +165,19 @@ pose0_nodelay: false
 # vx, vy, vz,
 # vroll, vpitch, vyaw,
 # ax, ay, az
-#imu0: imu
-#imu0_config: [false, false, false,
-#              false,  false, false,
-#              false, false, false,
-#              false,  false,  true,
-#              false,  false,  false]
-#imu0_nodelay: false
-#imu0_differential: false
-#imu0_relative: true
-#imu0_queue_size: 5
-#imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
-#imu0_twist_rejection_threshold: 0.8                #
-#imu0_linear_acceleration_rejection_threshold: 0.8  #
+imu0: imu
+imu0_config: [false, false, false,
+             false,  false, false,
+             false, false, false,
+             false,  false,  true,
+             true,  true,  false]
+imu0_nodelay: false
+imu0_differential: false
+imu0_relative: true
+imu0_queue_size: 5
+imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
+imu0_twist_rejection_threshold: 0.8                #
+imu0_linear_acceleration_rejection_threshold: 0.8  #
 
 # [ADVANCED] Some IMUs automatically remove acceleration due to gravity, and others don't. If yours doesn't, please set
 # this to true, and *make sure* your data conforms to REP-103, specifically, that the data is in ENU frame.
