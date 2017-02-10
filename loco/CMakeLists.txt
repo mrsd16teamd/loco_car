@@ -21,3 +21,7 @@ target_link_libraries(playback_traj ${catkin_LIBRARIES})
 
 add_executable(record_traj src/record_traj)
 target_link_libraries(record_traj ${catkin_LIBRARIES})
+
+add_executable(amcl_echo src/amcl_echo)
+target_link_libraries(amcl_echo ${catkin_LIBRARIES})
+
