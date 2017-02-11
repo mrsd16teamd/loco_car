@@ -69,7 +69,9 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # sensor_msgs/Imu). To add an input, simply append the next number in the sequence to its "base" name, e.g., odom0,
 # odom1, twist0, twist1, imu0, imu1, imu2, etc. The value should be the topic name. These parameters obviously have no
 # default values, and must be specified.
-# odom0: odom # from canonical scan matcher
+
+
+odom0: csm_odom # from canonical scan matcher
 
 # Each sensor reading updates some or all of the filter's state. These options give you greater control over which
 # values from each measurement are fed to the filter. For example, if you have an odometry message as input, but only
@@ -78,20 +80,20 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # do not provide some of the state variables estimated by the filter. For example, a TwistWithCovarianceStamped message
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
-# odom0_config: [true,  true,  false,
-#                false, false, false,
-#                false, false, false,
-#                false, false, true,
-#                false, false, false]
+odom0_config: [false,  false,  false,
+                false, false, true,
+                true, true, false,
+                false, false, false,
+                false, false, false]
 
 # If you have high-frequency data or are running with a low frequency parameter value, then you may want to increase
 # the size of the subscription queue so that more measurements are fused.
-# odom0_queue_size: 5
+odom0_queue_size: 5
 
 # [ADVANCED] Large messages in ROS can exhibit strange behavior when they arrive at a high frequency. This is a result
 # of Nagle's algorithm. This option tells the ROS subscriber to use the tcpNoDelay option, which disables Nagle's
 # algorithm.
-# odom0_nodelay: false
+odom0_nodelay: false
 
 # [ADVANCED] When measuring one pose variable with two sensors, a situation can arise in which both sensors under-
 # report their covariances. This can lead to the filter rapidly jumping back and forth between each measurement as they
@@ -101,7 +103,7 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # data is converted to velocity data by differentiating the absolute pose measurements. These velocities are then
 # integrated as usual. NOTE: this only applies to sensors that provide pose measurements; setting differential to true
 # for twist measurements has no effect.
-# odom0_differential: false
+odom0_differential: true
 
 # [ADVANCED] When the node starts, if this parameter is true, then the first measurement is treated as a "zero point"
 # for all future measurements. While you can achieve the same effect with the differential paremeter, the key
@@ -115,8 +117,8 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # required. Data is specified at the level of pose and twist variables, rather than for each variable in isolation.
 # For messages that have both pose and twist data, the parameter specifies to which part of the message we are applying
 # the thresholds.
-# odom0_pose_rejection_threshold: 5
-# odom0_twist_rejection_threshold: 1
+#odom0_pose_rejection_threshold: 5
+#odom0_twist_rejection_threshold: 1
 
 # # Further input parameter examples
 # odom1: example/another_odom
@@ -137,17 +139,17 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # vx, vy, vz,
 # vroll, vpitch, vyaw,
 # ax, ay, az
-# pose0: amcl_pose
-# pose0_config: [true,  true,  false,
-#                false, false, false,
-#                false, false, false,
-#                false, false, false,
-#                false, false, false]
-# pose0_differential: false
-# pose0_relative: false
-# pose0_queue_size: 5
-# pose0_rejection_threshold: 2  # Note the difference in parameter name
-# pose0_nodelay: false
+pose0: amcl_pose_echo
+pose0_config: [true,  true,  false,
+                false, false, true,
+                true, true, false,
+                false, false, false,
+                false, false, false]
+pose0_differential: false
+pose0_relative: false
+pose0_queue_size: 5
+pose0_rejection_threshold: 2  # Note the difference in parameter name
+pose0_nodelay: false
 
 # twist0: example/twist
 # twist0_config: [false, false, false,
@@ -165,23 +167,23 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # vx, vy, vz,
 # vroll, vpitch, vyaw,
 # ax, ay, az
-imu0: imu
-imu0_config: [false, false, false,
-             false,  false, false,
-             false, false, false,
-             false,  false,  true,
-             true,  true,  false]
-imu0_nodelay: false
-imu0_differential: false
-imu0_relative: true
-imu0_queue_size: 5
-imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
-imu0_twist_rejection_threshold: 0.8                #
-imu0_linear_acceleration_rejection_threshold: 0.8  #
+#imu0: imu
+#imu0_config: [false, false, false,
+#             false,  false, false,
+#             false, false, false,
+#             false,  false,  false,
+#             false,  false,  false]
+#imu0_nodelay: false
+#imu0_differential: false
+#imu0_relative: true
+#imu0_queue_size: 5
+#imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
+#imu0_twist_rejection_threshold: 0.8                #
+#imu0_linear_acceleration_rejection_threshold: 0.8  #
 
 # [ADVANCED] Some IMUs automatically remove acceleration due to gravity, and others don't. If yours doesn't, please set
 # this to true, and *make sure* your data conforms to REP-103, specifically, that the data is in ENU frame.
-imu0_remove_gravitational_acceleration: true
+#imu0_remove_gravitational_acceleration: true
 
 # [ADVANCED]  The EKF and UKF models follow a standard predict/correct cycle. During prediction, if there is no
 # acceleration reference, the velocity at time t+1 is simply predicted to be the same as the velocity at time t. During
@@ -228,8 +230,8 @@ process_noise_covariance: [0.05, 0,    0,    0,    0,    0,    0,     0,     0, 
                            0,    0,    0,    0.03, 0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
                            0,    0,    0,    0,    0.03, 0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
                            0,    0,    0,    0,    0,    0.06, 0,     0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0.025, 0,     0,    0,    0,    0,    0,    0,    0,
-                           0,    0,    0,    0,    0,    0,    0,     0.025, 0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0.1,   0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0.1,   0,    0,    0,    0,    0,    0,    0,
                            0,    0,    0,    0,    0,    0,    0,     0,     0.04, 0,    0,    0,    0,    0,    0,
                            0,    0,    0,    0,    0,    0,    0,     0,     0,    0.01, 0,    0,    0,    0,    0,
                            0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.01, 0,    0,    0,    0,

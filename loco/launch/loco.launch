@@ -25,6 +25,8 @@
 
   <include file="$(find robot_localization)/launch/ekf_state_estimate.launch" />
 
+  <include file="$(find vesc_driver)/launch/vesc_driver_node.launch" />
+
 <!-- <node pkg="loco" type="dist2goal" name="dist2goal_node" output="screen"/> -->
 
 

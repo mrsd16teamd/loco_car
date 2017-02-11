@@ -8,4 +8,7 @@
     -->
 
   </node>
+
+<!--  <node pkg="loco" type="amcl_echo" name="amcl_echo" output="screen"/> -->
+
 </launch>

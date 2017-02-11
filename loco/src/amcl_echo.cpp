@@ -21,6 +21,11 @@ int main(int argc, char** argv)
 
   tf::TransformListener listener;
 
+  // TODO change this to wait until amcl_pose is publishing
+  ROS_INFO("Waiting for everything to start.");
+  ros::Duration(10).sleep(); 
+  ROS_INFO("Publishing amcl_pose_echo now.");
+
   ros::Rate r(10);
 
   while(ros::ok()){
