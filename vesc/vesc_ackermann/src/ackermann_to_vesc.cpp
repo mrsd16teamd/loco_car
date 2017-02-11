@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include <std_msgs/Float64.h>
+#include <geometry_msgs/Twist.h>
 
 namespace vesc_ackermann
 {
@@ -30,19 +31,22 @@ AckermannToVesc::AckermannToVesc(ros::NodeHandle nh, ros::NodeHandle private_nh)
   servo_pub_ = nh.advertise<std_msgs::Float64>("commands/servo/position", 10);
 
   // subscribe to ackermann topic
-  ackermann_sub_ = nh.subscribe("ackermann_cmd", 10, &AckermannToVesc::ackermannCmdCallback, this);
+  // ackermann_sub_ = nh.subscribe("ackermann_cmd", 10, &AckermannToVesc::ackermannCmdCallback, this);
+  ackermann_sub_ = nh.subscribe("cmd_vel", 10, &AckermannToVesc::ackermannCmdCallback, this);
 }
 
-typedef ackermann_msgs::AckermannDriveStamped::ConstPtr AckermannMsgPtr;
+// typedef ackermann_msgs::AckermannDriveStamped::ConstPtr AckermannMsgPtr;
+typedef geometry_msgs::Twist::ConstPtr AckermannMsgPtr;
 void AckermannToVesc::ackermannCmdCallback(const AckermannMsgPtr& cmd)
 {
   // calc vesc electric RPM (speed)
   std_msgs::Float64::Ptr erpm_msg(new std_msgs::Float64);
-  erpm_msg->data = speed_to_erpm_gain_ * cmd->drive.speed + speed_to_erpm_offset_;
-
+  // erpm_msg->data = speed_to_erpm_gain_ * cmd->drive.speed + speed_to_erpm_offset_;
+  erpm_msg->data = speed_to_erpm_gain_ * cmd->linear.x + speed_to_erpm_offset_;
   // calc steering angle (servo)
   std_msgs::Float64::Ptr servo_msg(new std_msgs::Float64);
-  servo_msg->data = steering_to_servo_gain_ * cmd->drive.steering_angle + steering_to_servo_offset_;
+  // servo_msg->data = steering_to_servo_gain_ * cmd->drive.steering_angle + steering_to_servo_offset_;
+  servo_msg->data = steering_to_servo_gain_ * cmd->angular.z + steering_to_servo_offset_;
 
   // publish
   if (ros::ok()) {

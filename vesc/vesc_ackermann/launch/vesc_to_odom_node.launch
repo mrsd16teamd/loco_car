@@ -10,7 +10,7 @@
 
 <rosparam>
   
-speed_to_erpm_gain: -1800
+speed_to_erpm_gain: -1664
 speed_to_erpm_offset: 0
 steering_angle_to_servo_gain: 1
 steering_angle_to_servo_offset: 0

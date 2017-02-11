@@ -5,6 +5,7 @@
 
 #include <ros/ros.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
+#include <geometry_msgs/Twist.h>
 
 namespace vesc_ackermann
 {
@@ -29,7 +30,8 @@ private:
   ros::Subscriber ackermann_sub_;
 
   // ROS callbacks
-  void ackermannCmdCallback(const ackermann_msgs::AckermannDriveStamped::ConstPtr& cmd);
+  // void ackermannCmdCallback(const ackermann_msgs::AckermannDriveStamped::ConstPtr& cmd);
+  void ackermannCmdCallback(const geometry_msgs::Twist::ConstPtr& cmd);
 };
 
 } // namespace vesc_ackermann
