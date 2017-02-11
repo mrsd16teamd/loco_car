@@ -5,6 +5,7 @@
   <arg name="debug" default="false" />
   <arg if="$(arg debug)" name="launch_prefix" value="xterm -e gdb --args" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
+
   <rosparam> 
 speed_to_erpm_gain: -1664
 speed_to_erpm_offset: 0
