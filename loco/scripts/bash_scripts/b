@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# IMPORTANT: do not run this script directly, ex - $rosip
+# because environment variables are set only in subshells
+# USAGE: "$. rosip" OR "$source rosip"
+
+echo "---------------------------------"
+echo "Sourcing .bashrc				   "
+echo "---------------------------------"
+
+
+source ~/.bashrc
+# IP=`ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'`
+#echo "Local IP address found is: $IP"
+#echo "Use 'hostname -I' to verify!"
+
+# export ROS_MASTER_URI=http://192.168.1.118:11311 
+# export ROS_IP=${IP}
+# echo "export ROS_MASTER_URI=$ROS_MASTER_URI"
+# echo "export ROS_IP=$ROS_IP"
+#echo "Verify addresses above!"
+#echo "---------------------------------"
+
