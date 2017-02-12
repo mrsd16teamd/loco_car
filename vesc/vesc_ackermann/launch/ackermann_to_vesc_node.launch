@@ -12,11 +12,18 @@ speed_to_erpm_offset: 0
 steering_angle_to_servo_gain: 1
 steering_angle_to_servo_offset: 0
 wheelbase: 0.255
+speed_min: -7200
+speed_max:  7200
+max_delta_rpm: 200
+
   </rosparam>
 
   <!-- Ackermann to VESC node -->
   <node pkg="vesc_ackermann" type="ackermann_to_vesc_node" name="ackermann_to_vesc_node"
         output="screen" launch-prefix="$(arg launch_prefix)" >
+        <remap from="commands/motor/speed" to="commands/motor/unsmoothed_speed" />
   </node>
+
+  <node name="throttle_interpolator" pkg="vesc_ackermann" type="throttle_interpolator.py" />
 
 </launch>

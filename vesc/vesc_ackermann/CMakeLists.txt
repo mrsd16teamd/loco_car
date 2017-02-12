@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   ackermann_msgs
   vesc_msgs
+  rospy 
 )
 
 catkin_package(
@@ -25,6 +26,7 @@ catkin_package(
     tf
     ackermann_msgs
     vesc_msgs
+    rospy
 )
 
 ###########
