@@ -4,9 +4,9 @@
 # because environment variables are set only in subshells
 # USAGE: "$. rosip" OR "$source rosip"
 
-echo "---------------------------------"
-echo "Sourcing .bashrc				   "
-echo "---------------------------------"
+echo "----------------"
+echo "Sourcing .bashrc"
+echo "----------------"
 
 
 source ~/.bashrc
@@ -16,8 +16,8 @@ source ~/.bashrc
 
 # export ROS_MASTER_URI=http://192.168.1.118:11311 
 # export ROS_IP=${IP}
-# echo "export ROS_MASTER_URI=$ROS_MASTER_URI"
-# echo "export ROS_IP=$ROS_IP"
+echo "Current ROS_MASTER_URI=$ROS_MASTER_URI"
+echo "Current ROS_IP=$ROS_IP"
 #echo "Verify addresses above!"
 #echo "---------------------------------"
 
