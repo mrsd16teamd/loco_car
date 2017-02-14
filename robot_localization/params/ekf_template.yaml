@@ -1,7 +1,7 @@
 # The frequency, in Hz, at which the filter will output a position estimate. Note that the filter will not begin
 # computation until it receives at least one message from one of the inputs. It will then run continuously at the
 # frequency specified here, regardless of whether it receives more measurements. Defaults to 30 if unspecified.
-frequency: 20
+frequency: 50
 
 # The period, in seconds, after which we consider a sensor to have timed out. In this event, we carry out a predict
 # cycle on the EKF without correcting it. This parameter can be thought of as the minimum frequency with which the
@@ -71,7 +71,7 @@ world_frame: map           # Defaults to the value of odom_frame if unspecified
 # default values, and must be specified.
 
 
-odom0: csm_odom # from canonical scan matcher
+odom0: odom_csm # from canonical scan matcher
 
 # Each sensor reading updates some or all of the filter's state. These options give you greater control over which
 # values from each measurement are fed to the filter. For example, if you have an odometry message as input, but only
@@ -80,9 +80,9 @@ odom0: csm_odom # from canonical scan matcher
 # do not provide some of the state variables estimated by the filter. For example, a TwistWithCovarianceStamped message
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
-odom0_config: [false,  false,  false,
+odom0_config: [true,  true,  false,
                 false, false, true,
-                true, true, false,
+                false, false, false,
                 false, false, false,
                 false, false, false]
 
@@ -139,17 +139,19 @@ odom0_differential: true
 # vx, vy, vz,
 # vroll, vpitch, vyaw,
 # ax, ay, az
-pose0: amcl_pose_echo
-pose0_config: [true,  true,  false,
-                false, false, true,
-                true, true, false,
-                false, false, false,
-                false, false, false]
-pose0_differential: false
-pose0_relative: false
-pose0_queue_size: 5
-pose0_rejection_threshold: 2  # Note the difference in parameter name
-pose0_nodelay: false
+
+
+# pose0: amcl_pose_echo
+# pose0_config: [true,  true,  false,
+#                 false, false, true,
+#                 true, true, false,
+#                 false, false, false,
+#                 false, false, false]
+# pose0_differential: false
+# pose0_relative: false
+# pose0_queue_size: 5
+# pose0_rejection_threshold: 2  # Note the difference in parameter name
+# pose0_nodelay: false
 
 # twist0: example/twist
 # twist0_config: [false, false, false,
