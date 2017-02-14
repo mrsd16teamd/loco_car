@@ -16,6 +16,13 @@
   <node pkg="vesc_driver" type="vesc_driver_node" name="$(arg node_name)"
         output="screen" launch-prefix="$(arg launch_prefix)" >
     <param name="port" value="$(arg port)" />
+
   </node>
+
+
+
+  <include file="$(find vesc_ackermann)/launch/ackermann_to_vesc_node.launch" />
+
+  <include file="$(find vesc_ackermann)/launch/vesc_to_odom_node.launch" />
 
 </launch>

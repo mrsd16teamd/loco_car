@@ -21,15 +21,11 @@
 
   <include file="$(find loco)/launch/amcl.launch" />
 
-  <include file="$(find teleop_twist_joy)/launch/teensy_nav.launch" />
+  <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
 
   <include file="$(find robot_localization)/launch/ekf_state_estimate.launch" />
 
-  <include file="$(find vesc_driver)/launch/vesc_driver_node.launch" />
-
-  <include file="$(find vesc_ackermann)/launch/ackermann_to_vesc_node.launch" />
-
-  <include file="$(find vesc_ackermann)/launch/vesc_to_odom_node.launch" />
+  <include file="$(find vesc_driver)/launch/vesc_driver_node.launch" /> 
 
 <!-- <node pkg="loco" type="dist2goal" name="dist2goal_node" output="screen"/> -->
 
