@@ -27,7 +27,9 @@
 
   <include file="$(find vesc_driver)/launch/vesc_driver_node.launch" /> 
 
-<!-- <node pkg="loco" type="dist2goal" name="dist2goal_node" output="screen"/> -->
+
+
+  <node pkg="loco" type="amcl_echo" name="amcl_echo" output="screen"/>
 
 
 <!--   <node pkg="rosbag" type="record" name="rosbag_record_main"
