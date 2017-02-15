@@ -141,17 +141,17 @@ odom0_differential: true
 # ax, ay, az
 
 
-# pose0: amcl_pose_echo
-# pose0_config: [true,  true,  false,
-#                 false, false, true,
-#                 true, true, false,
-#                 false, false, false,
-#                 false, false, false]
-# pose0_differential: false
-# pose0_relative: false
-# pose0_queue_size: 5
-# pose0_rejection_threshold: 2  # Note the difference in parameter name
-# pose0_nodelay: false
+pose0: amcl_pose_echo
+pose0_config: [true,  true,  false,
+                false, false, true,
+                false, false, false,
+                false, false, false,
+                false, false, false]
+pose0_differential: false
+pose0_relative: false
+pose0_queue_size: 5
+pose0_rejection_threshold: 2  # Note the difference in parameter name
+pose0_nodelay: false
 
 # twist0: example/twist
 # twist0_config: [false, false, false,
