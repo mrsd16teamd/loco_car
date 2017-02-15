@@ -23,7 +23,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 */
 
 #include "geometry_msgs/Twist.h"
-#include "geometry_msgs/TwistStamped.h"
 #include "ros/ros.h"
 #include "sensor_msgs/Joy.h"
 #include "teleop_twist_joy/teleop_twist_joy.h"
@@ -46,7 +45,6 @@ struct TeleopTwistJoy::Impl
 
   ros::Subscriber joy_sub;
   ros::Publisher cmd_vel_pub;
-  ros::Publisher cmd_vel_stamped_pub;
 
   int enable_button;
   int enable_turbo_button;
@@ -72,7 +70,6 @@ TeleopTwistJoy::TeleopTwistJoy(ros::NodeHandle* nh, ros::NodeHandle* nh_param)
   pimpl_ = new Impl;
 
   pimpl_->cmd_vel_pub = nh->advertise<geometry_msgs::Twist>("cmd_vel", 1, true);
-  pimpl_->cmd_vel_stamped_pub = nh->advertise<geometry_msgs::TwistStamped>("cmd_vel_stamped", 1, true);
   pimpl_->joy_sub = nh->subscribe<sensor_msgs::Joy>("joy", 1, &TeleopTwistJoy::Impl::joyCallback, pimpl_);
 
   nh_param->param<int>("enable_button", pimpl_->enable_button, 0);
@@ -134,11 +131,7 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::Joy::ConstPtr& joy_msg
 {
   // Initializes with zeros by default.
   geometry_msgs::Twist cmd_vel_msg;
-  geometry_msgs::TwistStamped cmd_vel_stamped_msg;
 
-  cmd_vel_stamped_msg.header.stamp = ros::Time::now();
-  cmd_vel_stamped_msg.header.frame_id = "base_link";
-  
   if (enable_turbo_button >= 0 && joy_msg->buttons[enable_turbo_button])
   {
     if (axis_linear_map.find("x") != axis_linear_map.end())
@@ -166,8 +159,6 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::Joy::ConstPtr& joy_msg
       cmd_vel_msg.angular.x = joy_msg->axes[axis_angular_map["roll"]] * scale_angular_turbo_map["roll"];
     }
 
-    cmd_vel_stamped_msg.twist = cmd_vel_msg;
-    cmd_vel_stamped_pub.publish(cmd_vel_stamped_msg);
     cmd_vel_pub.publish(cmd_vel_msg);
     sent_disable_msg = false;
   }
@@ -197,8 +188,7 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::Joy::ConstPtr& joy_msg
     {
       cmd_vel_msg.angular.x = joy_msg->axes[axis_angular_map["roll"]] * scale_angular_map["roll"];
     }
-    cmd_vel_stamped_msg.twist = cmd_vel_msg;
-    cmd_vel_stamped_pub.publish(cmd_vel_stamped_msg);
+
     cmd_vel_pub.publish(cmd_vel_msg);
     sent_disable_msg = false;
   }
@@ -208,8 +198,6 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::Joy::ConstPtr& joy_msg
     // in order to stop the robot.
     if (!sent_disable_msg)
     {
-      cmd_vel_stamped_msg.twist = cmd_vel_msg;
-      cmd_vel_stamped_pub.publish(cmd_vel_stamped_msg);
       cmd_vel_pub.publish(cmd_vel_msg);
       sent_disable_msg = true;
     }
