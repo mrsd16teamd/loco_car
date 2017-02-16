@@ -10,6 +10,7 @@
     <rosparam>
       scan: scan
       odom_frame_id: odom
+      base_frame_id: base_link 
       global_frame_id: map
 
       min_particles: 100
@@ -18,8 +19,8 @@
       recovery_alpha_slow: 0.005
       recovery_alpha_fast: 0.1
 
-      update_min_d: 0.2
-      update_min_a: 0.2
+      update_min_d: 0.2 #0.2
+      update_min_a: 0.2 #0.2
 
       m: diff
       odom_alpha1: 0.4
@@ -31,6 +32,7 @@
 
       save_pose_rate: 0.2
 
+      tf_broadcast: true
     </rosparam>
 
   </node>

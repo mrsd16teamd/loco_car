@@ -26,7 +26,7 @@ int main(int argc, char** argv)
   ros::Duration(10).sleep(); 
   ROS_INFO("Publishing amcl_pose_echo now.");
 
-  ros::Rate r(10);
+  ros::Rate r(40);
 
   while(ros::ok()){
     ros::spinOnce();
@@ -59,6 +59,7 @@ int main(int argc, char** argv)
     pose_msg.pose.pose.orientation = q_msg;
 
   	pose_msg.header.stamp = ros::Time::now();
+	pose_msg.header.frame_id = "map";
   	pose_pub.publish(pose_msg);
 
     r.sleep();
