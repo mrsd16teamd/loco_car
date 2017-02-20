@@ -169,12 +169,12 @@ pose0_nodelay: false
 # vx, vy, vz,
 # vroll, vpitch, vyaw,
 # ax, ay, az
-#imu0: imu
+#imu0: imu/data
 #imu0_config: [false, false, false,
 #             false,  false, false,
 #             false, false, false,
 #             false,  false,  true,
-#             false,  false,  false]
+#             true,  true,  false]
 #imu0_nodelay: false
 #imu0_differential: false
 #imu0_relative: true

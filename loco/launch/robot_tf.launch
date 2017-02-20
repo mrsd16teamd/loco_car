@@ -10,6 +10,9 @@
     args="$(arg base2lidar_x) $(arg base2lidar_y) $(arg base2lidar_z) 0 0 0 base_link laser 100"/>
 
   <node pkg="tf" type="static_transform_publisher" name="base_to_imu_broadcaster"
+    args="0.01195 0 0.09556 0 0 0 base_link imu_link 100"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="base_to_um7_broadcaster"
     args="0.01195 0 0.09556 0 0 0 base_link imu 100"/>
 
 </launch>
