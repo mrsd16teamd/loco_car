@@ -6,15 +6,15 @@
   <arg if="$(arg debug)" name="launch_prefix" value="xterm -e gdb --args" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
 
-  <rosparam> 
-	speed_to_erpm_gain: -1664
-	speed_to_erpm_offset: 0
-	steering_angle_to_servo_gain: 1.0
-	steering_angle_to_servo_offset: 0
-	wheelbase: 0.255
-	speed_min: -7200
-	speed_max:  7200
-	max_delta_rpm: 200
+  <rosparam>
+speed_to_erpm_gain: -1664
+speed_to_erpm_offset: 0
+steering_angle_to_servo_gain: 1.0
+steering_angle_to_servo_offset: 0
+wheelbase: 0.255
+speed_min: -7200
+speed_max:  7200
+max_delta_rpm: 200
   </rosparam>
 
   <!-- Ackermann to VESC node -->
