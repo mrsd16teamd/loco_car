@@ -12,7 +12,7 @@
 
 #include <Servo.h>
 #include <ros.h>
-#include <std_msgs/UInt16.h>
+//#include <std_msgs/UInt16.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/String.h>
 //#include <geometry_msgs/Twist.h>
@@ -77,9 +77,10 @@ void setup() {
   pinMode(servo_pin, OUTPUT);
   pinMode(on_pin, OUTPUT);
   pinMode(off_pin, OUTPUT);
-
   pinMode(disable_pin, INPUT);
+  
   attachInterrupt(disable_pin, disable_ISR, CHANGE);
+  
   nh.getHardware()->setBaud(115200);
   nh.initNode();
   nh.subscribe(sub);
@@ -114,11 +115,11 @@ void loop() {
   nh.spinOnce();
   String out;
 
-  out += "Steering Angle: " + String(steer) +" rads, ";
-  out += String(steer*RAD_TO_DEG, 2) + " degs"              + '\t';
-  out += "PWM: " + String(pwm_val)                          + '\t';
-  out += "Disabled: " + String(disabled)                    + '\t';
-  out += "Elapsed: " + elapsed;
+  out += "Steering Angle: " + String(steer) +" rads | ";
+  out += String(steer*RAD_TO_DEG, 2) + " degs \t";
+  out += "PWM: " + String(pwm_val);
+//  out += "Disabled: " + String(disabled)                    + '\t';
+//  out += "Elapsed: " + elapsed;
   out.toCharArray(buf, 200);
   out_msg.data = buf;
   teensy.publish( &out_msg );
