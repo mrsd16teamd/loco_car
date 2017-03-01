@@ -1,7 +1,7 @@
-/* 
- *  MRSD Team D '16 - Team LoCo - Evasive Maneuvers and Drifting for Autonomous Vehicles - Teensy Firmware
- *  This sets up the Teensy as a ROS subscriber for steering command inputs and also a ROS publisher on the /teensy topic for diagnostics
- *  The teensy then sends out PWM output to the servo to control the steering
+/*
+    MRSD Team D '16 - Team LoCo - Evasive Maneuvers and Drifting for Autonomous Vehicles - Teensy Firmware
+    This sets up the Teensy as a ROS subscriber for steering command inputs and also a ROS publisher on the /teensy topic for diagnostics
+    The teensy then sends out PWM output to the servo to control the steering
 */
 
 #if (ARDUINO >= 100)
@@ -31,21 +31,35 @@ Servo servo;
 
 
 //steering angle input in rads
-double steer; 
+double steer = 0;
 //double steer_zero = 0.22;
 //double steer_min = 0.99;
 //double steer_max = -0.55;
 double steer_zero = 0;          //maxes out at +/- 0.77 rads = +/- 44.65 degs
-double steer_min = 0.7777;
-double steer_max = -0.7777;
+double steer_min = 0.76;
+double steer_max = -0.68;
 
 //pwm value to write to the servo, zeros at 1385 in current steering arm config
-long pwm_val;       
-long pwm_zero = 1385;
-long pwm_min = 1135;
-long pwm_max = 1635;
+long pwm_val;
+//this doesnt steer to max
+//long pwm_zero = 1385;
+//long pwm_min = 1135;
+//long pwm_max = 1635;
+
+//this steers to max, but non-linear
+//long pwm_zero = 1385;
 //long pwm_min = 885;
 //long pwm_max = 1885;
+
+//trying this now -> better but still wrong in the middle
+//long pwm_zero = 1385;
+//long pwm_min = 1085;
+//long pwm_max = 1685;
+
+//final try
+long pwm_zero = 1381;
+long pwm_min = 1048;
+long pwm_max = 1679;
 
 
 char buf[200];
@@ -78,9 +92,9 @@ void setup() {
   pinMode(on_pin, OUTPUT);
   pinMode(off_pin, OUTPUT);
   pinMode(disable_pin, INPUT);
-  
+
   attachInterrupt(disable_pin, disable_ISR, CHANGE);
-  
+
   nh.getHardware()->setBaud(115200);
   nh.initNode();
   nh.subscribe(sub);
@@ -115,25 +129,25 @@ void loop() {
   nh.spinOnce();
   String out;
 
-  out += "Steering Angle: " + String(steer) +" rads | ";
-  out += String(steer*RAD_TO_DEG, 2) + " degs \t";
-  out += "PWM: " + String(pwm_val);
-//  out += "Disabled: " + String(disabled)                    + '\t';
-//  out += "Elapsed: " + elapsed;
+  out += "Steering Angle: " + String(steer) + " rads | ";
+    out += String(steer*RAD_TO_DEG, 2) + " degs \t";
+    out += "PWM: " + String(pwm_val);
+  //  out += "Disabled: " + String(disabled)                    + '\t';
+  //  out += "Elapsed: " + elapsed;
   out.toCharArray(buf, 200);
   out_msg.data = buf;
   teensy.publish( &out_msg );
 
   if (!disabled) {
 
-    pwm_val = mapf(steer, steer_min, steer_max, pwm_min, pwm_max); 
+    pwm_val = mapf(steer, steer_min, steer_max, pwm_min, pwm_max);
     servo.writeMicroseconds(pwm_val);
 
     digitalWrite(led_pin, LOW);
   }
 
   else {  //when disabled
-    
+
     pwm_val = pwm_zero;
     servo.writeMicroseconds(pwm_val);
     servo.detach();
