@@ -10,11 +10,11 @@
 <!--
 <rosparam>
   
-speed_to_erpm_gain: -1664
+speed_to_erpm_gain: -1680
 speed_to_erpm_offset: 0
-steering_angle_to_servo_gain: 1
+steering_angle_to_servo_gain: -1
 steering_angle_to_servo_offset: 0
-wheelbase: 0.255
+wheelbase: 0.257
 </rosparam>
 -->
 
