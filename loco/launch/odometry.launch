@@ -56,7 +56,7 @@
 
       </rosparam>
 
-<!--      <remap from="imu/data" to="imu" /> -->
+      <remap from="imu/data" to="imu" />
     </node>
   </group>
 
