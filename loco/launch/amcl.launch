@@ -12,7 +12,7 @@
       odom_frame_id: odom
       base_frame_id: base_link 
       global_frame_id: map
-
+      
       min_particles: 100
       max_particles: 1000
       transform_tolerance: 0.01
@@ -27,6 +27,7 @@
       m: diff
       odom_alpha1: 0.4
       odom_alpha2: 0.4
+
 
       initial_cov_xx: 0.1
       initial_cov_yy: 0.1

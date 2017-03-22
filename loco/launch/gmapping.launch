@@ -3,8 +3,9 @@
 <launch>
 
 <include file="$(find loco)/launch/odometry.launch" />
+<include file="$(find loco)/launch/teleop.launch" />
 
-    <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" />
+<!--    <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" /> -->
 
 <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
     <rosparam>
