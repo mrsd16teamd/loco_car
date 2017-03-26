@@ -1,0 +1,8 @@
+#goal definition
+ilqr_loco/Trajectory traj
+---
+#result definition
+int64 done
+---
+#feedback
+int64 steps_left
