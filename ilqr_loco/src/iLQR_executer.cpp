@@ -9,11 +9,15 @@ iLQR_Executer::iLQR_Executer()
 {
   ros::NodeHandle nh;
   cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
+  //TODO we can also subscribe to state information here for local control around traj
+
   ROS_INFO("Started iLQR executer node.");
 }
 
 // provides action to execute plans
-void iLQR::ExecuteTrajectory(int steps);
+void iLQR::ExecuteTrajectory(int steps){
+  
+};
 
 //     geometry_msgs::Twist msg;
 //     msg.linear.x = vx;
