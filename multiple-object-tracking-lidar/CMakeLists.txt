@@ -9,9 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   roscpp
   sensor_msgs
-  grid_map_core
-  grid_map_msgs
-  grid_map_ros
+
   
 	
 
