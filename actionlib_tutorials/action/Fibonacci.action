@@ -1,8 +1,8 @@
 #goal definition
-loco_msgs/Trajectory traj
+int32 order
 ---
 #result definition
-int64 done
+int32[] sequence
 ---
 #feedback
-int64 steps_left
+int32[] sequence

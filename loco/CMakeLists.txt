@@ -27,13 +27,13 @@ include_directories(
 #   Trajectory.msg
 #)
 
-generate_messages(
-   DEPENDENCIES
-   std_msgs
-   nav_msgs
-   geometry_msgs
-   actionlib_msgs
-)
+# generate_messages(
+#    DEPENDENCIES
+#   std_msgs
+#   nav_msgs
+#   geometry_msgs
+#   actionlib_msgs
+#)
 
 catkin_package(
   CATKIN_DEPENDS message_runtime
