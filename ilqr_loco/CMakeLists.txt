@@ -16,8 +16,8 @@ find_package(Boost REQUIRED COMPONENTS system)
 
 # Generate actions in the 'action' folder
 add_action_files(
-   FILES
-   TrajExec.action
+   DIRECTORY action
+   FILES TrajExec.action
 )
 
 # Generate added messages and services with any dependencies listed here
