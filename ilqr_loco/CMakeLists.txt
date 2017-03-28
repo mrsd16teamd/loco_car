@@ -42,6 +42,6 @@ include_directories(
 #target_link_libraries(ilqr_planner ${catkin_LIBRARIES})
 #add_dependencies(ilqr_planner ${ilqr_loco_EXPORTED_TARGETS} )
 
-add_executable(ilqr_executer src/ilqr_executer.cpp)
-target_link_libraries(ilqr_executer ${catkin_LIBRARIES})
-add_dependencies(ilqr_executer ${ilqr_loco_EXPORTED_TARGETS} )
+#add_executable(ilqr_executer src/ilqr_executer.cpp)
+#target_link_libraries(ilqr_executer ${catkin_LIBRARIES})
+#add_dependencies(ilqr_executer ${ilqr_loco_EXPORTED_TARGETS} )
