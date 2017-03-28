@@ -16,6 +16,9 @@ Panels:
         - /Robot1/TF1
         - /Robot1/TF1/Frames1
         - /Robot1/TF1/Tree1
+        - /Odometry1
+        - /Odometry1/Status1
+        - /Odometry2
       Splitter Ratio: 0.605096
     Tree Height: 429
   - Class: rviz/Selection
@@ -208,6 +211,8 @@ Visualization Manager:
             All Enabled: false
             base_link:
               Value: true
+            imu:
+              Value: true
             laser:
               Value: true
             map:
@@ -221,10 +226,7 @@ Visualization Manager:
           Show Names: true
           Tree:
             map:
-              odom:
-                base_link:
-                  laser:
-                    {}
+              {}
           Update Interval: 0
           Value: true
         - Angle Tolerance: 0.1
@@ -249,6 +251,26 @@ Visualization Manager:
       Topic: /circle
       Unreliable: false
       Value: true
+    - Angle Tolerance: 0.1
+      Class: rviz/Odometry
+      Color: 255; 25; 0
+      Enabled: true
+      Keep: 100
+      Length: 0.75
+      Name: Odometry
+      Position Tolerance: 0.1
+      Topic: /traj_sim
+      Value: true
+    - Angle Tolerance: 0.1
+      Class: rviz/Odometry
+      Color: 0; 170; 0
+      Enabled: true
+      Keep: 100
+      Length: 0.75
+      Name: Odometry
+      Position Tolerance: 0.1
+      Topic: /odometry/filtered
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -272,7 +294,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0.00500001
+      Angle: 0.0549999
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
@@ -281,11 +303,11 @@ Visualization Manager:
         Value: false
       Name: Current View
       Near Clip Distance: 0.01
-      Scale: 37.011
+      Scale: 98.5553
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -0.0214009
-      Y: -0.174504
+      X: 4.38634
+      Y: 1.00951
     Saved: ~
 Window Geometry:
   Displays:
