@@ -12,7 +12,7 @@
 # $ cmk loco_ws
 
 CUR_DIR=$PWD
-WS_PATH=${1:-~/ros}
+WS_PATH=${1:-~/catkin_ws}
 cd $WS_PATH
 catkin_make
 cd $CUR_DIR
