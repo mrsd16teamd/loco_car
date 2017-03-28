@@ -21,9 +21,8 @@ private:
 
   ros::Publisher cmd_pub;
 
-  void ExecuteTrajectory(int steps);
 
 public:
   iLQR_Executer();
-  void executeCB(const ilqr_loco::TrajExecGoalConstPtr &goal);
+  void execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal);
 };

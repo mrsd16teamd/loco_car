@@ -3,11 +3,12 @@ Executes most recent trajectory given by iLQR.
 Sends feedback to action client (planner) in terms of "almost done", "done".
 */
 
-include "ilqr_executer.h"
+#include "ilqr_executer.h"
 
 iLQR_Executer::iLQR_Executer()
 {
-  as(nh, name, boost::bind(&TrajExecAction::executeCB, this, _1), false), traj_action(name)
+  as(nh, "traj_executer", boost::bind(&TrajExecAction::executeCB, this, _1), false),
+                                                        traj_action("traj_executer")
   {
     as.start();
   }
@@ -21,7 +22,7 @@ iLQR_Executer::iLQR_Executer()
 
 
 // provides action to execute plans
-void iLQR_Executer::ExecuteTrajectory(int steps){
+void iLQR_Executer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
 
 };
 
@@ -36,9 +37,10 @@ void iLQR_Executer::ExecuteTrajectory(int steps){
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "iLQR_executer");
+  ros::init(argc, argv, "ilqr_executer");
 
   iLQR_Executer executer;
+  ros::spin();
 
   return 0;
 }

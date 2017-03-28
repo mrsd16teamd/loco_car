@@ -3,7 +3,7 @@ Continuously calls iLQR to generate trajectories, based on changing states,
 desired states, and obstacle positions.
 */
 
-include "ilqr_planner.h"
+#include "ilqr_planner.h"
 
 iLQR_Planner::iLQR_Planner()
 {
