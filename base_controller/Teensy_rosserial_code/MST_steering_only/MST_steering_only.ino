@@ -56,11 +56,15 @@ long pwm_val;
 //long pwm_min = 1085;
 //long pwm_max = 1685;
 
-//final try
-long pwm_zero = 1381;
-long pwm_min = 1048;
-long pwm_max = 1679;
+//final try  - increasing it steers left, decreasing it steers right
+//long pwm_zero = 1381;
+//long pwm_min = 1048;
+//long pwm_max = 1679;
 
+//the below values are needed after crash on 3/27. basically an offset of +290
+long pwm_zero = 1671;
+long pwm_min = 1338;
+long pwm_max = 1969;
 
 char buf[200];
 unsigned long last_received;
@@ -130,7 +134,7 @@ void loop() {
   String out;
 
   out += "Steering Angle: " + String(steer) + " rads | ";
-    out += String(steer*RAD_TO_DEG, 2) + " degs \t";
+//    out += String(steer*RAD_TO_DEG, 2) + " degs \t";
     out += "PWM: " + String(pwm_val);
   //  out += "Disabled: " + String(disabled)                    + '\t';
   //  out += "Elapsed: " + elapsed;
