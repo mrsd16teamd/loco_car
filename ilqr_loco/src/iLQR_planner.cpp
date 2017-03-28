@@ -48,7 +48,7 @@ iLQR_Planner::iLQR_Planner()
 
 void iLQR_Planner::GetNewSensorInfo()
 {
-
+  // get feedback on state from server
 }
 
 // Calls iLQR_mpc.c to generate new trajectory

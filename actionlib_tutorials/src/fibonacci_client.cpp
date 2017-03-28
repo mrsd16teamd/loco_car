@@ -9,9 +9,9 @@ typedef actionlib::SimpleActionClient<actionlib_tutorials::FibonacciAction> Clie
 void doneCb(const actionlib::SimpleClientGoalState& state,
             const actionlib_tutorials::FibonacciResultConstPtr& result)
 {
+  // ROS_INFO("Answer: %i", result->sequence.back());
   ROS_INFO("Finished in state [%s]", state.toString().c_str());
-  ROS_INFO("Answer: %i", result->sequence.back());
-  ros::shutdown();
+  // ros::shutdown();
 }
 
 // Called once when the goal becomes active
@@ -48,24 +48,30 @@ int main (int argc, char **argv)
   double start = ros::Time::now().toSec();
   double now = ros::Time::now().toSec();
 
-  while (now-start > 10){
+  while (now-start < 7){
     ros::spinOnce();
     now = ros::Time::now().toSec();
   }
 
-  ROS_INFO("Sending cancel command.");
-  ac.cancelGoal();
+  ROS_INFO("sending new goal.");
+  goal.order = 10;
+  ac.sendGoal(goal, &doneCb, &activeCb, &feedbackCb);
+
+  ros::spin();
+
+  // ROS_INFO("Sending cancel command.");
+  // ac.cancelGoal();
 
   //wait for the action to return
-  bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
-
-  if (finished_before_timeout)
-  {
-    actionlib::SimpleClientGoalState state = ac.getState();
-    ROS_INFO("Action finished: %s",state.toString().c_str());
-  }
-  else
-    ROS_INFO("Action did not finish before the time out.");
+  // bool finished_before_timeout = ac.waitForResult(ros::Duration(30.0));
+  //
+  // if (finished_before_timeout)
+  // {
+  //   actionlib::SimpleClientGoalState state = ac.getState();
+  //   ROS_INFO("Action finished: %s",state.toString().c_str());
+  // }
+  // else
+  //   ROS_INFO("Action did not finish before the time out.");
 
   //exit
   return 0;
