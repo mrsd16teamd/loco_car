@@ -3,7 +3,7 @@
 #include <actionlib/client/terminal_state.h>
 #include <actionlib_tutorials/FibonacciAction.h>
 
-typedef actionlib::SimpleActionClient<FibonacciAction> Client;
+typedef actionlib::SimpleActionClient<actionlib_tutorials::FibonacciAction> Client;
 
 // Called once when the goal completes
 void doneCb(const actionlib::SimpleClientGoalState& state,
