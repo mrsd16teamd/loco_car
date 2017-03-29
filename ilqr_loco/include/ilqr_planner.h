@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <ilqr_loco/TrajExecAction.h>
+#include "iLQG_mpc.c"
 
 // #include "iLQR_mpc.c" //TODO integrate generated c-code
 //iLQR_mpc(double x_cur[10], double x_des[6], double obs[2], int T);
@@ -21,6 +22,25 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
                           x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
                           x_cur.twist.twist.angular.z,
                           x_cur.twist.twist.linear.x, 0, 0, 0}
+
+  double* x_des = &x_desired[0];
+  double* obs = obstacle_pos.data;
+
+  // TODO what is the output type?
+  int N = T+1;
+  int n = 10;
+  int m = 2;
+
+  struct trajectory Traj;
+  Traj.x = malloc(n*N*sizeof(double));
+  Traj.u = malloc(m*(N-1)*sizeof(double));
+  // traj[0]: states, traj[1]: controls
+  plan_trajectory(x0,xDes,Obs,50,&Traj);
+
+  ilqr_loco::TrajExecGoal goal;
+  // TODO put output from c-code into action message
+
+  return goal;
 
   // TODO what is the output type?
   sometype outputs = iLQR_mpc(x_current, x_desired, obs, T);
