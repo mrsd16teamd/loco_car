@@ -34,7 +34,7 @@ private:
 
   // If a command was planned to be executed more than this many seconds, then
   // client will ignore it and move to processing next command.
-  // Arbitrarily set to 0.5sec in constructor above. 
+  // Arbitrarily set to 0.5sec in constructor above.
   double old_msg_thres;
 
   // create messages that are used to published feedback/result

@@ -49,7 +49,6 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     ROS_INFO("Finished publishing trajectory");
     result.done = 1;
     as.setSucceeded(result);
-    ros::shutdown();
   }
 }
 
