@@ -21,7 +21,6 @@ protected:
 
   ros::Publisher cmd_pub;
 
-
 public:
   iLQR_Executer():
     as(nh, "traj_executer", boost::bind(&iLQR_Executer::execute_trajectory, this,
