@@ -7,7 +7,8 @@
 //iLQR_mpc(double x_cur[10], double x_des[6], double obs[2], int T);
 
 // Note that the inputs to this function can be whatever is convenient for client
-ilqr_loco::TrajExecGoal iLQR_gen_traj(x_current, x_desired, obstacle_pos, T)
+ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_current, std::vector<double> x_desired,
+                                        std_msgs::Float32MultiArray obstacle_pos, int T)
 {
   // TODO pre-process inputs as necessary, put into C-style arrays
   double x_cur[10] = { }
