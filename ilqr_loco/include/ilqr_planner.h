@@ -1,7 +1,7 @@
 #include "ros/ros.h"
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/terminal_state.h>
-#include <ilqr_loco/TrajExecAction.h">
+#include <ilqr_loco/TrajExecAction.h>
 
 #include <math.h>
 #include <geometry_msgs/Twist.h>
