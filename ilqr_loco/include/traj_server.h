@@ -1,3 +1,6 @@
+#ifndef _TRAJ_SERVER_H_
+#define _TRAJ_SERVER_H_
+
 #include "ros/ros.h"
 #include <actionlib/server/simple_action_server.h>
 #include <ilqr_loco/TrajExecAction.h>
@@ -35,3 +38,5 @@ private:
 
   ros::Publisher cmd_pub;
 };
+
+#endif 

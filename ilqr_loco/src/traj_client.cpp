@@ -20,16 +20,15 @@ void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
 ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
 {
   ROS_INFO("Generating trajectory.");
+  ilqr_loco::TrajExecGoal goal;
 
   //TODO use sensor feedback here
   //TODO replace this with actual trajectory planners; see below for possible implementation
-  // RampupPlanner ramp_planner(initial_state);
-  // ilqr_loco::TrajExecGoal goal = ramp_planner.GenerateTrajectory();
+  // goal = ramp_planner.GenerateTrajectory();
+  // goal = iLQR_gen_traj(x_current, x_desired, obstacle_pos, T);
+  //    see ilqr_planner.h
 
-  // iLQRPlanner ilqr_planner(initial_state, goal_state, obstacle, T)
-  //
-
-  ilqr_loco::TrajExecGoal goal;
+  // For now, just hard-coded commands
   int traj_length = 20;
   for (int i=0; i<traj_length; i++)
   {
@@ -49,6 +48,7 @@ void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 }
 
 
+// This function gets called when server comes online!
 void TrajClient::Plan()
 {
   ilqr_loco::TrajExecGoal goal = GenerateTrajectory();

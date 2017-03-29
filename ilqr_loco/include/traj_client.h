@@ -1,3 +1,6 @@
+#ifndef _TRAJ_CLIENT_H_
+#define _TRAJ_CLIENT_H_
+
 #include "ros/ros.h"
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
@@ -18,7 +21,7 @@ public:
   {
     state_sub  = nh.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
     obs_sub = nh.subscribe("ccs", 1, &TrajClient::obsCb, this);
-    
+
     ROS_INFO("Waiting for action server to start.");
     ac.waitForServer(); //will wait for infinite time
     ROS_INFO("Action server started.");
@@ -48,3 +51,5 @@ private:
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const std_msgs::Float32MultiArray &msg);
 };
+
+#endif
