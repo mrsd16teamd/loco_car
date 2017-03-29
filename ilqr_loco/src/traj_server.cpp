@@ -12,6 +12,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   bool success = true;
   ROS_INFO("Executing trajectory."); // TODO print client name
 
+  double timestep = goal.
+
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
     // check that preempt has not been requested by the client
