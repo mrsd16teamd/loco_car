@@ -29,7 +29,6 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   //    see ilqr_planner.h
 
   ros::Time begin = ros::Time::now();
-  
   goal.traj.timestep = 0.05;
 
 

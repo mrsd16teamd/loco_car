@@ -7,15 +7,18 @@ Sends feedback to action client (planner) in terms of "almost done", "done".
 
 // provides action to execute plans
 void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
-  // TODO check that states and commands are right length
+  // TODO? check that states and commands are right length
 
   bool success = true;
   ROS_INFO("Executing trajectory."); // TODO print client name
 
-  double timestep = goal.
+  double timestep = goal->traj.timestep;
+  double traj_start_time = (goal->traj.header.stamp).toSec(); // Is this same as ros::Time::now()?
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
+    double now = ros::Time::now().toSec();
+
     // check that preempt has not been requested by the client
     if (as.isPreemptRequested() || !ros::ok())
     {
@@ -23,6 +26,12 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       as.setPreempted();
       success = false;
       break;
+    }
+    // check that commands in plan are not too old
+    else if ((now - traj_start_time) > old_msg_thres)
+    {
+      ROS_INFO("Ignoring old command.");
+      continue;
     }
     else{
       ROS_INFO("Publishing command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
