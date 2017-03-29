@@ -13,11 +13,12 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   ROS_INFO("Executing trajectory."); // TODO print client name
 
   double timestep = goal->traj.timestep;
+  double traj_start_time = (goal->traj.header.stamp).toSec();
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
     double now = ros::Time::now().toSec();
-    double cmd_planned_time = (goal->traj.commands[i].header.stamp).toSec(); 
+    double cmd_planned_time = traj_start_time + (i*timestep);
 
     // check that preempt has not been requested by the client
     if (as.isPreemptRequested() || !ros::ok())
