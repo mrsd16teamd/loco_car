@@ -40,10 +40,12 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
     msg.angular.z = 0.5;
     goal.traj.commands.push_back(msg);
   }
+  return goal;
 }
 
 void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 {
+  ROS_INFO("Sending trajectory.");
   ac.sendGoal(goal,
               boost::bind(&TrajClient::doneCb, this, _1, _2),
               boost::bind(&TrajClient::activeCb, this),
