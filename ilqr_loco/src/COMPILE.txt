@@ -1,0 +1,1 @@
+gcc -DPRNT=printf -DDEBUG_BACKPASS=1 -DDEBUG_FORWARDPASS=1 -DFULL_DDP=0 iLQG.c iLQG_mpc.c line_search.c back_pass.c matMult.c boxQP.c cholesky.c printMat.c iLQG_func.c -O3 -o run_iLQR
