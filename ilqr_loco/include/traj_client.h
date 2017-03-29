@@ -6,6 +6,7 @@
 #include <actionlib/client/terminal_state.h>
 #include <ilqr_loco/TrajExecAction.h>
 
+#include <vector>
 #include <math.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float32MultiArray.h>
@@ -38,6 +39,7 @@ private:
 
   nav_msgs::Odometry most_recent_state;
   std_msgs::Float32MultiArray obs_pos;
+  std::vector<double> desired_state;
 
   void Plan();
   ilqr_loco::TrajExecGoal GenerateTrajectory();

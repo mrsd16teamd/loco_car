@@ -18,7 +18,7 @@ class TrajServer
 public:
   TrajServer():
     as(nh, "traj_executer", boost::bind(&TrajServer::execute_trajectory, this,
-    _1), false), traj_action("traj_executer")
+    _1), false), traj_action("traj_executer"), old_msg_thres(0.5)
     {
       as.start();
       cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
@@ -32,6 +32,10 @@ private:
   actionlib::SimpleActionServer<ilqr_loco::TrajExecAction> as;
   std::string traj_action;
 
+  // If a command was planned to be executed more than this many seconds, then
+  // client will ignore it and move to processing next command.
+  double old_msg_thres;
+
   // create messages that are used to published feedback/result
   ilqr_loco::TrajExecFeedback feedback;
   ilqr_loco::TrajExecResult result;
@@ -39,4 +43,4 @@ private:
   ros::Publisher cmd_pub;
 };
 
-#endif 
+#endif

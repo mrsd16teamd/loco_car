@@ -28,6 +28,10 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   // goal = iLQR_gen_traj(x_current, x_desired, obstacle_pos, T);
   //    see ilqr_planner.h
 
+  ros::Time begin = ros::Time::now();
+  goal.traj.timestep = 0.05;
+
+
   // For now, just hard-coded commands
   int traj_length = 20;
   for (int i=0; i<traj_length; i++)
