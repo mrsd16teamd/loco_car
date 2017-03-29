@@ -1,0 +1,6 @@
+[submodule "kf_obstacle_tracker"]
+	path = kf_obstacle_tracker
+	url = git@github.com:mrsd16teamd/kf_obstacle_tracker.git
+[submodule "kf_tracker"]
+	path = kf_tracker
+	url = git@github.com:mrsd16teamd/kf_tracker.git
