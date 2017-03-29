@@ -44,4 +44,8 @@ include_directories(
 
 add_executable(ilqr_executer src/ilqr_executer.cpp)
 target_link_libraries(ilqr_executer ${catkin_LIBRARIES})
-add_dependencies(ilqr_executer ${ilqr_loco_EXPORTED_TARGETS} )
+add_dependencies(ilqr_executer ${ilqr_loco_EXPORTED_TARGETS})
+
+add_executable(test_client src/test_client.cpp)
+target_link_libraries(test_client ${catkin_LIBRARIES})
+add_dependencies(test_client ${ilqr_loco_EXPORTED_TARGETS})

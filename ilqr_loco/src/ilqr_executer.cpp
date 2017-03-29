@@ -24,22 +24,23 @@ void iLQR_Executer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &go
       break;
     }
     else{
-      geometry_msgs::Twist msg;
-      msg.linear.x = 1.0;
-      msg.angular.z = 1.0;
+      // TODO instead of making new message, send from goal message
+      geometry_msgs::Twist msg = goal->traj.commands[i];
+      ROS_INFO("Publishing %f and %f", msg.linear.x, msg.angular.z);
       cmd_pub.publish(msg);
       ros::spinOnce();
 
-      // feedback = 1; //TODO change this
-      // as.publishFeedback(feedback);
+      feedback.steps_left = 1; //TODO change this
+      as.publishFeedback(feedback);
+      ros::Duration(1.0).sleep();
     }
   }
 
   if(success)
   {
     ROS_INFO("Finished publishing trajectory");
-    // result = 1;
-    // as.setSucceeded(result);
+    result.done = 1;
+    as.setSucceeded(result);
   }
 
 };
