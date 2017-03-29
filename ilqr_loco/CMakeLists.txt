@@ -38,14 +38,10 @@ include_directories(
   include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
 )
 
-#add_executable(ilqr_planner src/ilqr_planner.cpp)
-#target_link_libraries(ilqr_planner ${catkin_LIBRARIES})
-#add_dependencies(ilqr_planner ${ilqr_loco_EXPORTED_TARGETS} )
+add_executable(traj_client src/traj_client.cpp)
+target_link_libraries(traj_client ${catkin_LIBRARIES})
+add_dependencies(traj_client ${ilqr_loco_EXPORTED_TARGETS})
 
 add_executable(traj_server src/traj_server.cpp)
 target_link_libraries(traj_server ${catkin_LIBRARIES})
 add_dependencies(traj_server ${ilqr_loco_EXPORTED_TARGETS})
-
-add_executable(test_client src/test_client.cpp)
-target_link_libraries(test_client ${catkin_LIBRARIES})
-add_dependencies(test_client ${ilqr_loco_EXPORTED_TARGETS})

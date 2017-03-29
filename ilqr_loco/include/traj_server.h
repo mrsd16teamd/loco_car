@@ -8,9 +8,23 @@
 #include <string>
 #include <sstream>
 
+//TODO is there a way for server to know who called it?
+
 class TrajServer
 {
-protected:
+public:
+  TrajServer():
+    as(nh, "traj_executer", boost::bind(&TrajServer::execute_trajectory, this,
+    _1), false), traj_action("traj_executer")
+    {
+      as.start();
+      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
+      ROS_INFO("Started iLQR executer node. Send me actions!");
+    }
+
+  void execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal);
+
+private:
   ros::NodeHandle nh;
   actionlib::SimpleActionServer<ilqr_loco::TrajExecAction> as;
   std::string traj_action;
@@ -20,16 +34,4 @@ protected:
   ilqr_loco::TrajExecResult result;
 
   ros::Publisher cmd_pub;
-
-public:
-  TrajServer():
-    as(nh, "traj_executer", boost::bind(&TrajServer::execute_trajectory, this,
-    _1), false), traj_action("traj_executer")
-    {
-      as.start();
-      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
-      ROS_INFO("Started iLQR executer node.");
-    }
-
-  void execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal);
 };

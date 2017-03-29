@@ -2,7 +2,7 @@
 loco_msgs/Trajectory traj
 ---
 #result definition
-int64 done
+bool done
 ---
 #feedback
-int64 steps_left
+int16 steps_left

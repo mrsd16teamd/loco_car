@@ -14,7 +14,6 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
-
     // check that preempt has not been requested by the client
     if (as.isPreemptRequested() || !ros::ok())
     {
@@ -28,12 +27,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       cmd_pub.publish(goal->traj.commands[i]);
       ros::spinOnce();
 
-      ROS_INFO("Some of states: %f, %f", goal->traj.states[i].pose.pose.position.x,
-          goal->traj.states[i].twist.twist.linear.x);
-
-      feedback.steps_left = 1; //TODO change this
+      feedback.steps_left =  goal->traj.commands.size() - i;
       as.publishFeedback(feedback);
-      ros::Duration(1.0).sleep();
     }
   }
 
@@ -42,8 +37,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     ROS_INFO("Finished publishing trajectory");
     result.done = 1;
     as.setSucceeded(result);
+    ros::shutdown();
   }
-
 }
 
 
