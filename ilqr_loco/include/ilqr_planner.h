@@ -23,4 +23,4 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(x_current, x_desired, obstacle_pos, T)
   return goal;
 }
 
-#endif 
+#endif
