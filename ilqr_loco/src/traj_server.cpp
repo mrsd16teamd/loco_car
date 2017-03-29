@@ -3,10 +3,10 @@ Executes most recent trajectory given by iLQR.
 Sends feedback to action client (planner) in terms of "almost done", "done".
 */
 
-#include "ilqr_executer.h"
+#include "traj_server.h"
 
 // provides action to execute plans
-void iLQR_Executer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
+void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
   // TODO check that states and commands are right length
 
   bool success = true;
@@ -24,11 +24,12 @@ void iLQR_Executer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &go
       break;
     }
     else{
-      // TODO instead of making new message, send from goal message
-      geometry_msgs::Twist msg = goal->traj.commands[i];
-      ROS_INFO("Publishing %f and %f", msg.linear.x, msg.angular.z);
-      cmd_pub.publish(msg);
+      ROS_INFO("Publishing command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
+      cmd_pub.publish(goal->traj.commands[i]);
       ros::spinOnce();
+
+      ROS_INFO("Some of states: %f, %f", goal->traj.states[i].pose.pose.position.x,
+          goal->traj.states[i].twist.twist.linear.x);
 
       feedback.steps_left = 1; //TODO change this
       as.publishFeedback(feedback);
@@ -43,14 +44,14 @@ void iLQR_Executer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &go
     as.setSucceeded(result);
   }
 
-};
+}
 
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "ilqr_executer");
+  ros::init(argc, argv, "traj_server");
 
-  iLQR_Executer executer;
+  TrajServer executer;
   ros::spin();
 
   return 0;

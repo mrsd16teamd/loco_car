@@ -54,7 +54,7 @@ int main (int argc, char **argv)
   }
 
   ROS_INFO("sending new goal.");
-  goal.order = 10;
+  goal.order = 20;
   ac.sendGoal(goal, &doneCb, &activeCb, &feedbackCb);
 
   ros::spin();

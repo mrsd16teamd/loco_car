@@ -8,7 +8,7 @@
 #include <string>
 #include <sstream>
 
-class iLQR_Executer
+class TrajServer
 {
 protected:
   ros::NodeHandle nh;
@@ -22,8 +22,8 @@ protected:
   ros::Publisher cmd_pub;
 
 public:
-  iLQR_Executer():
-    as(nh, "traj_executer", boost::bind(&iLQR_Executer::execute_trajectory, this,
+  TrajServer():
+    as(nh, "traj_executer", boost::bind(&TrajServer::execute_trajectory, this,
     _1), false), traj_action("traj_executer")
     {
       as.start();

@@ -42,9 +42,9 @@ include_directories(
 #target_link_libraries(ilqr_planner ${catkin_LIBRARIES})
 #add_dependencies(ilqr_planner ${ilqr_loco_EXPORTED_TARGETS} )
 
-add_executable(ilqr_executer src/ilqr_executer.cpp)
-target_link_libraries(ilqr_executer ${catkin_LIBRARIES})
-add_dependencies(ilqr_executer ${ilqr_loco_EXPORTED_TARGETS})
+add_executable(traj_server src/traj_server.cpp)
+target_link_libraries(traj_server ${catkin_LIBRARIES})
+add_dependencies(traj_server ${ilqr_loco_EXPORTED_TARGETS})
 
 add_executable(test_client src/test_client.cpp)
 target_link_libraries(test_client ${catkin_LIBRARIES})

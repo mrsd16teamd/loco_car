@@ -33,21 +33,21 @@ public:
   void Plan();
 };
 
-// void TestClient::GetNewSensorInfo()
-// {
-//   // get feedback on state from server
-// }
-//
-// // Calls iLQR_mpc.c to generate new trajectory
-// bool TestClient::GenerateTrajectory(double x_cur[10], double x_des[6], double obs[2], int T)
-// {
-//
-// }
-//
-// void TestClient::SendTrajectory()
-// {
-//
-// }
+void TestClient::GetNewSensorInfo()
+{
+  // get feedback on state from server
+}
+
+// Calls iLQR_mpc.c to generate new trajectory
+bool TestClient::GenerateTrajectory(double x_cur[10], double x_des[6], double obs[2], int T)
+{
+
+}
+
+void TestClient::SendTrajectory()
+{
+
+}
 
 // Main function. Reads new state estimate and obstacle position, generates trajectory
 // based on that, and sends trajectory to executer.
@@ -66,6 +66,11 @@ void TestClient::Plan()
     msg.linear.x = 0.5;
     msg.angular.z = 0.5;
     goal.traj.commands.push_back(msg);
+
+    nav_msgs::Odometry state;
+    state.pose.pose.position.x = 1;
+    state.twist.twist.linear.x = 1;
+    goal.traj.states.push_back(state);
   }
 
   ac.sendGoal(goal);
