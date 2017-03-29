@@ -21,6 +21,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 add_executable(fibonacci_server src/fibonacci_server.cpp)
 add_executable(fibonacci_client src/fibonacci_client.cpp)
+add_executable(fibonacci_client2 src/fibonacci_client2.cpp)
 
 target_link_libraries(
   fibonacci_server
@@ -31,6 +32,12 @@ target_link_libraries(
   fibonacci_client
   ${catkin_LIBRARIES}
 )
+
+target_link_libraries(
+  fibonacci_client2
+  ${catkin_LIBRARIES}
+)
+
 
 add_dependencies(
   fibonacci_server
@@ -39,5 +46,10 @@ add_dependencies(
 
 add_dependencies(
   fibonacci_client
+  ${actionlib_tutorials_EXPORTED_TARGETS}
+)
+
+add_dependencies(
+  fibonacci_client2
   ${actionlib_tutorials_EXPORTED_TARGETS}
 )
