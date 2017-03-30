@@ -81,6 +81,7 @@ void RampPlanner::Plan() {
   while(ros::Time::now() - start_time < timeout) {
     ilqr_loco::TrajExecGoal goal = RampPlanner::GenerateTrajectory(prev_state_, cur_state_);
     RampPlanner::SendTrajectory(goal);
+    ros::spinOnce();
   }
 }
 
