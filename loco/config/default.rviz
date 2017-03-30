@@ -4,20 +4,15 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Grid1
         - /Local Planner1/TebPoses1
         - /Local Planner1/LocalPath1
         - /Local Planner1/LocalCostmap1
         - /Global Planner1/GlobalPath1
-        - /Robot1
         - /Robot1/Robot Footprint1
         - /Robot1/LaserScan1
-        - /Robot1/TF1
+        - /Robot1/TF1/Status1
         - /Robot1/TF1/Frames1
         - /Robot1/TF1/Tree1
-        - /Odometry1
-        - /Odometry1/Status1
         - /Odometry2
       Splitter Ratio: 0.605096
     Tree Height: 429
@@ -254,19 +249,19 @@ Visualization Manager:
     - Angle Tolerance: 0.1
       Class: rviz/Odometry
       Color: 255; 25; 0
-      Enabled: true
+      Enabled: false
       Keep: 100
       Length: 0.75
       Name: Odometry
       Position Tolerance: 0.1
       Topic: /traj_sim
-      Value: true
+      Value: false
     - Angle Tolerance: 0.1
       Class: rviz/Odometry
       Color: 0; 170; 0
       Enabled: true
       Keep: 100
-      Length: 0.75
+      Length: 0.25
       Name: Odometry
       Position Tolerance: 0.1
       Topic: /odometry/filtered
@@ -294,7 +289,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0.0549999
+      Angle: 4.84288e-08
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
