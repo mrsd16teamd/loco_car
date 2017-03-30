@@ -30,6 +30,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
 
   ros::Time begin = ros::Time::now();
   goal.traj.timestep = 0.05;
+  goal.traj.header.stamp = begin;
 
   // For now, just hard-coded commands
   int traj_length = 20;
