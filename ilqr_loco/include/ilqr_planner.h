@@ -5,6 +5,7 @@
 
 #include <ilqr_loco/TrajExecAction.h>
 #include <tf/transform_datatypes.h>
+#include <nav_msgs/Odometry.h>
 #include "iLQG_mpc.c"
 
 // #include "iLQR_mpc.c" //TODO integrate generated c-code
@@ -41,6 +42,28 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
 
   ilqr_loco::TrajExecGoal goal;
   // TODO put output from c-code into action message
+
+  for(int i=0; i<N; i++) {
+   	nav_msgs::Odometry odom;
+
+    odom.pose.pose.position.x = Traj.x[i*n+0]; // x
+    odom.pose.pose.position.y = Traj.x[i*n+1]; // y
+    odom.pose.pose.position.z = 0.0;
+
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(Traj.x[i*n+2]); // phi
+    odom.twist.twist.linear.x = Traj.x[i*n+3]; // Ux
+ 	odom.twist.twist.linear.x = Traj.x[i*n+4]; // Uy
+ 	odom.twist.twist.angular.z = Traj.x[i*n+5]]; // r
+
+	goal.traj.states.push_back(odom);
+  }
+
+  for(int i=0; i<N-1; i++) {
+  	geometry_msgs::Twist twist;
+  	twist.linear.x = Traj.u[i*m+0];
+  	twist.angular.z = Traj.u[i*m+1];
+  	goal.traj.states.push_back(twist);
+  }
 
   return goal;
 }

@@ -42,6 +42,10 @@ add_executable(traj_client src/traj_client.cpp)
 target_link_libraries(traj_client ${catkin_LIBRARIES})
 add_dependencies(traj_client ${ilqr_loco_EXPORTED_TARGETS})
 
+add_executable(ramp_client src/ramp_client.cpp)
+target_link_libraries(ramp_client ${catkin_LIBRARIES})
+add_dependencies(ramp_client ${ilqr_loco_EXPORTED_TARGETS})
+
 add_executable(traj_server src/traj_server.cpp)
 target_link_libraries(traj_server ${catkin_LIBRARIES})
 add_dependencies(traj_server ${ilqr_loco_EXPORTED_TARGETS})
