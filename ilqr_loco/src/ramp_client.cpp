@@ -3,6 +3,7 @@
 void RampPlanner::stateCb(const nav_msgs::Odometry &msg) {
   prev_state_ = cur_state_;
   cur_state_ = msg;
+  init_flag_ = true;
 }
 
 void RampPlanner::activeCb() {}
@@ -13,36 +14,41 @@ void RampPlanner::doneCb(const actionlib::SimpleClientGoalState& state,
                         const ilqr_loco::TrajExecResultConstPtr& result) {}
 
 ilqr_loco::TrajExecGoal RampPlanner::GenerateTrajectory(nav_msgs::Odometry prev_state,
-                                           nav_msgs::Odometry cur_state) {
+                                                        nav_msgs::Odometry cur_state) {
 
   ilqr_loco::TrajExecGoal goal;
   goal.traj.header.seq = T_;
   goal.traj.header.stamp = ros::Time::now();
   goal.traj.header.frame_id = "/base_link";
 
-  float dt = cur_state.(header.stamp).toSec() - prev_state.(header.stamp).toSec();
+  double dt = (cur_state.header.stamp).toSec() - (prev_state.header.stamp).toSec();
 
   // Get current orientation
-  tf::Quaternion quat(cur_state.pose.pose.orientation.x, cur_state.pose.pose.orientation.y,
-                      cur_state.pose.pose.orientation.z, cur_state.pose.pose.orientation.w);
+  // tf::Quaternion quat(cur_state.pose.pose.orientation.x, cur_state.pose.pose.orientation.y,
+  //                     cur_state.pose.pose.orientation.z, cur_state.pose.pose.orientation.w);
 
-  float roll, pitch, yaw;
-  tf::Matrix3x3 m(quat);
-  m.getRPY(roll, pitch, yaw);
-  prev_rpy_ = cur_rpy_;
-  cur_rpy_.x = roll;
-  cur_rpy_.y = pitch;
-  cur_rpy_.z = yaw;
+  double roll, pitch, yaw;
+  // tf::Matrix3x3 m(quat);
+  // m.getRPY(roll, pitch, yaw);
+  // prev_rpy_ = cur_rpy_;
+  // cur_rpy_.x = roll;
+  // cur_rpy_.y = pitch;
+  // cur_rpy_.z = yaw;
+
+  yaw = tf::getYaw(cur_state.pose.pose.orientation);
+
+  // ROS_INFO("yaw = %f",yaw);
 
   // PID control for vehicle heading
-  float error = 0 - cur_rpy_.z;
+  float error = 0 - yaw;
   prev_integral_ = cur_integral_;
   cur_integral_ += error*dt;
   float output = kp_*error + ki_*cur_integral_ + kd_*(error-prev_error_)/dt;
+                                                                                  ROS_INFO("output = %f",output);
   prev_error_ = error;
 
   // Generate goal
-  float v = cur_state->twist.twist.linear.x + accel_*dt;
+  float v = cur_state.twist.twist.linear.x + accel_*dt;
 
   geometry_msgs::Twist control_msg;
 
@@ -58,25 +64,30 @@ ilqr_loco::TrajExecGoal RampPlanner::GenerateTrajectory(nav_msgs::Odometry prev_
 }
 
 void RampPlanner::SendTrajectory(ilqr_loco::TrajExecGoal &goal) {
-  ac.sendGoal(goal,
-              boost::bind(&TrajClient::doneCb, this, _1, _2),
-              boost::bind(&TrajClient::activeCb, this),
-              boost::bind(&TrajClient::feedbackCb, this, _1));
+  ac_.sendGoal(goal,
+              boost::bind(&RampPlanner::doneCb, this, _1, _2),
+              boost::bind(&RampPlanner::activeCb, this),
+              boost::bind(&RampPlanner::feedbackCb, this, _1));
 }
 
 void RampPlanner::Plan() {
+  ROS_INFO("Waiting for initial odometry information...");
+  while (!init_flag_)
+    ros::spinOnce();
+
+  ROS_INFO("Starting speed ramp!");
   ros::Time start_time = ros::Time::now();
   ros::Duration timeout(3.0);
   while(ros::Time::now() - start_time < timeout) {
-    ilqr_loco::TrajExecGoal goal = GenerateTrajectory();
-    SendTrajectory(goal);
+    ilqr_loco::TrajExecGoal goal = RampPlanner::GenerateTrajectory(prev_state_, cur_state_);
+    RampPlanner::SendTrajectory(goal);
   }
 }
 
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "ramp_client");
-  rampPlanner ramp;
+  RampPlanner ramp;
   ros::spin();
 
   return 0;
