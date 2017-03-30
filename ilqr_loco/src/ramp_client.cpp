@@ -44,6 +44,7 @@ ilqr_loco::TrajExecGoal RampPlanner::GenerateTrajectory(nav_msgs::Odometry prev_
   prev_integral_ = cur_integral_;
   cur_integral_ += error*dt;
   float output = kp_*error + ki_*cur_integral_ + kd_*(error-prev_error_)/dt;
+  ROS_INFO("P = %f, I = %f, D = %f",kp_*error, ki_*cur_integral_, kd_*(error-prev_error_)/dt);
   ROS_INFO("PID output = %f",output);
   prev_error_ = error;
 
