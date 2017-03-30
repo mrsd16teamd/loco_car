@@ -4,6 +4,7 @@ void RampPlanner::stateCb(const nav_msgs::Odometry &msg) {
   prev_state_ = cur_state_;
   cur_state_ = msg;
   init_flag_ = true;
+  RampPlanner::Plan();
 }
 
 void RampPlanner::activeCb() {}
@@ -40,26 +41,25 @@ ilqr_loco::TrajExecGoal RampPlanner::GenerateTrajectory(nav_msgs::Odometry prev_
   ROS_INFO("yaw = %f",yaw);
 
   // PID control for vehicle heading
-  float error = 0 - yaw;
-  prev_integral_ = cur_integral_;
+  double error = 0 - yaw;
   cur_integral_ += error*dt;
-  float output = kp_*error + ki_*cur_integral_ + kd_*(error-prev_error_)/dt;
-  ROS_INFO("P = %f, I = %f, D = %f",kp_*error, ki_*cur_integral_, kd_*(error-prev_error_)/dt);
+  double output = kp_*error + (std::abs(cur_integral_)<1 ? ki_*cur_integral_ : 0) + (dt>0.01 ? kd_*(error-prev_error_)/dt : 0);
+  ROS_INFO("P = %f | I = %f | D = %f",kp_*error, ki_*cur_integral_, kd_*(error-prev_error_)/dt);
   ROS_INFO("PID output = %f",output);
   prev_error_ = error;
 
   // Generate goal
-  float v = cur_state.twist.twist.linear.x + accel_*dt;
+  double v = cur_state.twist.twist.linear.x + accel_*dt +0.4;
 
   geometry_msgs::Twist control_msg;
 
-  control_msg.linear.x = v<3.0 ? v : 3.0;
+  control_msg.linear.x = v<target_vel_ ? v : target_vel_;
   control_msg.angular.z = output;
   goal.traj.commands.push_back(control_msg);
   goal.traj.states.push_back(cur_state);
   ++T_;
 
-  flag_ = v>=3.0 ? true : false;  // Ramp completion flag
+  flag_ = v>=target_vel_ ? true : false;  // Ramp completion flag
 
   return goal;
 }
@@ -72,17 +72,20 @@ void RampPlanner::SendTrajectory(ilqr_loco::TrajExecGoal &goal) {
 }
 
 void RampPlanner::Plan() {
-  ROS_INFO("Waiting for initial odometry information...");
-  while (!init_flag_)
-    ros::spinOnce();
-
-  ROS_INFO("Starting speed ramp!");
-  ros::Time start_time = ros::Time::now();
-  ros::Duration timeout(3.0);
-  while(ros::Time::now() - start_time < timeout) {
+ 
+  if(ros::Time::now() - start_time_ < ros::Duration(timeout_)) {
     ilqr_loco::TrajExecGoal goal = RampPlanner::GenerateTrajectory(prev_state_, cur_state_);
     RampPlanner::SendTrajectory(goal);
-    ros::spinOnce();
+  }
+  else {
+    // Stop car after ramp timeout
+    ilqr_loco::TrajExecGoal goal;
+    geometry_msgs::Twist control_msg;
+    control_msg.linear.x = 0;
+    control_msg.angular.z = 0;
+    goal.traj.commands.push_back(control_msg);
+    goal.traj.states.push_back(cur_state_);
+    RampPlanner::SendTrajectory(goal);
   }
 }
 

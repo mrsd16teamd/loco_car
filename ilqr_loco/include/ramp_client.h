@@ -29,12 +29,10 @@ public:
 
     flag_ = false;
     cur_integral_ = 0.0;
-    prev_integral_ = 0.0;
     prev_error_ = 0.0;
     T_ = 0;
     init_flag_ = false;
-
-    Plan();
+    start_time_ = ros::Time::now();
   }
 
 protected:
@@ -45,22 +43,17 @@ protected:
   nav_msgs::Odometry cur_state_;
   nav_msgs::Odometry prev_state_;
 
-  // geometry_msgs::Vector3 cur_rpy_;
-  // geometry_msgs::Vector3 prev_rpy_;
-
-  // geometry_msgs::Point cur_pos_;
-  // geometry_msgs::Point prev_pos_;
-
-  static const float kp_ = 0.1;
-  static const float ki_ = 0;
-  static const float kd_ = 0.05;
-  static const float target_vel_ = 0.5;
+  static const float kp_ = 0.45;
+  static const float ki_ = 0.05;
+  static const float kd_ = 0.1;
+  static const float target_vel_ = 3;
   static const float accel_ = 3;
-  static const float timestep = 0.5;
-
-  float cur_integral_;
-  float prev_integral_;
-  float prev_error_;
+  static const float timestep_ = 0.02;
+  static const float timeout_ = 0.5;
+  
+  ros::Time start_time_;
+  double cur_integral_;
+  double prev_error_;
   int T_;
 
   void stateCb(const nav_msgs::Odometry &msg);
