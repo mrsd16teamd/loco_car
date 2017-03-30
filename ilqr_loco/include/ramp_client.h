@@ -54,7 +54,7 @@ protected:
   static const float kp_ = 0.1;
   static const float ki_ = 0;
   static const float kd_ = 0.05;
-  static const float target_vel_ = 3;
+  static const float target_vel_ = 0.5;
   static const float accel_ = 3;
   static const float timestep = 0.5;
 

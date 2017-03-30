@@ -37,14 +37,14 @@ ilqr_loco::TrajExecGoal RampPlanner::GenerateTrajectory(nav_msgs::Odometry prev_
 
   yaw = tf::getYaw(cur_state.pose.pose.orientation);
 
-  // ROS_INFO("yaw = %f",yaw);
+  ROS_INFO("yaw = %f",yaw);
 
   // PID control for vehicle heading
   float error = 0 - yaw;
   prev_integral_ = cur_integral_;
   cur_integral_ += error*dt;
   float output = kp_*error + ki_*cur_integral_ + kd_*(error-prev_error_)/dt;
-                                                                                  ROS_INFO("output = %f",output);
+  ROS_INFO("PID output = %f",output);
   prev_error_ = error;
 
   // Generate goal
