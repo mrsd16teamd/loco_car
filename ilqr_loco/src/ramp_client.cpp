@@ -3,8 +3,8 @@
 void RampPlanner::stateCb(const nav_msgs::Odometry &msg) {
   prev_state_ = cur_state_;
   cur_state_ = msg;
-  init_flag_ = true;
-  RampPlanner::Plan();
+  if (!end_flag_)
+    RampPlanner::Plan();
 }
 
 void RampPlanner::activeCb() {}
@@ -59,7 +59,7 @@ ilqr_loco::TrajExecGoal RampPlanner::GenerateTrajectory(nav_msgs::Odometry prev_
   goal.traj.states.push_back(cur_state);
   ++T_;
 
-  flag_ = v>=target_vel_ ? true : false;  // Ramp completion flag
+  goal_flag_ = v>=target_vel_ ? true : false;  // Ramp completion flag
 
   return goal;
 }
@@ -79,13 +79,17 @@ void RampPlanner::Plan() {
   }
   else {
     // Stop car after ramp timeout
-    ilqr_loco::TrajExecGoal goal;
+    ROS_INFO("Timeout exceeded, stopping car");
+    ilqr_loco::TrajExecGoal end_goal;
     geometry_msgs::Twist control_msg;
-    control_msg.linear.x = 0;
-    control_msg.angular.z = 0;
-    goal.traj.commands.push_back(control_msg);
-    goal.traj.states.push_back(cur_state_);
-    RampPlanner::SendTrajectory(goal);
+    control_msg.linear.x = 0.0;
+    control_msg.angular.z = 0.0;
+    end_goal.traj.commands.push_back(control_msg);
+    end_goal.traj.commands.push_back(control_msg);
+    end_goal.traj.states.push_back(cur_state_);
+    end_goal.traj.states.push_back(cur_state_);
+    RampPlanner::SendTrajectory(end_goal);
+    end_flag_ = true;
   }
 }
 
