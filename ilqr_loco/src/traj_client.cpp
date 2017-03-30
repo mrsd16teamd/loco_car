@@ -21,6 +21,9 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
 {
   ROS_INFO("Generating trajectory.");
   ilqr_loco::TrajExecGoal goal;
+  ros::Time begin = ros::Time::now();
+  goal.traj.header.stamp = begin;
+  goal.traj.timestep = 0.05;
 
   //TODO use sensor feedback here
   //TODO replace this with actual trajectory planners; see below for possible implementation
@@ -28,19 +31,20 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   // goal = iLQR_gen_traj(x_current, x_desired, obstacle_pos, T);
   //    see ilqr_planner.h
 
-  ros::Time begin = ros::Time::now();
-  goal.traj.timestep = 0.05;
-  goal.traj.header.stamp = begin;
+  double xd[] = {3, 0, 0, 0, 0, 0};
+  std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
+  goal = iLQR_gen_traj(most_recent_state, x_des, obs_pos, 50);
 
-  // For now, just hard-coded commands
-  int traj_length = 20;
-  for (int i=0; i<traj_length; i++)
-  {
-    geometry_msgs::Twist msg;
-    msg.linear.x = 0.5;
-    msg.angular.z = 0.5;
-    goal.traj.commands.push_back(msg);
-  }
+  // Simple trajectory
+  // // For now, just hard-coded commands
+  // int traj_length = 20;
+  // for (int i=0; i<traj_length; i++)
+  // {
+  //   geometry_msgs::Twist msg;
+  //   msg.linear.x = 0.5;
+  //   msg.angular.z = 0.5;
+  //   goal.traj.commands.push_back(msg);
+  // }
   return goal;
 }
 

@@ -1,24 +1,9 @@
 // MATLAB Mex function wrapper for iLQG algorithm
 // Copyright (c) 2016 Jens Geisler
-
-
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include "iLQG.h"
-#include "printMat.h"
-#include "matMult.h"
-
-struct trajectory {
-    double* x;  // states
-    double* u;  // controls
-};
+#include "iLQG_mpc.h"
 
 double* assignPtrVal(double* values, int numVal) {
-    double* temp = malloc(numVal*sizeof(double));
+    double* temp = (double *) malloc(numVal*sizeof(double));
     memcpy(temp, values, numVal*sizeof(double));
 
     return temp;
@@ -66,7 +51,7 @@ void init_params(tOptSet *o, double* xDes, double* Obs)
     // double xDes[6] = {3,0,0,3,0,0};
     // double Obs[2] = {1,0};
 
-    o->p= malloc(n_params*sizeof(double *));
+    o->p= (double **) malloc(n_params*sizeof(double *));
     o->p[0] = assignPtrVal(&G_f,1);
     o->p[1] = assignPtrVal(&G_r,1);;
     o->p[2] = assignPtrVal(&Iz,1);;
@@ -115,14 +100,14 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
     clock_t begin, end;
 
     // double x0[] = {0,0,0, 3,0,0,3,0,0,0};
-    
+
 
     n= sizeof(x0)/sizeof(x0[0]);  // length of state vector
     m= 2; // number of inputs
     N= T+1; // T+1 TODO how to make this variable?
     double u0[m*(N-1)]; // TODO row-first
     srand(time(NULL));
-    for(int i=0; i<N-1; i++) {
+    for(i=0; i<N-1; i++) {
         u0[i*m] = ((double)rand()/(double)(RAND_MAX)) * 0.5 + 3;
         u0[i*m+1] = ((double)rand()/(double)(RAND_MAX)) * 0.2 + 0.1;
     }
@@ -154,8 +139,8 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
 
     // aux
     for(i= 0; i<NUMBER_OF_THREADS+1; i++)
-        o.trajectories[i].t= malloc(sizeof(trajEl_t)*(N-1));
-    o.multipliers.t= malloc(sizeof(multipliersEl_t)*N);
+        o.trajectories[i].t= (trajEl_t *) malloc(sizeof(trajEl_t)*(N-1));
+    o.multipliers.t= (multipliersEl_t *) malloc(sizeof(multipliersEl_t)*N);
 
     printf("Set const vars\n");
     if(!init_opt(&o)) {
@@ -193,7 +178,7 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
     }
     printf("runs to here");
 
-    for(int i=0; i<n_params; i++)
+    for(i=0; i<n_params; i++)
         free(o.p[i]);
 
     free(o.p);
@@ -217,7 +202,7 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
 //     Traj.u = malloc(m*(N-1)*sizeof(double));
 //     // traj[0]: states, traj[1]: controls
 //     plan_trajectory(x0,xDes,Obs,50,&Traj);
-    
+
 //     // free at the end
 //     free(Traj.x);
 //     free(Traj.u);
