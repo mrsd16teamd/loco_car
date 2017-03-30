@@ -15,6 +15,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   double timestep = goal->traj.timestep;
   double traj_start_time = (goal->traj.header.stamp).toSec();
 
+  ros::Rate loop_rate(1/timestep);
+
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
     double now = ros::Time::now().toSec();
@@ -41,6 +43,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
       feedback.steps_left =  goal->traj.commands.size() - i;
       as.publishFeedback(feedback);
+      loop_rate.sleep();
     }
   }
 

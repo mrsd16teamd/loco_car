@@ -18,7 +18,7 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
   // TODO pre-process inputs as necessary, put into C-style arrays
 
   // TODO convert orientation from quaternion
-  
+
   double theta = tf::getYaw(x_cur.pose.pose.orientation);
 
   double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
