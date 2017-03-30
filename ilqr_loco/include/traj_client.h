@@ -5,6 +5,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 #include <ilqr_loco/TrajExecAction.h>
+#include "ilqr_planner.h"
 
 #include <vector>
 #include <math.h>

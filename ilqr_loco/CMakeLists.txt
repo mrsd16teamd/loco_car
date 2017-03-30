@@ -38,7 +38,9 @@ include_directories(
   include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
 )
 
-add_executable(traj_client src/traj_client.cpp)
+file(GLOB_RECURSE C_SOURCES "src/*.c")
+
+add_executable(traj_client src/traj_client.cpp ${C_SOURCES})
 target_link_libraries(traj_client ${catkin_LIBRARIES})
 add_dependencies(traj_client ${ilqr_loco_EXPORTED_TARGETS})
 
