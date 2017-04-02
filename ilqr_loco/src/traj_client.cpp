@@ -22,7 +22,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   ROS_INFO("Generating trajectory.");
   ilqr_loco::TrajExecGoal goal;
   ros::Time begin = ros::Time::now();
-  goal.traj.header.stamp = begin;
+  goal.traj.header.stamp = begin; //Makes sure that action server can account for planning delay. 
   goal.traj.timestep = 0.05;
 
   //TODO use sensor feedback here
