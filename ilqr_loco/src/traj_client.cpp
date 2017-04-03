@@ -35,7 +35,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   // goal = iLQR_gen_traj(x_current, x_desired, obstacle_pos, T);
   //    see ilqr_planner.h
 
-  double xd[] = {3, 0, 0, 0, 0, 0};
+  double xd[] = {3, 0, 0, 3, 0, 0};
   std::vector<double> x_des(xd, xd+5); // Maybe this should be a member variable too?
   goal = iLQR_gen_traj(most_recent_state, x_des, obs_pos, 50);
 
