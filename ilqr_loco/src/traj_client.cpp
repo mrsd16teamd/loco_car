@@ -14,6 +14,9 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
 {
   obs_pos = msg;
+  if (obs_pos.data[0]<2 && abs(obs_pos.data[0])<0.5) {
+    TrajClient::Plan();
+  }
 }
 
 // Calls iLQR_mpc.c to generate new trajectory
@@ -22,7 +25,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   ROS_INFO("Generating trajectory.");
   ilqr_loco::TrajExecGoal goal;
   ros::Time begin = ros::Time::now();
-  goal.traj.header.stamp = begin; //Makes sure that action server can account for planning delay. 
+  goal.traj.header.stamp = begin; //Makes sure that action server can account for planning delay.
   goal.traj.timestep = 0.05;
 
   //TODO use sensor feedback here

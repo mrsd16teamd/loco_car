@@ -27,7 +27,7 @@ public:
     ROS_INFO("Waiting for action server to start.");
     ac.waitForServer(); //will wait for infinite time
     ROS_INFO("Action server started.");
-    Plan();
+    // Plan();
   }
 
 private:
