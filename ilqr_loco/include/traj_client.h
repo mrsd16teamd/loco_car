@@ -1,49 +1,60 @@
 #ifndef _TRAJ_CLIENT_H_
 #define _TRAJ_CLIENT_H_
 
-#include "ros/ros.h"
-#include <actionlib/client/simple_action_client.h>
-#include <actionlib/client/terminal_state.h>
-#include <ilqr_loco/TrajExecAction.h>
-#include "ilqr_planner.h"
-
 #include <vector>
 #include <math.h>
+
+#include "ilqr_planner.h"
+#include <ilqr_loco/TrajExecAction.h>
+
+#include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float32MultiArray.h>
-
-#include <fstream>
-#include <string>
-#include <sstream>
+#include <tf/transform_listener.h>
+#include <tf/transform_datatypes.h>
+#include <actionlib/client/simple_action_client.h>
+#include <actionlib/client/terminal_state.h>
 
 class TrajClient
 {
 public:
-  TrajClient(): ac("traj_executer", true)
-  {
-    state_sub  = nh.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
-    obs_sub = nh.subscribe("ccs", 1, &TrajClient::obsCb, this);
+  bool switch_flag_;
+  bool ramp_goal_flag_;
 
-    ROS_INFO("Waiting for action server to start.");
-    ac.waitForServer(); //will wait for infinite time
-    ROS_INFO("Action server started.");
-    // Plan();
-  }
+  TrajClient();
 
-private:
-  ros::NodeHandle nh;
-  ros::Publisher cmd_pub;
-  ros::Subscriber state_sub;
-  ros::Subscriber obs_sub;
+protected:
+  ros::NodeHandle nh_;
+  ros::Subscriber state_sub_;
+  ros::Subscriber obs_sub_;
+  actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
 
-  actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac;
+  nav_msgs::Odometry cur_state_;
+  nav_msgs::Odometry prev_state_;
+  std_msgs::Float32MultiArray obs_pos_;
+  std::vector<double> desired_state_; // Not used anywhere?
 
-  nav_msgs::Odometry most_recent_state;
-  std_msgs::Float32MultiArray obs_pos;
-  std::vector<double> desired_state;
+  //Constants for rampup planner
+  static const float kp_ = 0.45;
+  static const float ki_ = 0.05;
+  static const float kd_ = 0.1;
+  static const float target_vel_ = 3;
+  static const float accel_ = 3;
+  static const float timestep_ = 0.02;
+  static const float timeout_ = 2.5;
 
-  void Plan();
-  ilqr_loco::TrajExecGoal GenerateTrajectory();
+  ros::Time start_time_;
+  double cur_integral_;
+  double prev_error_;
+  int T_;
+
+  void rampPlan();
+  ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
+                                                 nav_msgs::Odometry cur_state_);
+
+  void ilqgPlan();
+  ilqr_loco::TrajExecGoal ilqgGenerateTrajectory(nav_msgs::Odometry cur_state);
+
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
 
   void activeCb();
@@ -53,6 +64,7 @@ private:
 
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const std_msgs::Float32MultiArray &msg);
+
 };
 
 #endif
