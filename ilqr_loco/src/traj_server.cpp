@@ -17,6 +17,9 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   // ros::Rate loop_rate(1/timestep);
   ros::Rate loop_rate(50);
+  nav_msgs::Path path_msg;
+  path_msg.header.stamp = goal->traj.header.stamp;
+  path_msg.header.frame_id = "map";
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
@@ -47,12 +50,22 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       loop_rate.sleep();
       // ros::Duration(0.05).sleep();
     }
+
+    
+    path_msg.poses[i].header.stamp = ros::Time::now();
+    path_msg.poses[i].pose.position.x = goal->traj.states[i].pose.pose.position.x;
+    path_msg.poses[i].pose.position.y = goal->traj.states[i].pose.pose.position.y;
+    path_msg.poses[i].pose.orientation = goal->traj.states[i].pose.pose.orientation;
+
   }
 
+  
   geometry_msgs::Twist control_msg;
   control_msg.linear.x = 0.0;
   control_msg.angular.z = 0.0;
   cmd_pub.publish(control_msg);
+
+  path_pub.publish(path_msg);
   ros::spinOnce();
 
   if(success)

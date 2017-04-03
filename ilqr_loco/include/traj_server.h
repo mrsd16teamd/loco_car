@@ -7,6 +7,7 @@
 
 #include <math.h>
 #include <geometry_msgs/Twist.h>
+#include <nav_msgs/Path.h>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -22,6 +23,7 @@ public:
     {
       as.start();
       cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
+      path_pub = nh.advertise<nav_msgs::Path>("path", 1);
       ROS_INFO("Started iLQR executer node. Send me actions!");
     }
 
@@ -42,6 +44,7 @@ private:
   ilqr_loco::TrajExecResult result;
 
   ros::Publisher cmd_pub;
+  ros::Publisher path_pub;
 };
 
 #endif
