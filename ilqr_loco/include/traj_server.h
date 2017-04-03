@@ -7,6 +7,7 @@
 
 #include <math.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
 #include <fstream>
 #include <string>

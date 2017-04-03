@@ -20,6 +20,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   nav_msgs::Path path_msg;
   path_msg.header.stamp = goal->traj.header.stamp;
   path_msg.header.frame_id = "map";
+  std::vector<geometry_msgs::PoseStamped> poses(goal->traj.commands.size());
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
@@ -41,7 +42,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     //  continue;
     //}
     else{
-      ROS_INFO("Publishing command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
+      ROS_INFO("Publishing command: %f, %f, Goal State: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z, goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
       cmd_pub.publish(goal->traj.commands[i]);
       ros::spinOnce();
 
@@ -51,12 +52,13 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       // ros::Duration(0.05).sleep();
     }
 
+    // ROS_INFO("Publishing Path: %f, %f", goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
+    // ROS_INFO("Curr iteration: %i", i);
+    poses.at(i).header.stamp = ros::Time::now();
+    poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.x;
+    poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.y;
+    poses.at(i).pose.orientation = goal->traj.states[i].pose.pose.orientation;
     
-    path_msg.poses[i].header.stamp = ros::Time::now();
-    path_msg.poses[i].pose.position.x = goal->traj.states[i].pose.pose.position.x;
-    path_msg.poses[i].pose.position.y = goal->traj.states[i].pose.pose.position.y;
-    path_msg.poses[i].pose.orientation = goal->traj.states[i].pose.pose.orientation;
-
   }
 
   
@@ -64,7 +66,9 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   control_msg.linear.x = 0.0;
   control_msg.angular.z = 0.0;
   cmd_pub.publish(control_msg);
+  
 
+  path_msg.poses = poses;
   path_pub.publish(path_msg);
   ros::spinOnce();
 
