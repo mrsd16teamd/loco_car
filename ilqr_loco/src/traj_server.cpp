@@ -16,7 +16,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   double traj_start_time = (goal->traj.header.stamp).toSec();
 
   // ros::Rate loop_rate(1/timestep);
-  ros::Rate loop_rate(50);
+  ros::Rate loop_rate(50); //TODO make this work without hard-coding?
   nav_msgs::Path path_msg;
   path_msg.header.stamp = goal->traj.header.stamp;
   path_msg.header.frame_id = "map";
@@ -27,6 +27,10 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     double now = ros::Time::now().toSec();
     double cmd_planned_time = traj_start_time + (i*timestep);
 
+    //DEBUG STUFF
+    ROS_INFO("now: %f", now);
+    ROS_INFO("cmd_planned_time: %f", cmd_planned_time);
+
     // check that preempt has not been requested by the client
     if (as.isPreemptRequested() || !ros::ok())
     {
@@ -36,12 +40,13 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       break;
     }
     // check that commands in plan are not too old
-    //else if ((now - cmd_planned_time) > old_msg_thres)
-    //{
-    //  ROS_INFO("Ignoring old command.");
-    //  continue;
-    //}
-    else{
+    else if ((now - cmd_planned_time) > old_msg_thres)
+    {
+     ROS_INFO("Ignoring old command.");
+     continue;
+    }
+    else
+    {
       ROS_INFO("Publishing command: %f, %f, Goal State: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z, goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
       cmd_pub.publish(goal->traj.commands[i]);
       ros::spinOnce();
@@ -58,15 +63,15 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.x;
     poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.y;
     poses.at(i).pose.orientation = goal->traj.states[i].pose.pose.orientation;
-    
+
   }
 
-  
+
   geometry_msgs::Twist control_msg;
   control_msg.linear.x = 0.0;
   control_msg.angular.z = 0.0;
   cmd_pub.publish(control_msg);
-  
+
 
   path_msg.poses = poses;
   path_pub.publish(path_msg);

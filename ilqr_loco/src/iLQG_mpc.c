@@ -105,8 +105,9 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
     n= sizeof(x0)/sizeof(x0[0]);  // length of state vector
     m= 2; // number of inputs
     N= T+1; // T+1 TODO how to make this variable?
-    double u0[m*(N-1)]; // TODO row-first
+
     srand(time(NULL));
+    double u0[m*(N-1)]; // TODO row-first
     for(i=0; i<N-1; i++) {
         u0[i*m] = ((double)rand()/(double)(RAND_MAX)) * 0.5 + x0[3];
         u0[i*m+1] = ((double)rand()/(double)(RAND_MAX)) * 0.2 + 0.1;

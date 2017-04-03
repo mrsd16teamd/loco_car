@@ -34,6 +34,7 @@ protected:
   std_msgs::Float32MultiArray obs_pos_;
   std::vector<double> desired_state_; // Not used anywhere?
 
+  //Constants for rampup planner
   static const float kp_ = 0.45;
   static const float ki_ = 0.05;
   static const float kd_ = 0.1;
