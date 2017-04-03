@@ -1,33 +1,141 @@
 #include "traj_client.h"
 
+// Constructor
+TrajClient::TrajClient(): ac_("traj_executer", true)
+{
+  state_sub_  = nh_.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
+  obs_sub_ = nh_.subscribe("ccs", 1, &TrajClient::obsCb, this);
+
+  ROS_INFO("Waiting for action server to start.");
+  ac_.waitForServer(); //will wait for infinite time
+  ROS_INFO("Action server started.");
+
+  switch_flag_ = false;
+  ramp_goal_flag_ = false;
+  cur_integral_ = 0.0;
+  prev_error_ = 0.0;
+  T_ = 0;
+  start_time_ = ros::Time::now();
+}
+
+
 void TrajClient::activeCb() {}
 
-void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback) { }
+void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback) {}
 
 void TrajClient::doneCb(const actionlib::SimpleClientGoalState& state,
-  const ilqr_loco::TrajExecResultConstPtr& result) {}
+                        const ilqr_loco::TrajExecResultConstPtr& result) {}
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 {
-  most_recent_state = msg;
+  prev_state_ = cur_state_;
+  cur_state_ = msg;
+  if (!switch_flag_)
+    TrajClient::rampPlan();
 }
+
 void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
 {
-  obs_pos = msg;
+  obs_pos_ = msg;
   ROS_INFO("Received obstacle message!");
-  if (obs_pos.data[0]<2 && abs(obs_pos.data[1])<0.5) {
-    TrajClient::Plan();
+  if (obs_pos_.data[0]<2 && abs(obs_pos_.data[1])<0.5) {
+    switch_flag_ = true;
+    TrajClient::ilqgPlan();
   }
 }
 
-// Calls iLQR_mpc.c to generate new trajectory
-ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
+void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 {
-  ROS_INFO("Generating trajectory.");
+  ROS_INFO("Sending trajectory.");
+  ac_.sendGoal(goal,
+               boost::bind(&TrajClient::doneCb, this, _1, _2),
+               boost::bind(&TrajClient::activeCb, this),
+               boost::bind(&TrajClient::feedbackCb, this, _1));
+}
+
+//////////////////////// GENERATE RAMP START //////////////////////////////////
+
+ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry prev_state,
+                                                           nav_msgs::Odometry cur_state) {
+
   ilqr_loco::TrajExecGoal goal;
-  ros::Time begin = ros::Time::now();
-  goal.traj.header.stamp = begin; //Makes sure that action server can account for planning delay.
-  goal.traj.timestep = 0.02;
+  goal.traj.header.seq = T_;
+  goal.traj.header.stamp = ros::Time::now();
+  goal.traj.header.frame_id = "/base_link";
+
+  double dt = (cur_state.header.stamp).toSec() - (prev_state.header.stamp).toSec();
+  double yaw = tf::getYaw(cur_state.pose.pose.orientation);
+  ROS_INFO("yaw = %f",yaw);
+
+  // PID control for vehicle heading
+  double error = 0 - yaw;
+  cur_integral_ += error*dt;
+  double output = kp_*error + (std::abs(cur_integral_)<1 ? ki_*cur_integral_ : 0) + (dt>0.01 ? kd_*(error-prev_error_)/dt : 0);
+  ROS_INFO("P = %f | I = %f | D = %f",kp_*error, ki_*cur_integral_, kd_*(error-prev_error_)/dt);
+  ROS_INFO("PID output = %f",output);
+  prev_error_ = error;
+
+  // Generate goal
+  double v = cur_state.twist.twist.linear.x + accel_*dt +0.4;
+  v = v<target_vel_ ? v : target_vel_;
+
+  geometry_msgs::Twist control_msg;
+  control_msg.linear.x = v;
+  control_msg.angular.z = output;
+  goal.traj.commands.push_back(control_msg);
+
+  nav_msgs::Odometry traj_msg = cur_state;
+  traj_msg.pose.pose.orientation.w = 1;
+  traj_msg.pose.pose.orientation.x = 0;
+  traj_msg.pose.pose.orientation.y = 0;
+  traj_msg.pose.pose.orientation.z = 0;
+  traj_msg.twist.twist.linear.x = v;
+  traj_msg.twist.twist.linear.y = 0;
+  traj_msg.twist.twist.angular.z = 0;
+  goal.traj.states.push_back(traj_msg);
+
+  ++T_;
+  ramp_goal_flag_ = v>=target_vel_ ? true : false;  // Ramp completion flag
+
+  return goal;
+}
+
+
+void TrajClient::rampPlan() {
+
+  if(ros::Time::now() - start_time_ < ros::Duration(timeout_)) {
+    ilqr_loco::TrajExecGoal goal = TrajClient::rampGenerateTrajectory(prev_state_, cur_state_);
+    TrajClient::SendTrajectory(goal);
+  }
+  else {
+    // Stop car after ramp timeout
+    ROS_INFO("Timeout exceeded, stopping car");
+    ilqr_loco::TrajExecGoal end_goal;
+    geometry_msgs::Twist control_msg;
+    control_msg.linear.x = 0.0;
+    control_msg.angular.z = 0.0;
+    end_goal.traj.commands.push_back(control_msg);
+    end_goal.traj.commands.push_back(control_msg);
+    end_goal.traj.states.push_back(cur_state_);
+    end_goal.traj.states.push_back(cur_state_);
+    TrajClient::SendTrajectory(end_goal);
+    switch_flag_ = true;
+  }
+}
+
+//////////////////////// GENERATE RAMP END //////////////////////////////////
+
+//////////////////////// GENERATE iLQG START //////////////////////////////////
+
+// Calls iLQG_mpc.c to generate new trajectory
+ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cur_state)
+{
+  ROS_INFO("Generating iLQG trajectory.");
+  ilqr_loco::TrajExecGoal goal;
+  goal.traj.header.seq = T_;
+  goal.traj.header.stamp = ros::Time::now(); //Makes sure that action server can account for planning delay.
+  goal.traj.header.frame_id = "/base_link";
+  goal.traj.timestep = timestep_;
 
   //TODO use sensor feedback here
   //TODO replace this with actual trajectory planners; see below for possible implementation
@@ -36,38 +144,21 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   //    see ilqr_planner.h
 
   double xd[] = {3, 0, 0, 0, 0, 0};
-  std::vector<double> x_des(xd, xd+5); // Maybe this should be a member variable too?
-  goal = iLQR_gen_traj(most_recent_state, x_des, obs_pos, 50);
+  std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
+  goal = iLQR_gen_traj(cur_state, x_des, obs_pos_, 50);
+  ++T_;
 
-  // Simple trajectory
-  // // For now, just hard-coded commands
-  // int traj_length = 20;
-  // for (int i=0; i<traj_length; i++)
-  // {
-  //   geometry_msgs::Twist msg;
-  //   msg.linear.x = 0.5;
-  //   msg.angular.z = 0.5;
-  //   goal.traj.commands.push_back(msg);
-  // }
   return goal;
 }
 
-void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
+void TrajClient::ilqgPlan()
 {
-  ROS_INFO("Sending trajectory.");
-  ac.sendGoal(goal,
-              boost::bind(&TrajClient::doneCb, this, _1, _2),
-              boost::bind(&TrajClient::activeCb, this),
-              boost::bind(&TrajClient::feedbackCb, this, _1));
-}
-
-
-// This function gets called when server comes online!
-void TrajClient::Plan()
-{
-  ilqr_loco::TrajExecGoal goal = GenerateTrajectory();
+  ilqr_loco::TrajExecGoal goal = ilqgGenerateTrajectory(cur_state_);
   SendTrajectory(goal);
 }
+
+//////////////////////// GENERATE iLQG END //////////////////////////////////
+
 
 int main(int argc, char** argv)
 {
