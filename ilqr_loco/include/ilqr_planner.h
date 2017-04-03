@@ -26,7 +26,7 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
                           x_cur.twist.twist.angular.z,
                           x_cur.twist.twist.linear.x, 0, 0, 0};
 
-  double* xDes = &x_des[0];
+  double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array
   double Obs[2] = {(double)obstacle_pos.data[0],(double)obstacle_pos.data[1]};
 
   int N = T+1;
