@@ -16,15 +16,10 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   prev_error_ = 0.0;
   T_ = 0;
   start_time_ = ros::Time::now();
+
+  //After this, this node will wait for a state estimate to start ramping up,
+  //then switch to iLQR after an obstacle is seen. 
 }
-
-
-void TrajClient::activeCb() {}
-
-void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback) {}
-
-void TrajClient::doneCb(const actionlib::SimpleClientGoalState& state,
-                        const ilqr_loco::TrajExecResultConstPtr& result) {}
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 {
@@ -44,13 +39,20 @@ void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
   }
 }
 
+// void TrajClient::activeCb() {}
+//
+// void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback) {}
+//
+// void TrajClient::doneCb(const actionlib::SimpleClientGoalState& state,
+//                         const ilqr_loco::TrajExecResultConstPtr& result) {}
+
 void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 {
   ROS_INFO("Sending trajectory.");
-  ac_.sendGoal(goal,
-               boost::bind(&TrajClient::doneCb, this, _1, _2),
-               boost::bind(&TrajClient::activeCb, this),
-               boost::bind(&TrajClient::feedbackCb, this, _1));
+  ac_.sendGoal(goal);
+              //  ,boost::bind(&TrajClient::doneCb, this, _1, _2),
+              //  boost::bind(&TrajClient::activeCb, this),
+              //  boost::bind(&TrajClient::feedbackCb, this, _1));
 }
 
 //////////////////////// GENERATE RAMP START //////////////////////////////////
@@ -136,12 +138,6 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
   goal.traj.header.stamp = ros::Time::now(); //Makes sure that action server can account for planning delay.
   goal.traj.header.frame_id = "/base_link";
   goal.traj.timestep = timestep_;
-
-  //TODO use sensor feedback here
-  //TODO replace this with actual trajectory planners; see below for possible implementation
-  // goal = ramp_planner.GenerateTrajectory();
-  // goal = iLQR_gen_traj(x_current, x_desired, obstacle_pos, T);
-  //    see ilqr_planner.h
 
   double xd[] = {3, 0, 0, 0, 0, 0};
   std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
