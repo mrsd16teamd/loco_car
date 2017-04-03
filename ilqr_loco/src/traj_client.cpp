@@ -25,6 +25,14 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 {
   prev_state_ = cur_state_;
   cur_state_ = msg;
+
+  //process odometry message to turn velocities into world frame
+  double theta = tf::getYaw(cur_state_.pose.pose.orientation);
+  double old_vx = cur_state_.twist.twist.linear.x;
+  double old_vy = cur_state_.twist.twist.linear.y;
+  cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
+  cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
+
   if (!switch_flag_)
     TrajClient::rampPlan();
 }

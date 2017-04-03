@@ -27,9 +27,9 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     double now = ros::Time::now().toSec();
     double cmd_planned_time = traj_start_time + (i*timestep);
 
-    //DEBUG STUFF
-    ROS_INFO("now: %f", now);
-    ROS_INFO("cmd_planned_time: %f", cmd_planned_time);
+    // //DEBUG STUFF
+    // ROS_INFO("now: %f", now);
+    // ROS_INFO("cmd_planned_time: %f", cmd_planned_time);
 
     // check that preempt has not been requested by the client
     if (as.isPreemptRequested() || !ros::ok())

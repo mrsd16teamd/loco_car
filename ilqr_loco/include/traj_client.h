@@ -15,6 +15,8 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
 
+#define PI 3.1415926535
+
 class TrajClient
 {
 public:
