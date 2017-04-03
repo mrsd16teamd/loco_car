@@ -31,11 +31,11 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       break;
     }
     // check that commands in plan are not too old
-    else if ((now - cmd_planned_time) > old_msg_thres)
-    {
-      ROS_INFO("Ignoring old command.");
-      continue;
-    }
+    //else if ((now - cmd_planned_time) > old_msg_thres)
+    //{
+    //  ROS_INFO("Ignoring old command.");
+    //  continue;
+    //}
     else{
       ROS_INFO("Publishing command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
       cmd_pub.publish(goal->traj.commands[i]);
@@ -43,7 +43,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
       feedback.steps_left =  goal->traj.commands.size() - i;
       as.publishFeedback(feedback);
-      loop_rate.sleep();
+      //loop_rate.sleep();
+      ros::Duration(0.05).sleep();
     }
   }
 

@@ -108,7 +108,7 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
     double u0[m*(N-1)]; // TODO row-first
     srand(time(NULL));
     for(i=0; i<N-1; i++) {
-        u0[i*m] = ((double)rand()/(double)(RAND_MAX)) * 0.5 + 3;
+        u0[i*m] = ((double)rand()/(double)(RAND_MAX)) * 0.5 + x0[3];
         u0[i*m+1] = ((double)rand()/(double)(RAND_MAX)) * 0.2 + 0.1;
     }
 

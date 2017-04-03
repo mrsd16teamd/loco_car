@@ -14,7 +14,8 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
 {
   obs_pos = msg;
-  if (obs_pos.data[0]<2 && abs(obs_pos.data[0])<0.5) {
+  ROS_INFO("Received obstacle message!");
+  if (obs_pos.data[0]<2 && abs(obs_pos.data[1])<0.5) {
     TrajClient::Plan();
   }
 }
@@ -35,7 +36,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenerateTrajectory()
   //    see ilqr_planner.h
 
   double xd[] = {3, 0, 0, 0, 0, 0};
-  std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
+  std::vector<double> x_des(xd, xd+5); // Maybe this should be a member variable too?
   goal = iLQR_gen_traj(most_recent_state, x_des, obs_pos, 50);
 
   // Simple trajectory
