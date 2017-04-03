@@ -18,7 +18,7 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   start_time_ = ros::Time::now();
 
   //After this, this node will wait for a state estimate to start ramping up,
-  //then switch to iLQR after an obstacle is seen. 
+  //then switch to iLQR after an obstacle is seen.
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
@@ -134,10 +134,7 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
 {
   ROS_INFO("Generating iLQG trajectory.");
   ilqr_loco::TrajExecGoal goal;
-  goal.traj.header.seq = T_;
-  goal.traj.header.stamp = ros::Time::now(); //Makes sure that action server can account for planning delay.
-  goal.traj.header.frame_id = "/base_link";
-  goal.traj.timestep = timestep_;
+
 
   double xd[] = {3, 0, 0, 0, 0, 0};
   std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?

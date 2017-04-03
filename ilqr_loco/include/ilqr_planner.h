@@ -41,7 +41,12 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
   plan_trajectory(x0,xDes,Obs,T,&Traj);
 
   //Post-process iLQR trajectory - put states and controls into format that action client wants.
-  ilqr_loco::TrajExecGoal goal;	
+  ilqr_loco::TrajExecGoal goal;
+  goal.traj.header.seq = T_;
+  goal.traj.header.stamp = ros::Time::now(); //Makes sure that action server can account for planning delay.
+  goal.traj.header.frame_id = "/base_link";
+  goal.traj.timestep = timestep_;
+
   for(int i=0; i<N; i++) {
    	nav_msgs::Odometry odom;
 
