@@ -12,11 +12,9 @@ extern "C"{
   #include "iLQG_mpc.h"
 }
 
-//iLQR_mpc(double x_cur[10], double x_des[6], double obs[2], int T);
-
 // Note that the inputs to this function can be whatever is convenient for client
-ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> x_des,
-                                        std_msgs::Float32MultiArray obstacle_pos, int T)
+void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> x_des,
+                                        std_msgs::Float32MultiArray obstacle_pos, int T, ilqr_loco::TrajExecGoal &goal)
 {
   //Pre-process inputs - put them in format that C-code wants
   double theta = tf::getYaw(x_cur.pose.pose.orientation);
@@ -41,12 +39,6 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
   plan_trajectory(x0,xDes,Obs,T,&Traj);
 
   //Post-process iLQR trajectory - put states and controls into format that action client wants.
-  ilqr_loco::TrajExecGoal goal;
-  goal.traj.header.seq = T_;
-  goal.traj.header.stamp = ros::Time::now(); //Makes sure that action server can account for planning delay.
-  goal.traj.header.frame_id = "/base_link";
-  goal.traj.timestep = timestep_;
-
   for(int i=0; i<N; i++) {
    	nav_msgs::Odometry odom;
 
@@ -56,9 +48,9 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
 
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(Traj.x[i*n+2]); // phi
     odom.twist.twist.linear.x = Traj.x[i*n+3]; // Ux
- 	odom.twist.twist.linear.x = Traj.x[i*n+4]; // Uy
- 	odom.twist.twist.angular.z = Traj.x[i*n+5]; // r
-	goal.traj.states.push_back(odom);
+   	odom.twist.twist.linear.x = Traj.x[i*n+4]; // Uy
+   	odom.twist.twist.angular.z = Traj.x[i*n+5]; // r
+  	goal.traj.states.push_back(odom);
   }
 
   for(int i=0; i<N-1; i++) {
@@ -67,8 +59,6 @@ ilqr_loco::TrajExecGoal iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<doub
   	twist.angular.z = Traj.u[i*m+1];
   	goal.traj.commands.push_back(twist);
   }
-
-  return goal;
 }
 
 #endif
