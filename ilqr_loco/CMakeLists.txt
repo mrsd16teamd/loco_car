@@ -39,6 +39,7 @@ include_directories(
 )
 
 file(GLOB_RECURSE C_SOURCES "src/*.c")
+add_definitions(-DPRNT=printf -DDEBUG_BACKPASS=1 -DDEBUG_FORWARDPASS=1 -DFULL_DDP=0 -O3)
 
 add_executable(traj_client src/traj_client.cpp ${C_SOURCES})
 target_link_libraries(traj_client ${catkin_LIBRARIES})
