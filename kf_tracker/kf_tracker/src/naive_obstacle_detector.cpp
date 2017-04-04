@@ -35,9 +35,10 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   if(percent_scans_close<0.5)
   {
     cluster_pos_localframe.point.x = obs_dist;
-    cluster_pos_localframe.point.y = 0;
-    cluster_pos_localframe.point.z = 0;
+    cluster_pos_localframe.point.y = 999;
+    cluster_pos_localframe.point.z = 999;
     cluster_pos_localframe.header.frame_id = "laser";
+    cluster_pos_mapframe.header.frame_id = "map";
 
     try
     {
@@ -52,6 +53,14 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
       ROS_INFO("Transform not available.");
     }
 
+  }
+  else
+  {
+    cluster_pos_mapframe.point.x = 999;
+    cluster_pos_mapframe.point.y = 999;
+    cluster_pos_mapframe.point.z = 999;
+    cluster_pos_mapframe.header.frame_id = "map";
+    cc_pos.publish(cluster_pos_mapframe);
   }
 }
 
