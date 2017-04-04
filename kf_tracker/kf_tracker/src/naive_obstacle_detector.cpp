@@ -36,7 +36,6 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   //TODO fill, transform, sendcluster_center_pos here
   if(percent_scans_close>0.2)
   {
-    found_obs = true;
     cluster_pos_localframe.point.x = obs_dist;
     cluster_pos_localframe.point.y = 0;
     cluster_pos_localframe.point.z = 0;
@@ -49,6 +48,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
       tran->lookupTransform("map", "laser", ros::Time(0), transform);
       tran->transformPoint("map", cluster_pos_localframe, cluster_pos_mapframe);
       cc_pos.publish(cluster_pos_mapframe);
+      found_obs = true;
       ROS_INFO("Found obstacle, published at %f %f.", cluster_pos_mapframe.point.x, cluster_pos_mapframe.point.y);
     }
     catch(...)
