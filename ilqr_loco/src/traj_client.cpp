@@ -38,14 +38,17 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     TrajClient::rampPlan();
 }
 
-void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
+// void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
+void TrajClient::obsCb(geometry_msgs::PointStamped &msg)
 {
-  obs_pos_ = msg;
-  if (!obs_pos_.data.empty()) {
-    ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.data[0], obs_pos_.data[1]);
-    switch_flag_ = true;
-    TrajClient::ilqgPlan();
-  }
+  // obs_pos_ = msg;
+  // if (!obs_pos_.data.empty()) {
+  //   ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.data[0], obs_pos_.data[1]);
+  //   switch_flag_ = true;
+  //   TrajClient::ilqgPlan();
+  // }
+
+  std::cout << msg.point.x << ' ' << msg.point.y << '\n';
 }
 
 // void TrajClient::activeCb() {}

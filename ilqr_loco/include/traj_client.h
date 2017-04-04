@@ -14,6 +14,7 @@
 #include <tf/transform_datatypes.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
+#include <geometry_msgs/Point.h>
 
 #define PI 3.1415926535
 
