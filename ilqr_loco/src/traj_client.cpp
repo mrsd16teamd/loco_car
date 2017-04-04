@@ -34,8 +34,8 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   //cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
   //cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
 
-  if (!switch_flag_)
-    TrajClient::rampPlan();
+//  if (!switch_flag_)
+//    TrajClient::rampPlan();
 }
 
 // void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
