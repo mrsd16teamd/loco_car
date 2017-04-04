@@ -4,7 +4,7 @@
 TrajClient::TrajClient(): ac_("traj_executer", true)
 {
   state_sub_  = nh_.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
-  obs_sub_ = nh_.subscribe("ccs", 1, &TrajClient::obsCb, this);
+  obs_sub_ = nh_.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
@@ -16,6 +16,7 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   prev_error_ = 0.0;
   T_ = 0;
   start_time_ = ros::Time::now();
+  cur_vel_ = 0.5;
 
   //After this, this node will wait for a state estimate to start ramping up,
   //then switch to iLQR after an obstacle is seen.
@@ -27,11 +28,11 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   cur_state_ = msg;
 
   //process odometry message to turn velocities into world frame
-  double theta = tf::getYaw(cur_state_.pose.pose.orientation);
-  double old_vx = cur_state_.twist.twist.linear.x;
-  double old_vy = cur_state_.twist.twist.linear.y;
-  cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
-  cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
+  //double theta = tf::getYaw(cur_state_.pose.pose.orientation);
+  //double old_vx = cur_state_.twist.twist.linear.x;
+  //double old_vy = cur_state_.twist.twist.linear.y;
+  //cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
+  //cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
 
   if (!switch_flag_)
     TrajClient::rampPlan();
@@ -40,8 +41,8 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
 {
   obs_pos_ = msg;
-  ROS_INFO("Received obstacle message!");
-  if (obs_pos_.data[0]<2 && abs(obs_pos_.data[1])<0.5) {
+  if (!obs_pos_.data.empty()) {
+    ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.data[0], obs_pos_.data[1]);
     switch_flag_ = true;
     TrajClient::ilqgPlan();
   }
@@ -86,13 +87,17 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   prev_error_ = error;
 
   // Generate goal
-  double v = cur_state.twist.twist.linear.x + accel_*dt +0.4;
-  v = v<target_vel_ ? v : target_vel_;
+  ROS_INFO("Cur vel = %f,    dt = %f",cur_state.twist.twist.linear.x,dt);
+  cur_vel_ += accel_*dt;
+  double v = cur_state.twist.twist.linear.x + accel_*dt + 0.75;
+  //v = v<target_vel_ ? v : target_vel_;
+  v = cur_vel_<target_vel_ ? cur_vel_ : target_vel_;
 
   geometry_msgs::Twist control_msg;
   control_msg.linear.x = v;
   control_msg.angular.z = output;
   goal.traj.commands.push_back(control_msg);
+  ROS_INFO("No. of twist commands %f", goal.traj.commands.size());
 
   nav_msgs::Odometry traj_msg = cur_state;
   traj_msg.pose.pose.orientation.w = 1;
