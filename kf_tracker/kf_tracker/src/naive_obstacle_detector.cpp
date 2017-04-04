@@ -10,10 +10,12 @@ tf::TransformListener *tran;
 float obstacle_thres = 1.25; //[m]
 ros::Publisher cc_pos;
 float obs_dist = 0;
+bool found_obs = false;
 
 void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
 {
-  //TODO Look for clusters here
+  if(found_obs) return;
+
   int n_scans_close_enough = 0;
   int size_scan = msg->ranges.size();
 
@@ -34,6 +36,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   //TODO fill, transform, sendcluster_center_pos here
   if(percent_scans_close>0.2)
   {
+    found_obs = true;
     cluster_pos_localframe.point.x = obs_dist;
     cluster_pos_localframe.point.y = 0;
     cluster_pos_localframe.point.z = 0;
@@ -52,7 +55,6 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
     {
       ROS_INFO("Transform not available.");
     }
-
   }
   else
   {
