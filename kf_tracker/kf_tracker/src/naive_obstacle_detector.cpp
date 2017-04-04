@@ -32,7 +32,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   geometry_msgs::PointStamped cluster_pos_mapframe;
 
   //TODO fill, transform, sendcluster_center_pos here
-  if (percent_scans_close<0.5)
+  if(percent_scans_close<0.5)
   {
     cluster_pos_localframe.point.x = obs_dist;
     cluster_pos_localframe.point.y = 0;
@@ -41,17 +41,16 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
     try
     {
       tf::StampedTransform transform;
-      tran->waitForTransform("map", "laser", ros::Time::now(),
-                             ros::Duration(0.01));
+      tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.01));
       tran->lookupTransform("map", "laser", ros::Time(0), transform);
       tran->transformPoint("map", cluster_pos_localframe, cluster_pos_mapframe);
+      cc_pos.publish(cluster_pos_mapframe);
     }
-    except
+    catch(...)
     {
       ROS_INFO("Transform not available.");
     }
 
-    cc_pos.publish(cluster_pos_mapframe);
   }
 }
 
