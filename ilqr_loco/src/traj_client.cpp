@@ -39,7 +39,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 }
 
 // void TrajClient::obsCb(const std_msgs::Float32MultiArray &msg)
-void TrajClient::obsCb(geometry_msgs::PointStamped &msg)
+void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 {
   // obs_pos_ = msg;
   // if (!obs_pos_.data.empty()) {

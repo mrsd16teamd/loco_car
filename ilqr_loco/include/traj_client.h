@@ -34,7 +34,7 @@ protected:
 
   nav_msgs::Odometry cur_state_;
   nav_msgs::Odometry prev_state_;
-  std_msgs::Float32MultiArray obs_pos_;
+  geometry_msgs::Point obs_pos_;
   std::vector<double> desired_state_; // Not used anywhere?
 
   //Constants for rampup planner
@@ -67,7 +67,8 @@ protected:
               const ilqr_loco::TrajExecResultConstPtr& result);
 
   void stateCb(const nav_msgs::Odometry &msg);
-  void obsCb(const std_msgs::Float32MultiArray &msg);
+  // void obsCb(const std_msgs::Float32MultiArray &msg);
+  void obsCb(const geometry_msgs::PointStamped &msg);
 
 };
 
