@@ -4,7 +4,7 @@ using namespace std;
 using namespace cv;
 
 // tf::TransformListener listener;
-ros::Publisher objID_pub;
+// ros::Publisher objID_pub;
 
 tf::TransformListener *tran;
 
@@ -13,13 +13,12 @@ int stateDim = 4; // [x,y,v_x,v_y]//,w,h]
 int measDim = 2;  // [z_x,z_y,z_w,z_h]
 int ctrlDim = 0;
 
-int n_clusters = 6;
+int n_clusters = 1;
 std::vector<cv::KalmanFilter> KF_vec;
 cv::KalmanFilter KF_start(stateDim, measDim, ctrlDim, CV_32F);
 
-std::vector<ros::Publisher> pub_cluster_vec;
 ros::Publisher cc_pos;
-ros::Publisher markerPub;
+// ros::Publisher markerPub;
 ros::Publisher markerPub1;
 
 std::vector<geometry_msgs::Point> prevClusterCenters;
@@ -131,14 +130,14 @@ void KFT(const std_msgs::Float32MultiArray ccs) {
 
   prevClusterCenters = clusterCenters;
 
-  markerPub.publish(clusterMarkers);
+  // markerPub.publish(clusterMarkers);
 
   std_msgs::Int32MultiArray obj_id;
   for (std::vector<int>::iterator it = objID.begin(); it != objID.end(); it++)
     obj_id.data.push_back(*it);
 
   // Publish the object IDs
-  objID_pub.publish(obj_id);
+  // objID_pub.publish(obj_id);
 
   // convert clusterCenters from geometry_msgs::Point to floats
   std::vector<std::vector<float> > cc;
@@ -160,21 +159,10 @@ void KFT(const std_msgs::Float32MultiArray ccs) {
   }
 }
 
-void publish_cloud(ros::Publisher &pub,
-                   pcl::PointCloud<pcl::PointXYZ>::Ptr cluster,
-                   const sensor_msgs::PointCloud2ConstPtr &input) {
-  sensor_msgs::PointCloud2::Ptr clustermsg(new sensor_msgs::PointCloud2);
-  pcl::toROSMsg(*cluster, *clustermsg);
-  clustermsg->header.frame_id = input->header.frame_id;
-  clustermsg->header.stamp = ros::Time::now();
-  pub.publish(*clustermsg);
-}
-
+// If this is the first frame, initialize kalman filters for the clustered objects
 void init_kf(const sensor_msgs::PointCloud2ConstPtr &input)
-// If this is the first frame, initialize kalman filters for the clustered
-// objects
 {
-  // Initialize 6 Kalman Filters; Assuming 6 max objects in the dataset.
+  // Initialize n Kalman Filters; Assuming n max objects in the dataset.
   // Could be made generic by creating a Kalman Filter only when a new object is
   // detected
 
@@ -193,6 +181,7 @@ void init_kf(const sensor_msgs::PointCloud2ConstPtr &input)
       new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr clustered_cloud(
       new pcl::PointCloud<pcl::PointXYZ>);
+
   /* Creating the KdTree from input point cloud*/
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(
       new pcl::search::KdTree<pcl::PointXYZ>);
@@ -283,7 +272,9 @@ void init_kf(const sensor_msgs::PointCloud2ConstPtr &input)
 void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input) {
   if (firstFrame) {
     init_kf(input);
-  } else {
+  }
+  else
+  {
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud(
         new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr clustered_cloud(
@@ -358,7 +349,7 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input) {
       }
     }
 
-    // Ensure at least 6 clusters exist to publish (later clusters may be empty)
+    // Ensure at least n clusters exist to publish (later clusters may be empty)
     while (cluster_vec.size() < n_clusters) {
       pcl::PointCloud<pcl::PointXYZ>::Ptr empty_cluster(
           new pcl::PointCloud<pcl::PointXYZ>);
@@ -398,9 +389,6 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input) {
       }
     }
 
-    // std::cout << "local coordinate" << std::endl;
-    // std::cout << obstaclepoint << std::endl;
-
     tf::StampedTransform transform;
 
     bill.point.x = obstaclepoint[0];
@@ -414,11 +402,6 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input) {
       tran->transformPoint("map", bill, m);
     } catch (tf::TransformException &ex) {
     }
-
-    // std::cout << "worldcoordiante" << std::endl;
-    // std::cout << m.point.x << std::endl;
-    // std::cout << m.point.y << std::endl;
-    // std::cout << m.point.z << std::endl;
 
     visualization_msgs::MarkerArray clusterMarkers1;
     visualization_msgs::Marker m1;
@@ -453,15 +436,6 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input) {
     markerPub1.publish(clusterMarkers1);
 
     KFT(cc);
-    int i = 0;
-    bool publishedCluster[n_clusters];
-    for (std::vector<int>::iterator it = objID.begin(); it != objID.end();
-         it++) {
-      publish_cloud(pub_cluster_vec[i], cluster_vec[*it], input);
-      publishedCluster[i] =
-          true; // Use this flag to publish only once for a given obj ID
-      i++;
-    }
   } // else
 } // cloud_cb
 
@@ -469,38 +443,17 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "KFTracker");
   ros::NodeHandle nh;
 
-  KF_vec.push_back(KF_start);
-  KF_vec.push_back(KF_start);
-  KF_vec.push_back(KF_start);
-  KF_vec.push_back(KF_start);
-  KF_vec.push_back(KF_start);
-  KF_vec.push_back(KF_start);
-
-  // Create a ROS publisher for the output point cloud
-  // TODO make this more efficient
-  ros::Publisher pub_cluster0, pub_cluster1, pub_cluster2, pub_cluster3,
-      pub_cluster4, pub_cluster5;
-  pub_cluster0 = nh.advertise<sensor_msgs::PointCloud2>("cluster_0", 1);
-  pub_cluster1 = nh.advertise<sensor_msgs::PointCloud2>("cluster_1", 1);
-  pub_cluster2 = nh.advertise<sensor_msgs::PointCloud2>("cluster_2", 1);
-  pub_cluster3 = nh.advertise<sensor_msgs::PointCloud2>("cluster_3", 1);
-  pub_cluster4 = nh.advertise<sensor_msgs::PointCloud2>("cluster_4", 1);
-  pub_cluster5 = nh.advertise<sensor_msgs::PointCloud2>("cluster_5", 1);
-  pub_cluster_vec.push_back(pub_cluster0);
-  pub_cluster_vec.push_back(pub_cluster1);
-  pub_cluster_vec.push_back(pub_cluster2);
-  pub_cluster_vec.push_back(pub_cluster3);
-  pub_cluster_vec.push_back(pub_cluster4);
-  pub_cluster_vec.push_back(pub_cluster5);
+  for(int i=0; i<n_clusters; i++)
+  {
+    KF_vec.push_back(KF_start);
+  }
 
   ros::Subscriber sub = nh.subscribe("scan_cloud", 1, cloud_cb);
 
   tf::TransformListener lr(ros::Duration(10));
   tran = &lr;
 
-  objID_pub = nh.advertise<std_msgs::Int32MultiArray>("obj_id", 1);
   cc_pos = nh.advertise<std_msgs::Float32MultiArray>("cluster_center", 100); // clusterCenter1
-  markerPub = nh.advertise<visualization_msgs::MarkerArray>("viz_all", 1);
   markerPub1 = nh.advertise<visualization_msgs::MarkerArray>("viz1", 1);
 
   ros::spin();

@@ -76,18 +76,18 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
   double dt = (cur_state.header.stamp).toSec() - (prev_state.header.stamp).toSec();
   double yaw = tf::getYaw(cur_state.pose.pose.orientation);
-  ROS_INFO("yaw = %f",yaw);
+  // ROS_INFO("yaw = %f",yaw);
 
   // PID control for vehicle heading
   double error = 0 - yaw;
   cur_integral_ += error*dt;
   double output = kp_*error + (std::abs(cur_integral_)<1 ? ki_*cur_integral_ : 0) + (dt>0.01 ? kd_*(error-prev_error_)/dt : 0);
-  ROS_INFO("P = %f | I = %f | D = %f",kp_*error, ki_*cur_integral_, kd_*(error-prev_error_)/dt);
-  ROS_INFO("PID output = %f",output);
+  // ROS_INFO("P = %f | I = %f | D = %f",kp_*error, ki_*cur_integral_, kd_*(error-prev_error_)/dt);
+  // ROS_INFO("PID output = %f",output);
   prev_error_ = error;
 
   // Generate goal
-  ROS_INFO("Cur vel = %f,    dt = %f",cur_state.twist.twist.linear.x,dt);
+  // ROS_INFO("Cur vel = %f,    dt = %f",cur_state.twist.twist.linear.x,dt);
   cur_vel_ += accel_*dt;
   double v = cur_state.twist.twist.linear.x + accel_*dt + 0.75;
   //v = v<target_vel_ ? v : target_vel_;
@@ -97,7 +97,6 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   control_msg.linear.x = v;
   control_msg.angular.z = output;
   goal.traj.commands.push_back(control_msg);
-  ROS_INFO("No. of twist commands %f", goal.traj.commands.size());
 
   nav_msgs::Odometry traj_msg = cur_state;
   traj_msg.pose.pose.orientation.w = 1;

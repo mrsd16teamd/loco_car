@@ -51,6 +51,9 @@ include_directories(
 add_executable( tracker src/kf_tracker.cpp )
 target_link_libraries ( tracker ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(naive_detector src/naive_obstacle_detector.cpp)
+target_link_libraries(naive_detector ${catkin_LIBRARIES})
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(kf_tracker_node kf_tracker_generate_messages_cpp)
