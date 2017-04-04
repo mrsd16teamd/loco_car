@@ -38,11 +38,18 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
     cluster_pos_localframe.point.y = 0;
     cluster_pos_localframe.point.z = 0;
 
-    tf::StampedTransform transform;
-    tran->waitForTransform("/map", "/laser", ros::Time::now(),
-                           ros::Duration(0.01));
-    tran->lookupTransform("/map", "/laser", ros::Time(0), transform);
-    tran->transformPoint("map", cluster_pos_localframe, cluster_pos_mapframe);
+    try
+    {
+      tf::StampedTransform transform;
+      tran->waitForTransform("map", "laser", ros::Time::now(),
+                             ros::Duration(0.01));
+      tran->lookupTransform("map", "laser", ros::Time(0), transform);
+      tran->transformPoint("map", cluster_pos_localframe, cluster_pos_mapframe);
+    }
+    except
+    {
+      ROS_INFO("Transform not available.");
+    }
 
     cc_pos.publish(cluster_pos_mapframe);
   }
