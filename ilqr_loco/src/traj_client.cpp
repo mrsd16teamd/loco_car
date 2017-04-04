@@ -4,7 +4,7 @@
 TrajClient::TrajClient(): ac_("traj_executer", true)
 {
   state_sub_  = nh_.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
-  obs_sub_ = nh_.subscribe("ccs", 1, &TrajClient::obsCb, this);
+  obs_sub_ = nh_.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time

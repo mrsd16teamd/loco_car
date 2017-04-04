@@ -84,8 +84,6 @@ void init_params(tOptSet *o, double* xDes, double* Obs)
 
 void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajectory* Traj)
 {
-    //TODO make o manually
-
     // dims
     int N, n, m, m_, n_, si, i, k;
     // inputs
@@ -98,9 +96,6 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
     // aux
     char *err_msg, *fname;
     clock_t begin, end;
-
-    // double x0[] = {0,0,0, 3,0,0,3,0,0,0};
-
 
     n= sizeof(x0)/sizeof(x0[0]);  // length of state vector
     m= 2; // number of inputs
