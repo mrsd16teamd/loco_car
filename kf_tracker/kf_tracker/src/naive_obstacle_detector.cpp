@@ -24,7 +24,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
     if (msg->ranges[i]<obstacle_thres)
     {
       n_scans_close_enough++;
-      obs_dist = msg->ranges[i]<obstacle_thres;
+      obs_dist = msg->ranges[i];
     }
   }
 
