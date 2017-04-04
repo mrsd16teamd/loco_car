@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   tf::TransformListener lr(ros::Duration(10));
   tran = &lr;
 
-  cc_pos = nh.advertise<geometry_msgs::Point>("cluster_center", 100); // clusterCenter1
+  cc_pos = nh.advertise<geometry_msgs::PointStamped>("cluster_center", 100); // clusterCenter1
 
   ros::spin();
 
