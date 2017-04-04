@@ -37,11 +37,12 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
     cluster_pos_localframe.point.x = obs_dist;
     cluster_pos_localframe.point.y = 0;
     cluster_pos_localframe.point.z = 0;
+    cluster_pos_localframe.header.frame_id = "laser";
 
     try
     {
       tf::StampedTransform transform;
-      tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.01));
+      tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.1));
       tran->lookupTransform("map", "laser", ros::Time(0), transform);
       tran->transformPoint("map", cluster_pos_localframe, cluster_pos_mapframe);
       cc_pos.publish(cluster_pos_mapframe);
