@@ -43,11 +43,12 @@ protected:
   static const float target_vel_ = 3;
   static const float accel_ = 3;
   static const float timestep_ = 0.02;
-  static const float timeout_ = 2.5;
+  static const float timeout_ = 5;
 
   ros::Time start_time_;
   double cur_integral_;
   double prev_error_;
+  double cur_vel_;
   int T_;
 
   void rampPlan();
