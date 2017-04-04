@@ -1,3 +1,10 @@
+/*
+This node takes a sub-scan from publishpcl (which at this point is misnamed),
+and check if a certain percentage of those scans is within obstacle_thres. If it
+is, then it marks an obstacle straight in front of it and stops checking.
+So once an obstacle is detected, this node does nothing.
+*/
+
 #include <ros/ros.h>
 #include <geometry_msgs/Point.h>
 #include <std_msgs/Float32MultiArray.h>
@@ -7,15 +14,19 @@
 #include <tf/transform_listener.h>
 
 tf::TransformListener *tran;
-float obstacle_thres = 1.25; //[m]
 ros::Publisher cc_pos;
 float obs_dist = 0;
 bool found_obs = false;
+
+// Parameters
+float obstacle_thres = 1.25; //[m]f
+float percent_thres = 0.2;
 
 void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
 {
   if(found_obs) return;
 
+  // Look for obstacles in slice of scan
   int n_scans_close_enough = 0;
   int size_scan = msg->ranges.size();
 
@@ -33,8 +44,8 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   geometry_msgs::PointStamped cluster_pos_localframe;
   geometry_msgs::PointStamped cluster_pos_mapframe;
 
-  //TODO fill, transform, sendcluster_center_pos here
-  if(percent_scans_close>0.2)
+  // Fill, transform, sendcluster_center_pos here
+  if(percent_scans_close > percent_thres)
   {
     cluster_pos_localframe.point.x = obs_dist;
     cluster_pos_localframe.point.y = 0;
