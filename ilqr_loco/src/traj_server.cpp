@@ -21,7 +21,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   path_msg.header.stamp = goal->traj.header.stamp;
   path_msg.header.frame_id = "map";
   std::vector<geometry_msgs::PoseStamped> poses(goal->traj.states.size());
-  ROS_INFO("States of size %i received", poses.size());
+  ROS_INFO("States of size %ld received", poses.size());
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
