@@ -44,7 +44,7 @@ void init_params(tOptSet *o, double* xDes, double* Obs)
     double k_vel = 0;
     double d_thres = 0.3;
 
-    double limThr[2] = {0, 4.0};
+    double limThr[2] = {0, 2.0};
     double limSteer[2] = {-0.68, 0.76};
 
     // double xDes[6] = {3,0,0,3,0,0};
@@ -103,7 +103,7 @@ void plan_trajectory(double* x0, double* xDes, double* Obs, int T, struct trajec
     srand(time(NULL));
     double u0[m*(N-1)]; // TODO row-first
     for(i=0; i<N-1; i++) {
-        u0[i*m] = ((double)rand()/(double)(RAND_MAX)) * 0.5 + x0[3];
+        u0[i*m] = ((double)rand()/(double)(RAND_MAX)) * 0.5 + 3;// (x0[3]>1 ? x0[3] : 1);
         u0[i*m+1] = ((double)rand()/(double)(RAND_MAX)) * 0.2 + 0.1;
     }
 

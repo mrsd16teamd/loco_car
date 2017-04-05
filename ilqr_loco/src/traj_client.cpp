@@ -38,7 +38,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 //  std::cout << "velocities: " << cur_state_.twist.twist.linear.x << ' '
 //    << cur_state_.twist.twist.linear.y << '\n';
   state_estimate_received_ = true;
-  if (mode_==1 || mode_==3){
+  if (mode_==1 || (mode_==3 && !switch_flag_) ){
     rampPlan();
   }
 }
@@ -83,6 +83,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       break;
     }
     case 3: {
+      start_time_ = ros::Time::now(); 
       mode_=3;
       break;
     }
@@ -166,7 +167,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
 void TrajClient::rampPlan() {
 
-  if(ros::Time::now() - start_time_ < ros::Duration(timeout_)) {
+  if(ros::Time::now() - start_time_ < ros::Duration(timeout_) && (mode_==1 || (mode_==3 && !switch_flag_))) {
     ilqr_loco::TrajExecGoal goal = rampGenerateTrajectory(prev_state_, cur_state_);
     SendTrajectory(goal);
   }
@@ -205,9 +206,9 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
     cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
   ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
 
-  double xd[] = {8, 0, 0, 0, 0, 0};
+  double xd[] = {8, 0.3, 0, 0, 0, 0};
   std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
-  iLQR_gen_traj(cur_state, x_des, obs_pos_, 150, goal);
+  iLQR_gen_traj(cur_state, x_des, obs_pos_, 100, goal);
   ++T_;
 
   return goal;

@@ -49,7 +49,7 @@ protected:
   static const float target_vel_ = 3;
   static const float accel_ = 3;
   static const float timestep_ = 0.02;
-  static const float timeout_ = 1.5;
+  static const float timeout_ = 5;
 
   ros::Time start_time_;
   double cur_integral_;

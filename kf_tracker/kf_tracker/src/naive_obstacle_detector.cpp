@@ -20,7 +20,7 @@ float obs_dist = 0;
 bool found_obs = false;
 
 // Parameters
-float obstacle_thres = 1.25; //[m]f
+float obstacle_thres = 1.5; //[m]f
 float percent_thres = 0.2;
 
 void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)

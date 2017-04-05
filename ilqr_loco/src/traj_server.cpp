@@ -37,12 +37,12 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       break;
     }
     // check that commands in plan are not too old
-    else if ((now - cmd_planned_time) > old_msg_thres)
+/*    else if ((now - cmd_planned_time) > old_msg_thres)
     {
      ROS_INFO("Ignoring old command.");
      continue;
     }
-    else
+*/    else
     {
       ROS_INFO("cmd: %f, %f, next pos: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z, goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
       cmd_pub.publish(goal->traj.commands[i]);
