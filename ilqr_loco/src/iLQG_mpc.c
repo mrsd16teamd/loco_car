@@ -31,21 +31,20 @@ void init_params(tOptSet *o, double* xDes, double* Obs)
     double cu[2] = {1e-2, 1e-2};
     double cdu[2] = {10e-1, 15e-1};
 
-    double cf[6] = {10, 10, 1, 0.1, 0.1, 0.1};
+    double cf[6] = {10, 10, 5, 10, 0.1, 0.1};
     double pf[6] = {0.01, 0.01, 0.1, 0.1, 0.1, 0.1};
 
     double cx[3] = {5e-2, 5e-2, 4e-2};
-    double cdx[3] = {5e-1, 5e-2, 2e-2};
+    double cdx[3] = {1e-3, 5e-3, 2e-3};
     double px[3] = {0.01, 0.01, 0.1};
 
     double cdrift = -0.001;
 
-    double k_pos = 0.1;
+    double k_pos = 0.5;
     double k_vel = 0;
     double d_thres = 0.3;
 
-
-    double limThr[2] = {-1, 4.0};
+    double limThr[2] = {0, 4.0};
     double limSteer[2] = {-0.68, 0.76};
 
     // double xDes[6] = {3,0,0,3,0,0};
