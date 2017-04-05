@@ -61,8 +61,9 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     // ROS_INFO("Curr iteration: %i", i);
     poses.at(i).header.stamp = ros::Time::now();
     poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.x;
-    poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.y;
+    poses.at(i).pose.position.y = goal->traj.states[i].pose.pose.position.y;
     poses.at(i).pose.orientation = goal->traj.states[i].pose.pose.orientation;
+    ROS_INFO("Path: %f, %f", poses.at(i).pose.orientation.x, poses.at(i).pose.orientation.y);
 
   }
 
