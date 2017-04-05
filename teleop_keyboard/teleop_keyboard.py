@@ -28,6 +28,8 @@ instructions = {
 	'r': 'reset obs',
 	'k': 'kill client'
 }
+#DONT CHANGE THESE! TOO MUCH WORK
+
 
 def getKey():
 	tty.setraw(sys.stdin.fileno())
