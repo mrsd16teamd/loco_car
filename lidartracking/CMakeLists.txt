@@ -113,8 +113,8 @@ include_directories(
 
 ## Declare a cpp executable
 # add_executable(kf_tracker_node src/kf_tracker_node.cpp)
-add_executable( naive_detector src/main.cpp src/clusterExtraction.cpp  )
-target_link_libraries ( naive_detector ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+add_executable( naivedetector src/main.cpp src/clusterExtraction.cpp  )
+target_link_libraries ( naivedetector ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
  
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
