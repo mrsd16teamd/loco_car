@@ -20,7 +20,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   nav_msgs::Path path_msg;
   path_msg.header.stamp = goal->traj.header.stamp;
   path_msg.header.frame_id = "map";
-  std::vector<geometry_msgs::PoseStamped> poses(goal->traj.commands.size());
+  std::vector<geometry_msgs::PoseStamped> poses(goal->traj.states.size());
+  ROS_INFO("States of size %i received", poses.size());
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
@@ -47,7 +48,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     }
     else
     {
-      ROS_INFO("Publishing command: %f, %f, Goal pos: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z, goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
+      ROS_INFO("Publishing command: %f, %f, Goal State: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z, goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
       cmd_pub.publish(goal->traj.commands[i]);
       ros::spinOnce();
 
@@ -63,7 +64,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.x;
     poses.at(i).pose.position.y = goal->traj.states[i].pose.pose.position.y;
     poses.at(i).pose.orientation = goal->traj.states[i].pose.pose.orientation;
-    ROS_INFO("Path: %f, %f", poses.at(i).pose.orientation.x, poses.at(i).pose.orientation.y);
+    ROS_INFO("Path: %f, %f", poses.at(i).pose.position.x, poses.at(i).pose.position.y);
 
   }
 
