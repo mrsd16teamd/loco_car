@@ -45,8 +45,8 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   double old_vy = cur_state_.twist.twist.linear.y;
   cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
   cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
-  std::cout << "velocities: " << cur_state_.twist.twist.linear.x << ' '
-    << cur_state_.twist.twist.linear.y << '\n';
+//  std::cout << "velocities: " << cur_state_.twist.twist.linear.x << ' '
+//    << cur_state_.twist.twist.linear.y << '\n';
   state_estimate_received_ = true;
 }
 
