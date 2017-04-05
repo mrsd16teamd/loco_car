@@ -3,7 +3,7 @@ import roslib; roslib.load_manifest('teleop_keyboard')
 import rospy
 
 from geometry_msgs.msg import Point
-# from std_msgs import Char
+# from std_msgs.msg import Char
 
 import sys, select, termios, tty
 
@@ -17,11 +17,17 @@ commandBindings = {
 		'a': 1,
 		'b': 2,
 		'c': 3,
-		'k': 8,
-		'r': 9
+		'r': 8,
+		'k': 9
 	     }
 
-
+instructions = {
+	'a': 'ramp',
+	'b': 'iLQR static',
+	'c': 'ramp and iLQR',
+	'r': 'reset obs',
+	'k': 'kill client'
+}
 
 def getKey():
 	tty.setraw(sys.stdin.fileno())
@@ -35,7 +41,7 @@ if __name__=="__main__":
 	pub = rospy.Publisher('client_command', Point, queue_size = 1)
 	rospy.init_node('teleop_keyboard')
 	print("----------")
-	print("Teleop keyboard running! Give me commands.\n" +
+	print("Teleop keyboard running! Give me commands. \nMake sure these commands are synced with traj_client.\n" +
 		"a: ramp\nb: iLQR static\nc: ramp and iLQR\nr: reset obs\nk: kill client")
 	print("----------")
 
@@ -45,10 +51,10 @@ if __name__=="__main__":
 
 			if key in commandBindings.keys():
 				command = commandBindings[key]
-				print "Key: ", key, " Command: ", command
+				print "Key: ", key, " - ", instructions[key]
 			else:
 				command = 0
-				print "Key: ", key, " Command: ", command
+				print "Key: ", key
 
 				if (key == '\x03'):
 					break

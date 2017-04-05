@@ -88,11 +88,11 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       break;
     }
     case 8: {
-      ROS_INFO("Killing node.");
-      ros::shutdown();
+      switch_flag_ = false;
     }
     case 9: {
-      switch_flag_ = false;
+      ROS_INFO("Killing node.");
+      ros::shutdown();
     }
   }
 }
