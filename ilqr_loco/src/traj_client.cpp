@@ -68,12 +68,12 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   }
   switch (command)
   {
-    case 1: {
+    case 1: { //ramp
       start_time_ = ros::Time::now();
       mode_ = 1;
       break;
     }
-    case 2: {
+    case 2: { //iLQR static
       if(!switch_flag_){
         ROS_INFO("Haven't received obstacle info yet.");
         break;
@@ -82,15 +82,15 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ilqgPlan();
       break;
     }
-    case 3: {
+    case 3: { //ramp and iLQR
       start_time_ = ros::Time::now();
       mode_=3;
       break;
     }
-    case 8: {
+    case 8: { //reset obs
       switch_flag_ = false;
     }
-    case 9: {
+    case 9: { //kill client
       ROS_INFO("Killing node.");
       ros::shutdown();
     }
