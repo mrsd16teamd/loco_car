@@ -1,0 +1,9 @@
+<launch>
+
+  <node pkg="kf_tracker" type="naive_detector" name="naive_detector" output="screen"/>
+  <node pkg="publishpcl" type="publishpcl" name="publishpcl" output="screen"/>
+
+  <node pkg="ilqr_loco" type="traj_client" name="traj_client" output="screen"/>
+  <node pkg="ilqr_loco" type="traj_server" name="traj_server" output="screen"/>
+
+</launch>
