@@ -20,6 +20,12 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   cur_vel_ = 0.5;
   mode_ = 0;
 
+  // Get parameters from ROS Param server
+  nh_.getParam("T_horizon", T_horizon_);
+  nh_.getParam("init_control_seq", init_control_seq_);
+  nh_.getParam("X_des", x_des_);
+
+
   //After this, this node will wait for a state estimate to start ramping up,
   //then switch to iLQR after an obstacle is seen.
 }
@@ -208,12 +214,11 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
   double theta = tf::getYaw(cur_state.pose.pose.orientation);
 
   ROS_INFO("Start state: %f, %f, %f, %f, %f, %f", cur_state.pose.pose.position.x, cur_state.pose.pose.position.y, theta,
-    cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
+  cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
   ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
 
-  double xd[] = {8, 0.3, 0, 0, 0, 0};
-  std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
-  iLQR_gen_traj(cur_state, x_des, obs_pos_, 100, goal);
+  // std::vector<double> x_des = {8, 0.3, 0, 0, 0, 0};
+  iLQR_gen_traj(cur_state, init_control_seq_, x_des_, obs_pos_, T_horizon_, goal);
   ++T_;
 
   return goal;

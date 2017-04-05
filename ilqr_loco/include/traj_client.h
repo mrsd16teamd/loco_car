@@ -30,12 +30,28 @@ public:
   TrajClient();
 
 protected:
+  // ROS Handles
   ros::NodeHandle nh_;
   ros::Subscriber state_sub_;
   ros::Subscriber obs_sub_;
   ros::Subscriber mode_sub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
 
+  // ROS Parameters
+  int T_horizon_;
+  std::vector<double> init_control_seq_;
+  std::vector<double> x_des_;
+
+  // Helper variables
+  int T_;                         // Number of timesteps (traj command #)
+  int mode_;                      // Operation mode from keyboard teleop
+  ros::Time start_time_;          // Operation start time
+  double cur_integral_;
+  double prev_error_;
+  double cur_vel_;
+  bool state_estimate_received_;  // Initial estimate flag
+
+  // State variables
   nav_msgs::Odometry start_state_;
   nav_msgs::Odometry cur_state_;
   nav_msgs::Odometry prev_state_;
@@ -43,21 +59,15 @@ protected:
   std::vector<double> desired_state_; // Not used anywhere?
 
   //Constants for rampup planner
-  static const float kp_ = 0.45;
-  static const float ki_ = 0.05;
-  static const float kd_ = 0.1;
-  static const float target_vel_ = 3;
-  static const float accel_ = 3;
-  static const float timestep_ = 0.02;
-  static const float timeout_ = 2.5;
+  static constexpr float kp_ = 0.45;
+  static constexpr float ki_ = 0.05;
+  static constexpr float kd_ = 0.1;
+  static constexpr float accel_ = 3;
+  static constexpr float target_vel_ = 3;
+  static constexpr float timeout_ = 2.5;
+  static constexpr float timestep_ = 0.02;
 
-  ros::Time start_time_;
-  double cur_integral_;
-  double prev_error_;
-  double cur_vel_;
-  int T_;
-  bool state_estimate_received_;
-  int mode_;
+  // Member functions
 
   void rampPlan();
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
