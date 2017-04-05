@@ -89,6 +89,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     }
     case 8: { //reset obs
       switch_flag_ = false;
+      break;
     }
     case 9: { //kill client
       ROS_INFO("Killing node.");

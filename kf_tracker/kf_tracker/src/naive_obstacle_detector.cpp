@@ -80,7 +80,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
 
 void mode_cb(const geometry_msgs::Point &msg)
 {
-  if(msg.x == 9){
+  if(msg.x == 8){
     ROS_INFO("Looking for obstacle again.");
     found_obs = false;
   }
