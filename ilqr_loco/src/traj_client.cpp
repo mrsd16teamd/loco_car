@@ -18,6 +18,7 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   prev_error_ = 0.0;
   T_ = 0;
   cur_vel_ = 0.5;
+  mode_ = 0;
 
   //After this, this node will wait for a state estimate to start ramping up,
   //then switch to iLQR after an obstacle is seen.
@@ -73,6 +74,10 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       break;
     }
     case 2: {
+      if(!switch_flag_){
+        ROS_INFO("Haven't received obstacle info yet.");
+        break;
+      }
       mode_=2;
       ilqgPlan();
       break;
@@ -80,6 +85,10 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 3: {
       mode_=3;
       break;
+    }
+    case 8: {
+      ROS_INFO("Killing node.");
+      ros::shutdown();
     }
   }
 }
@@ -174,6 +183,7 @@ void TrajClient::rampPlan() {
     end_goal.traj.states.push_back(cur_state_);
     TrajClient::SendTrajectory(end_goal);
     switch_flag_ = true;
+    mode_ = 0;
   }
 }
 

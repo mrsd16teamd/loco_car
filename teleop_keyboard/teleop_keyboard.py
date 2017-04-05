@@ -23,6 +23,7 @@ commandBindings = {
 		'a': 1,
 		'b': 2,
 		'c': 3,
+		'k': 8,
 		'r': 9
 	     }
 
@@ -37,6 +38,7 @@ if __name__=="__main__":
 	settings = termios.tcgetattr(sys.stdin)
 	pub = rospy.Publisher('client_command', Point, queue_size = 1)
 	rospy.init_node('teleop_keyboard')
+	ROS_INFO("Teleop keyboard running! Give me commands.\n")
 
 	try:
 		while(1):
