@@ -38,20 +38,19 @@ if __name__=="__main__":
 	settings = termios.tcgetattr(sys.stdin)
 	pub = rospy.Publisher('client_command', Point, queue_size = 1)
 	rospy.init_node('teleop_keyboard')
-	ROS_INFO("Teleop keyboard running! Give me commands.\n")
+	print("Teleop keyboard running! Give me commands.\n" + 
+		"a: ramp\nb: iLQR static\nc: ramp and iLQR\nr: reset obs\nk: kill client")
 
 	try:
 		while(1):
 			key = getKey()
-			print "------"
-			print "Key pressed:", key
 
 			if key in commandBindings.keys():
 				command = commandBindings[key]
-				print "Command: ", command
+				print "Key: ", key, " Command: ", command
 			else:
 				command = 0
-				print "Command: ", command
+				print "Key: ", key, " Command: ", command
 
 				if (key == '\x03'):
 					break
