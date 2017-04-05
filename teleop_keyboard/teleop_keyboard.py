@@ -38,8 +38,10 @@ if __name__=="__main__":
 	settings = termios.tcgetattr(sys.stdin)
 	pub = rospy.Publisher('client_command', Point, queue_size = 1)
 	rospy.init_node('teleop_keyboard')
-	print("Teleop keyboard running! Give me commands.\n" + 
+	print("----------")
+	print("Teleop keyboard running! Give me commands.\n" +
 		"a: ramp\nb: iLQR static\nc: ramp and iLQR\nr: reset obs\nk: kill client")
+	print("----------")
 
 	try:
 		while(1):
