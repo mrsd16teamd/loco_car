@@ -199,6 +199,10 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
   goal.traj.header.frame_id = "/base_link";
   goal.traj.timestep = timestep_;
 
+  ROS_INFO("Start state: %f, %f, %f, %f, %f, %f", cur_state[0], cur_state[1], cur_state[2],
+    cur_state[3], cur_state[4], cur_state[5]);
+  ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
+
   double xd[] = {8, 0, 0, 0, 0, 0};
   std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
   iLQR_gen_traj(cur_state, x_des, obs_pos_, 50, goal);
