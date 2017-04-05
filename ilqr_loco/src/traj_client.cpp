@@ -5,13 +5,15 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
 {
   state_sub_  = nh_.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
   obs_sub_ = nh_.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
+  mode_sub_ = nh_.subscribe("client_command", 1, &TrajClient::modeCb, this);
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
-  ROS_INFO("Action server started.");
+  ROS_INFO("Action server started. Send me commands from teleop_keyboard!");
 
   switch_flag_ = false;
   ramp_goal_flag_ = false;
+  state_estimate_received_ = false;
   cur_integral_ = 0.0;
   prev_error_ = 0.0;
   T_ = 0;
@@ -22,33 +24,69 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   //then switch to iLQR after an obstacle is seen.
 }
 
+void TrajClient::RampAndiLQR()
+{
+  while(!switch_flag_)
+  {
+    rampPlan();
+    ros::spinOnce(); // Do we need this?
+  }
+  ilqgPlan();
+}
+
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 {
   prev_state_ = cur_state_;
   cur_state_ = msg;
 
   //process odometry message to turn velocities into world frame
-  //double theta = tf::getYaw(cur_state_.pose.pose.orientation);
-  //double old_vx = cur_state_.twist.twist.linear.x;
-  //double old_vy = cur_state_.twist.twist.linear.y;
-  //cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
-  //cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
-
-//commented out for now
-//  if (!switch_flag_)
-//    TrajClient::rampPlan();
+  double theta = tf::getYaw(cur_state_.pose.pose.orientation);
+  double old_vx = cur_state_.twist.twist.linear.x;
+  double old_vy = cur_state_.twist.twist.linear.y;
+  cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
+  cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
+  std::cout << "velocities: " << cur_state_.twist.twist.linear.x << ' '
+    << cur_state_.twist.twist.linear.y << '\n';
+  state_estimate_received_ = true;
 }
 
 void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 {
-  obs_pos_.x = msg.point.x;
-  obs_pos_.y = msg.point.y;
-  if (obs_pos_.x>100) {
+  if (msg.point.x<100)
+  {
+    obs_pos_.x = msg.point.x;
+    obs_pos_.y = msg.point.y;
     ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.x, obs_pos_.y);
     switch_flag_ = true;
-    TrajClient::ilqgPlan();
   }
 }
+
+void TrajClient::modeCb(const geometry_msgs::Point &msg)
+{
+  int command = msg.x;
+  ROS_INFO("Received command %d", command);
+  std::cout << state_estimate_received_ << '\n';
+  if (!state_estimate_received_){
+    ROS_INFO("Haven't received state info yet.");
+    return;
+  }
+  switch (command)
+  {
+    case 1: {
+      rampPlan();
+      break;
+    }
+    case 2: {
+      ilqgPlan();
+      break;
+    }
+    case 3: {
+      RampAndiLQR();
+      break;
+    }
+  }
+}
+
 
 // void TrajClient::activeCb() {}
 //

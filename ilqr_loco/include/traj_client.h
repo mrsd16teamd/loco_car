@@ -8,13 +8,16 @@
 #include <ilqr_loco/TrajExecAction.h>
 
 #include <ros/ros.h>
-#include <geometry_msgs/Twist.h>
-#include <std_msgs/Float32MultiArray.h>
+
 #include <tf/transform_listener.h>
 #include <tf/transform_datatypes.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
+
+#include <geometry_msgs/Twist.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/Point.h>
+#include <std_msgs/Char.h>
 
 #define PI 3.1415926535
 
@@ -30,6 +33,7 @@ protected:
   ros::NodeHandle nh_;
   ros::Subscriber state_sub_;
   ros::Subscriber obs_sub_;
+  ros::Subscriber mode_sub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
 
   nav_msgs::Odometry cur_state_;
@@ -51,6 +55,7 @@ protected:
   double prev_error_;
   double cur_vel_;
   int T_;
+  bool state_estimate_received_;
 
   void rampPlan();
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
@@ -67,9 +72,9 @@ protected:
               const ilqr_loco::TrajExecResultConstPtr& result);
 
   void stateCb(const nav_msgs::Odometry &msg);
-  // void obsCb(const std_msgs::Float32MultiArray &msg);
   void obsCb(const geometry_msgs::PointStamped &msg);
-
+  void modeCb(const geometry_msgs::Point &msg);
+  void RampAndiLQR();
 };
 
 #endif

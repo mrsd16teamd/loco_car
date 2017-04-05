@@ -15,6 +15,7 @@ So once an obstacle is detected, this node does nothing.
 
 tf::TransformListener *tran;
 ros::Publisher cc_pos;
+ros::Subscriber reset_sub;
 float obs_dist = 0;
 bool found_obs = false;
 
@@ -44,7 +45,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   geometry_msgs::PointStamped cluster_pos_localframe;
   geometry_msgs::PointStamped cluster_pos_mapframe;
 
-  // Fill, transform, sendcluster_center_pos here
+  // Fill data, transform, send cluster_center_pos here
   if(percent_scans_close > percent_thres)
   {
     cluster_pos_localframe.point.x = obs_dist;
@@ -55,7 +56,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
     try
     {
       tf::StampedTransform transform;
-      tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.1));
+      tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.01));
       tran->lookupTransform("map", "laser", ros::Time(0), transform);
       tran->transformPoint("map", cluster_pos_localframe, cluster_pos_mapframe);
       cc_pos.publish(cluster_pos_mapframe);
@@ -70,18 +71,28 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   else
   {
     cluster_pos_mapframe.point.x = 999;
-    cluster_pos_mapframe.point.y = 999;
-    cluster_pos_mapframe.point.z = 999;
+    cluster_pos_mapframe.point.y = 0;
+    cluster_pos_mapframe.point.z = 0;
     cluster_pos_mapframe.header.frame_id = "map";
     cc_pos.publish(cluster_pos_mapframe);
   }
 }
+
+void mode_cb(const geometry_msgs::Point &msg)
+{
+  if(msg.x == 9){
+    ROS_INFO("Looking for obstacle again.");
+    found_obs = false;
+  }
+}
+
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "obstacle_detector");
   ros::NodeHandle nh;
 
   ros::Subscriber sub = nh.subscribe("scan_front", 1, scan_cb);
+  ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
 
   tf::TransformListener lr(ros::Duration(10));
   tran = &lr;
