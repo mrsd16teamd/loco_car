@@ -2,7 +2,7 @@
 
 <!--  <include file="$(find loco)/launch/openloop_sve.launch" /> -->
 
-  <node pkg="multiple-object-tracking-lidar" type="naive_detector" name="naive_detector" output="screen"/>
+  <node pkg="lidartracking" type="naive_detector" name="naive_detector" output="screen"/>
   <node pkg="publishpcl" type="publishpcl" name="publishpcl" output="screen"/>
 
   <node pkg="ilqr_loco" type="traj_client" name="traj_client" output="screen"/>
