@@ -28,10 +28,6 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     double now = ros::Time::now().toSec();
     double cmd_planned_time = traj_start_time + (i*timestep);
 
-    // //DEBUG STUFF
-    // ROS_INFO("now: %f", now);
-    // ROS_INFO("cmd_planned_time: %f", cmd_planned_time);
-
     // check that preempt has not been requested by the client
     if (as.isPreemptRequested() || !ros::ok())
     {
@@ -55,24 +51,13 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       feedback.steps_left =  goal->traj.commands.size() - i;
       as.publishFeedback(feedback);
       loop_rate.sleep();
-      // ros::Duration(0.05).sleep();
     }
 
-    // ROS_INFO("Publishing Path: %f, %f", goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
-    // ROS_INFO("Curr iteration: %i", i);
     poses.at(i).header.stamp = ros::Time::now();
     poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.x;
     poses.at(i).pose.position.y = goal->traj.states[i].pose.pose.position.y;
     poses.at(i).pose.orientation = goal->traj.states[i].pose.pose.orientation;
-
-    // ROS_INFO("Path: %f, %f", poses.at(i).pose.orientation.x, poses.at(i).pose.orientation.y);
-
   }
-
-  // geometry_msgs::Twist control_msg;
-  // control_msg.linear.x = 0.0;
-  // control_msg.angular.z = 0.0;
-  // cmd_pub.publish(control_msg);
 
   path_msg.poses = poses;
   path_pub.publish(path_msg);
