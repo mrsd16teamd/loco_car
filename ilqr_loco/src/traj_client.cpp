@@ -138,7 +138,10 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   control_msg.angular.z = output;
   goal.traj.commands.push_back(control_msg);
 
-  nav_msgs::Odometry traj_msg = cur_state;
+  nav_msgs::Odometry traj_msg;
+  traj_msg.pose.pose.position.x = start_state_.pose.pose.position.x + 0.5*accel_*start_time_.toSec()*start_time_.toSec();
+  traj_msg.pose.pose.position.y = start_state_.pose.pose.position.y;
+  traj_msg.pose.pose.position.z = 0;
   traj_msg.pose.pose.orientation.w = 1;
   traj_msg.pose.pose.orientation.x = 0;
   traj_msg.pose.pose.orientation.y = 0;

@@ -36,6 +36,7 @@ protected:
   ros::Subscriber mode_sub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
 
+  nav_msgs::Odometry start_state_;
   nav_msgs::Odometry cur_state_;
   nav_msgs::Odometry prev_state_;
   geometry_msgs::Point obs_pos_;
