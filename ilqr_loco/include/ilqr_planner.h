@@ -48,6 +48,8 @@ void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> x_des,
     odom.pose.pose.position.z = 0.0;
 
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(Traj.x[i*n+2]); // phi
+    odom.pose.pose.orientation = odom_quat;
+    
     odom.twist.twist.linear.x = Traj.x[i*n+3]; // Ux
    	odom.twist.twist.linear.x = Traj.x[i*n+4]; // Uy
    	odom.twist.twist.angular.z = Traj.x[i*n+5]; // r

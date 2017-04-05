@@ -199,8 +199,10 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
   goal.traj.header.frame_id = "/base_link";
   goal.traj.timestep = timestep_;
 
-  ROS_INFO("Start state: %f, %f, %f, %f, %f, %f", cur_state[0], cur_state[1], cur_state[2],
-    cur_state[3], cur_state[4], cur_state[5]);
+  double theta = tf::getYaw(cur_state.pose.pose.orientation);
+
+  ROS_INFO("Start state: %f, %f, %f, %f, %f, %f", cur_state.pose.pose.position.x, cur_state.pose.pose.position.y, theta,
+    cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
   ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
 
   double xd[] = {8, 0, 0, 0, 0, 0};
