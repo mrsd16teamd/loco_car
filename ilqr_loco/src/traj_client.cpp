@@ -61,13 +61,13 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 {
   int command = msg.x;
   ROS_INFO("Received command %d", command);
-  std::cout << state_estimate_received_ << '\n';
   if (!state_estimate_received_){
     ROS_INFO("Haven't received state info yet.");
     return;
   }
   switch (command)
   {
+    //DONT CHANGE THESE! TOO MUCH WORK
     case 1: { //ramp
       start_time_ = ros::Time::now();
       mode_ = 1;
@@ -89,10 +89,12 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     }
     case 8: { //reset obs
       switch_flag_ = false;
+      break;
     }
     case 9: { //kill client
       ROS_INFO("Killing node.");
       ros::shutdown();
+      break;
     }
   }
 }
