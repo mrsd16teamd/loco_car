@@ -60,6 +60,13 @@ void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> x_des,
   	twist.angular.z = Traj.u[i*m+1];
   	goal.traj.commands.push_back(twist);
   }
+
+  // append zero command
+  geometry_msgs::Twist twist;
+  twist.linear.x = 0;
+  twist.angular.z = 0;
+  goal.traj.commands.push_back(twist);
+
 }
 
 #endif
