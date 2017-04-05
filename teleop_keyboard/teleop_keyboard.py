@@ -10,12 +10,6 @@ import sys, select, termios, tty
 msg = """
 Reading from the keyboard  and Publishing to Point!
 ---------------------------
-1 - mode 1
-2 - mode 2
-3 - mode 3
-
-anything else : stop
-
 CTRL-C to quit
 """
 
@@ -26,6 +20,8 @@ commandBindings = {
 		'k': 8,
 		'r': 9
 	     }
+
+
 
 def getKey():
 	tty.setraw(sys.stdin.fileno())

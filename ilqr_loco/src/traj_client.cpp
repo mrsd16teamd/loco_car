@@ -83,13 +83,16 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       break;
     }
     case 3: {
-      start_time_ = ros::Time::now(); 
+      start_time_ = ros::Time::now();
       mode_=3;
       break;
     }
     case 8: {
       ROS_INFO("Killing node.");
       ros::shutdown();
+    }
+    case 9: {
+      switch_flag_ = false;
     }
   }
 }
