@@ -57,6 +57,7 @@ protected:
   double cur_vel_;
   int T_;
   bool state_estimate_received_;
+  int mode_;
 
   void rampPlan();
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,

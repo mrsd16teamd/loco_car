@@ -17,21 +17,10 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   cur_integral_ = 0.0;
   prev_error_ = 0.0;
   T_ = 0;
-  start_time_ = ros::Time::now();
   cur_vel_ = 0.5;
 
   //After this, this node will wait for a state estimate to start ramping up,
   //then switch to iLQR after an obstacle is seen.
-}
-
-void TrajClient::RampAndiLQR()
-{
-  while(!switch_flag_)
-  {
-    rampPlan();
-    ros::spinOnce(); // Do we need this?
-  }
-  ilqgPlan();
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
@@ -48,6 +37,9 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 //  std::cout << "velocities: " << cur_state_.twist.twist.linear.x << ' '
 //    << cur_state_.twist.twist.linear.y << '\n';
   state_estimate_received_ = true;
+  if (mode_==1 || mode_==3){
+    rampPlan();
+  }
 }
 
 void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
@@ -58,6 +50,9 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     obs_pos_.y = msg.point.y;
     ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.x, obs_pos_.y);
     switch_flag_ = true;
+    if (mode_==3){
+      ilqgPlan();
+    }
   }
 }
 
@@ -73,15 +68,17 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   switch (command)
   {
     case 1: {
-      rampPlan();
+      start_time_ = ros::Time::now();
+      mode_ = 1;
       break;
     }
     case 2: {
+      mode_=2;
       ilqgPlan();
       break;
     }
     case 3: {
-      RampAndiLQR();
+      mode_=3;
       break;
     }
   }
