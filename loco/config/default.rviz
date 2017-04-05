@@ -1,6 +1,6 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 244
+    Help Height: 78
     Name: Displays
     Property Tree Widget:
       Expanded:
@@ -8,16 +8,12 @@ Panels:
         - /Local Planner1/LocalPath1
         - /Local Planner1/LocalCostmap1
         - /Global Planner1/GlobalPath1
-        - /Robot1
         - /Robot1/Robot Footprint1
         - /Robot1/LaserScan1
         - /Robot1/TF1/Frames1
         - /Robot1/TF1/Tree1
-        - /Odometry2
-        - /PointStamped2
-        - /LaserScan1
       Splitter Ratio: 0.605096
-    Tree Height: 329
+    Tree Height: 495
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -255,16 +251,6 @@ Visualization Manager:
       Value: true
     - Angle Tolerance: 0.1
       Class: rviz/Odometry
-      Color: 255; 25; 0
-      Enabled: false
-      Keep: 100
-      Length: 0.75
-      Name: Odometry
-      Position Tolerance: 0.1
-      Topic: /traj_sim
-      Value: false
-    - Angle Tolerance: 0.1
-      Class: rviz/Odometry
       Color: 0; 170; 0
       Enabled: true
       Keep: 100
@@ -312,6 +298,28 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 255; 85; 255
+      Enabled: true
+      Head Diameter: 0.3
+      Head Length: 0.2
+      Length: 0.3
+      Line Style: Lines
+      Line Width: 0.03
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Style: None
+      Radius: 0.03
+      Shaft Diameter: 0.1
+      Shaft Length: 0.1
+      Topic: /path
+      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
