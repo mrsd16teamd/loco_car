@@ -207,7 +207,7 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
 
   double xd[] = {8, 0, 0, 0, 0, 0};
   std::vector<double> x_des(xd, xd+6); // Maybe this should be a member variable too?
-  iLQR_gen_traj(cur_state, x_des, obs_pos_, 50, goal);
+  iLQR_gen_traj(cur_state, x_des, obs_pos_, 150, goal);
   ++T_;
 
   return goal;
