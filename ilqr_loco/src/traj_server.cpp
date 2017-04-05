@@ -47,7 +47,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     }
     else
     {
-      ROS_INFO("Publishing command: %f, %f, Goal State: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z, goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
+      ROS_INFO("Publishing command: %f, %f, Goal pos: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z, goal->traj.states[i].pose.pose.position.x, goal->traj.states[i].pose.pose.position.y);
       cmd_pub.publish(goal->traj.commands[i]);
       ros::spinOnce();
 
