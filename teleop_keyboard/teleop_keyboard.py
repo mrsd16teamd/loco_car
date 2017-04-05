@@ -56,7 +56,7 @@ if __name__=="__main__":
 				print "Key: ", key, " - ", instructions[key]
 			else:
 				command = 0
-				print "Key: ", key
+				print "Key: ", key, " NO COMMAND"
 
 				if (key == '\x03'):
 					break
