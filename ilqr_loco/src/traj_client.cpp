@@ -167,8 +167,8 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 void TrajClient::rampPlan() {
 
   if(ros::Time::now() - start_time_ < ros::Duration(timeout_)) {
-    ilqr_loco::TrajExecGoal goal = TrajClient::rampGenerateTrajectory(prev_state_, cur_state_);
-    TrajClient::SendTrajectory(goal);
+    ilqr_loco::TrajExecGoal goal = rampGenerateTrajectory(prev_state_, cur_state_);
+    SendTrajectory(goal);
   }
   else {
     // Stop car after ramp timeout
@@ -178,10 +178,8 @@ void TrajClient::rampPlan() {
     control_msg.linear.x = 0.0;
     control_msg.angular.z = 0.0;
     end_goal.traj.commands.push_back(control_msg);
-    end_goal.traj.commands.push_back(control_msg);
     end_goal.traj.states.push_back(cur_state_);
-    end_goal.traj.states.push_back(cur_state_);
-    TrajClient::SendTrajectory(end_goal);
+    SendTrajectory(end_goal);
     switch_flag_ = true;
     mode_ = 0;
   }
