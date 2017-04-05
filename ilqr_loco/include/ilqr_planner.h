@@ -7,6 +7,7 @@
 #include <tf/transform_datatypes.h>
 #include <nav_msgs/Odometry.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <geometry_msgs/Point.h>
 
 extern "C"{
   #include "iLQG_mpc.h"
@@ -14,7 +15,7 @@ extern "C"{
 
 // Note that the inputs to this function can be whatever is convenient for client
 void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> x_des,
-                                        std_msgs::Float32MultiArray obstacle_pos, int T, ilqr_loco::TrajExecGoal &goal)
+                                        geometry_msgs::Point obstacle_pos, int T, ilqr_loco::TrajExecGoal &goal)
 {
   //Pre-process inputs - put them in format that C-code wants
   double theta = tf::getYaw(x_cur.pose.pose.orientation);
@@ -25,7 +26,7 @@ void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> x_des,
                           x_cur.twist.twist.linear.x, 0, 0, 0};
 
   double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array
-  double Obs[2] = {(double)obstacle_pos.data[0],(double)obstacle_pos.data[1]};
+  double Obs[2] = {(double)obstacle_pos.x,(double)obstacle_pos.y};
 
   int N = T+1;
   int n = 10;

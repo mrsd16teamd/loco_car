@@ -66,12 +66,10 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   }
 
-
-  geometry_msgs::Twist control_msg;
-  control_msg.linear.x = 0.0;
-  control_msg.angular.z = 0.0;
-  cmd_pub.publish(control_msg);
-
+  // geometry_msgs::Twist control_msg;
+  // control_msg.linear.x = 0.0;
+  // control_msg.angular.z = 0.0;
+  // cmd_pub.publish(control_msg);
 
   path_msg.poses = poses;
   path_pub.publish(path_msg);
