@@ -61,7 +61,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 {
   int command = msg.x;
   ROS_INFO("Received command %d", command);
-  std::cout << state_estimate_received_ << '\n';
+ 
   if (!state_estimate_received_){
     ROS_INFO("Haven't received state info yet.");
     return;
