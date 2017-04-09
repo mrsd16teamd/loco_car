@@ -1,6 +1,5 @@
 <launch>
 
-
   <include file="$(find loco)/launch/amcl_sve.launch" />
 
   <include file="$(find teleop_twist_joy)/launch/teensy_nav.launch" />
@@ -9,14 +8,6 @@
 
   <include file="$(find vesc_driver)/launch/vesc_driver_node.launch" /> 
 
-
-
   <node pkg="loco" type="amcl_echo" name="amcl_echo" output="screen"/>
-
-
-<!--   <node pkg="rosbag" type="record" name="rosbag_record_main"
-     	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>
--->
-
 
 </launch>
