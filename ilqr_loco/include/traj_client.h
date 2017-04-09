@@ -4,7 +4,7 @@
 #include <vector>
 #include <math.h>
 
-#include "ilqr_planner.h"
+// #include "ilqr_planner.h"
 #include <ilqr_loco/TrajExecAction.h>
 
 #include <ros/ros.h>
@@ -15,16 +15,13 @@
 #include <actionlib/client/terminal_state.h>
 
 #include <geometry_msgs/Twist.h>
-#include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/Point.h>
-#include <std_msgs/Char.h>
 
 #define PI 3.1415926535
 
 class TrajClient
 {
 public:
-  bool switch_flag_;
   bool ramp_goal_flag_;
 
   TrajClient();
@@ -43,13 +40,14 @@ protected:
   std::vector<double> x_des_;
 
   // Helper variables
-  int T_;                         // Number of timesteps (traj command #)
+  int T_;                         // Sequence ID number (starts from 0, in lifetime of client)
   int mode_;                      // Operation mode from keyboard teleop
   ros::Time start_time_;          // Operation start time
   double cur_integral_;
   double prev_error_;
   double cur_vel_;
   bool state_estimate_received_;  // Initial estimate flag
+  bool obs_received_;
 
   // State variables
   nav_msgs::Odometry start_state_;
@@ -68,6 +66,7 @@ protected:
   static constexpr float timestep_ = 0.02;
 
   // Member functions
+  void LoadParams();
 
   void rampPlan();
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
@@ -75,7 +74,10 @@ protected:
 
   void ilqgPlan();
   ilqr_loco::TrajExecGoal ilqgGenerateTrajectory(nav_msgs::Odometry cur_state);
+  void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_init, std::vector<double> x_des,
+                     geometry_msgs::Point obstacle_pos, int T, ilqr_loco::TrajExecGoal &goal);
 
+  void RampAndiLQR();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
 
   void activeCb();
@@ -86,7 +88,11 @@ protected:
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const geometry_msgs::PointStamped &msg);
   void modeCb(const geometry_msgs::Point &msg);
-  void RampAndiLQR();
+
+  void FillGoalMsgHeader(ilqr_loco::TrajExecGoal &goal);
+  void FillTwistMsg(geometry_msgs::Twist &twist, double lin_x, double ang_z);
+  void FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
+                   double yaw, double Ux, double Uy, double w);
 };
 
 #endif

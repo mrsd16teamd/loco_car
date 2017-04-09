@@ -42,7 +42,7 @@ include_directories(
 file(GLOB_RECURSE C_SOURCES "src/*.c")
 add_definitions(-DPRNT=printf -DDEBUG_ILQG=0 -DDEBUG_BACKPASS=0 -DDEBUG_FORWARDPASS=0 -DFULL_DDP=0 -DMULTI_THREADED=1 -O3)
 
-add_executable(traj_client src/traj_client.cpp ${C_SOURCES})
+add_executable(traj_client src/traj_client.cpp src/ilqr_planner.cpp ${C_SOURCES})
 target_link_libraries(traj_client ${catkin_LIBRARIES})
 add_dependencies(traj_client ${ilqr_loco_EXPORTED_TARGETS})
 

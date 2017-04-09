@@ -11,23 +11,23 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   ac_.waitForServer(); //will wait for infinite time
   ROS_INFO("Action server started. Send me commands from teleop_keyboard!");
 
-  switch_flag_ = false;
-  ramp_goal_flag_ = false;
   state_estimate_received_ = false;
+  obs_received_ = false;
+  ramp_goal_flag_ = false;
+  mode_ = 0;
+  T_ = 0;
+
   cur_integral_ = 0.0;
   prev_error_ = 0.0;
-  T_ = 0;
   cur_vel_ = 0.5;
-  mode_ = 0;
+}
 
+void TrajClient::LoadParams()
+{
   // Get parameters from ROS Param server
   nh_.getParam("T_horizon", T_horizon_);
   nh_.getParam("init_control_seq", init_control_seq_);
   nh_.getParam("X_des", x_des_);
-
-
-  //After this, this node will wait for a state estimate to start ramping up,
-  //then switch to iLQR after an obstacle is seen.
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
@@ -35,28 +35,27 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   prev_state_ = cur_state_;
   cur_state_ = msg;
 
-  //process odometry message to turn velocities into world frame
+  //turn velocities into body frame
   double theta = tf::getYaw(cur_state_.pose.pose.orientation);
   double old_vx = cur_state_.twist.twist.linear.x;
   double old_vy = cur_state_.twist.twist.linear.y;
   cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
   cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
-//  std::cout << "velocities: " << cur_state_.twist.twist.linear.x << ' '
-//    << cur_state_.twist.twist.linear.y << '\n';
+
   state_estimate_received_ = true;
-  if (mode_==1 || (mode_==3 && !switch_flag_) ){
+  if (mode_==1 || (mode_==3 && !obs_received_) ){
     rampPlan();
   }
 }
 
 void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 {
-  if (msg.point.x<100)
+  if (msg.point.x < 100) //Note: This is just cuz detector pubs 999 when sees nothing
   {
     obs_pos_.x = msg.point.x;
     obs_pos_.y = msg.point.y;
     ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.x, obs_pos_.y);
-    switch_flag_ = true;
+    obs_received_ = true;
     if (mode_==3){
       ilqgPlan();
     }
@@ -80,7 +79,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       break;
     }
     case 2: { //iLQR static
-      if(!switch_flag_){
+      if(!obs_received_){
         ROS_INFO("Haven't received obstacle info yet.");
         break;
       }
@@ -88,13 +87,16 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ilqgPlan();
       break;
     }
-    case 3: { //ramp and iLQR
+    case 3: { //ramp and iLQR open loop
+      obs_received_ = false;
       start_time_ = ros::Time::now();
       mode_=3;
       break;
+      //wait for next stateCb
     }
+    //TODO add 4 here - ramp and iLQR closed-loop
     case 8: { //reset obs
-      switch_flag_ = false;
+      obs_received_ = false;
       break;
     }
     case 9: { //kill client
@@ -128,46 +130,32 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
                                                            nav_msgs::Odometry cur_state) {
 
   ilqr_loco::TrajExecGoal goal;
-  goal.traj.header.seq = T_;
-  goal.traj.header.stamp = ros::Time::now();
-  goal.traj.header.frame_id = "/base_link";
+  FillGoalMsgHeader(goal);
 
   double dt = (cur_state.header.stamp).toSec() - (prev_state.header.stamp).toSec();
   double yaw = tf::getYaw(cur_state.pose.pose.orientation);
-  // ROS_INFO("yaw = %f",yaw);
 
   // PID control for vehicle heading
   double error = 0 - yaw;
   cur_integral_ += error*dt;
   double output = kp_*error + (std::abs(cur_integral_)<1 ? ki_*cur_integral_ : 0) + (dt>0.01 ? kd_*(error-prev_error_)/dt : 0);
-  // ROS_INFO("P = %f | I = %f | D = %f",kp_*error, ki_*cur_integral_, kd_*(error-prev_error_)/dt);
-  // ROS_INFO("PID output = %f",output);
   prev_error_ = error;
 
   // Generate goal
-  // ROS_INFO("Cur vel = %f,    dt = %f",cur_state.twist.twist.linear.x,dt);
   cur_vel_ += accel_*dt;
   double v = cur_state.twist.twist.linear.x + accel_*dt + 0.75;
-  //v = v<target_vel_ ? v : target_vel_;
   v = cur_vel_<target_vel_ ? cur_vel_ : target_vel_;
 
   geometry_msgs::Twist control_msg;
-  control_msg.linear.x = v;
-  control_msg.angular.z = output;
+  FillTwistMsg(control_msg, v, output);
   goal.traj.commands.push_back(control_msg);
 
-  nav_msgs::Odometry traj_msg;
-  traj_msg.pose.pose.position.x = start_state_.pose.pose.position.x + 0.5*accel_*start_time_.toSec()*start_time_.toSec();
-  traj_msg.pose.pose.position.y = start_state_.pose.pose.position.y;
-  traj_msg.pose.pose.position.z = 0;
-  traj_msg.pose.pose.orientation.w = 1;
-  traj_msg.pose.pose.orientation.x = 0;
-  traj_msg.pose.pose.orientation.y = 0;
-  traj_msg.pose.pose.orientation.z = 0;
-  traj_msg.twist.twist.linear.x = v;
-  traj_msg.twist.twist.linear.y = 0;
-  traj_msg.twist.twist.angular.z = 0;
-  goal.traj.states.push_back(traj_msg);
+  nav_msgs::Odometry state_msg;
+  double expected_x = start_state_.pose.pose.position.x + 0.5*accel_*start_time_.toSec()*start_time_.toSec();
+  double expected_y = start_state_.pose.pose.position.y;
+
+  FillOdomMsg(state_msg, expected_x, expected_y, 0, v, 0, 0); //0s: yaw, vy, w
+  goal.traj.states.push_back(state_msg);
 
   ++T_;
   ramp_goal_flag_ = v>=target_vel_ ? true : false;  // Ramp completion flag
@@ -178,7 +166,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
 void TrajClient::rampPlan() {
 
-  if(ros::Time::now() - start_time_ < ros::Duration(timeout_) && (mode_==1 || (mode_==3 && !switch_flag_))) {
+  if(ros::Time::now() - start_time_ < ros::Duration(timeout_) && (mode_==1 || (mode_==3 && !obs_received_))) {
     ilqr_loco::TrajExecGoal goal = rampGenerateTrajectory(prev_state_, cur_state_);
     SendTrajectory(goal);
   }
@@ -187,12 +175,11 @@ void TrajClient::rampPlan() {
     ROS_INFO("Timeout exceeded, stopping car");
     ilqr_loco::TrajExecGoal end_goal;
     geometry_msgs::Twist control_msg;
-    control_msg.linear.x = 0.0;
-    control_msg.angular.z = 0.0;
+    FillTwistMsg(control_msg, 0, 0);
     end_goal.traj.commands.push_back(control_msg);
     end_goal.traj.states.push_back(cur_state_);
     SendTrajectory(end_goal);
-    switch_flag_ = true;
+    obs_received_ = true;
     mode_ = 0;
   }
 }
@@ -206,18 +193,16 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
 {
   ROS_INFO("Generating iLQG trajectory.");
   ilqr_loco::TrajExecGoal goal;
-  goal.traj.header.seq = T_;
-  goal.traj.header.stamp = ros::Time::now(); //Makes sure that action server can account for planning delay.
-  goal.traj.header.frame_id = "/base_link";
+  FillGoalMsgHeader(goal);
   goal.traj.timestep = timestep_;
 
   double theta = tf::getYaw(cur_state.pose.pose.orientation);
 
-  ROS_INFO("Start state: %f, %f, %f, %f, %f, %f", cur_state.pose.pose.position.x, cur_state.pose.pose.position.y, theta,
-  cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
+  ROS_INFO("Start state: %f, %f, %f, %f, %f, %f",
+            cur_state.pose.pose.position.x, cur_state.pose.pose.position.y, theta,
+            cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
   ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
 
-  // std::vector<double> x_des = {8, 0.3, 0, 0, 0, 0};
   iLQR_gen_traj(cur_state, init_control_seq_, x_des_, obs_pos_, T_horizon_, goal);
   ++T_;
 
@@ -228,6 +213,36 @@ void TrajClient::ilqgPlan()
 {
   ilqr_loco::TrajExecGoal goal = ilqgGenerateTrajectory(cur_state_);
   SendTrajectory(goal);
+}
+
+//////////////////////// Message utils //////////////////////////////////
+
+void TrajClient::FillGoalMsgHeader(ilqr_loco::TrajExecGoal &goal)
+{
+  goal.traj.header.seq = T_;
+  goal.traj.header.stamp = ros::Time::now();
+  goal.traj.header.frame_id = "/base_link";
+}
+
+void TrajClient::FillTwistMsg(geometry_msgs::Twist &twist, double lin_x, double ang_z)
+{
+  twist.linear.x = lin_x;
+  twist.angular.z = ang_z;
+}
+
+void TrajClient::FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
+                             double yaw, double Ux, double Uy, double w)
+{
+  odom.pose.pose.position.x = x;
+  odom.pose.pose.position.y = y;
+  odom.pose.pose.position.z = 0.0;
+
+  geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(yaw);
+  odom.pose.pose.orientation = odom_quat;
+
+  odom.twist.twist.linear.x = Ux;
+  odom.twist.twist.linear.y = Uy;
+  odom.twist.twist.angular.z = w;
 }
 
 //////////////////////// GENERATE iLQG END //////////////////////////////////
