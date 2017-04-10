@@ -41,13 +41,13 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
 
     // Set optimization parameters
     // standard_parameters(o);
-    fname = "max_iter";
-    double max_iter = 100;
+    // fname = "max_iter";
+    // double max_iter = 100;
 
-    err_msg = setOptParam(o, fname, &max_iter, 1);
-    if(err_msg) {
-        printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", fname, err_msg);
-    }
+    // err_msg = setOptParam(o, fname, &max_iter, 1);
+    // if(err_msg) {
+    //     printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", fname, err_msg);
+    // }
 
     // Set model and problem parameters
     init_params(o, xDes, Obs);

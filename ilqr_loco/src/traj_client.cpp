@@ -110,6 +110,13 @@ void TrajClient::LoadOpt()
   Opt.p[23] = assignPtrVal(&pf_[0],6);
   Opt.p[24] = assignPtrVal(&px_[0],3);
   // [25] xDes
+  fname = "max_iter";
+  double max_iter = 100;
+
+  err_msg = setOptParam(&Opt, fname, &max_iter, 1);
+  if(err_msg) {
+      printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", fname, err_msg);
+  }
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
