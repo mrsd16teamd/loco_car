@@ -113,13 +113,12 @@ void TrajClient::LoadOpt()
   Opt.p[24] = assignPtrVal(&px_[0],3);
   // [25] xDes
 
-  char *err_msg, *fname;
-  fname = "max_iter";
+  char *err_msg;
   double max_iter = 100;
 
-  err_msg = setOptParam(&Opt, fname, &max_iter, 1);
+  err_msg = setOptParam(&Opt, "max_iter", &max_iter, 1);
   if(err_msg) {
-      printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", fname, err_msg);
+      printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", "max_iter", err_msg);
   }
 }
 
