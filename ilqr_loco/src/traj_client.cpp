@@ -1,6 +1,7 @@
 #include "traj_client.h"
 
-TrajClient::TrajClient(): ac_("traj_executer", true)
+TrajClient::TrajClient(): ac_("traj_executer", true), mode_(0), T_(0),
+                          cur_integral_(0), prev_error_(0), cur_vel_(0.5)
 {
   state_sub_  = nh_.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
   obs_sub_ = nh_.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
@@ -13,12 +14,6 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
   state_estimate_received_ = false;
   obs_received_ = false;
   ramp_goal_flag_ = false;
-  mode_ = 0;
-  T_ = 0;
-
-  cur_integral_ = 0.0;
-  prev_error_ = 0.0;
-  cur_vel_ = 0.5;
 }
 
 void TrajClient::LoadParams()
@@ -38,6 +33,8 @@ void TrajClient::LoadParams()
     nh_.getParam("T_horizon", T_horizon_);
     nh_.getParam("init_control_seq", init_control_seq_);
     nh_.getParam("X_des", x_des_);
+    nh_.getParam("timeout_ilqr_mpc", mpc_timeout_);
+    nh_.getParam("stop_goal_threshold", goal_threshold_);
   }
   catch(...)
   {
@@ -58,21 +55,25 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
 
   state_estimate_received_ = true;
-  if (mode_==1 || (mode_==3 && !obs_received_) ){
+  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
+  {
     rampPlan();
   }
 }
 
 void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 {
-  if (msg.point.x < 100) //Note: This is just cuz detector pubs 999 when sees nothing
+  if (msg.point.x < 100) //Note: This is just cuz detector pubs 999 when it sees nothing
   {
     obs_pos_.x = msg.point.x;
     obs_pos_.y = msg.point.y;
     ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.x, obs_pos_.y);
     obs_received_ = true;
-    if (mode_==3){
+    if (mode_ == 3){
       ilqrPlan();
+    }
+    else if (mode_ == 4){
+      ilqrMPC();
     }
   }
 }
@@ -89,8 +90,8 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   {
     //DONT CHANGE THESE! TOO MUCH WORK
     case 1: { //ramp
-      start_time_ = ros::Time::now();
       mode_ = 1;
+      start_time_ = ros::Time::now();
       break;
     }
     case 2: { //iLQR static
@@ -98,19 +99,21 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
         ROS_INFO("Haven't received obstacle info yet.");
         break;
       }
-      mode_=2;
+      mode_ = 2;
       ilqrPlan();
       break;
     }
     case 3: { //ramp and iLQR open loop
+      mode_ = 3;
       obs_received_ = false;
       start_time_ = ros::Time::now();
-      mode_=3;
       break;
       //wait for next stateCb
     }
     case 4: { //ramp and iLQR closed loop
-      //TODO fill this
+      mode_ = 4;
+      obs_received_ = false;
+      //wait for next stateCb
     }
     case 8: { //reset obs
       obs_received_ = false;

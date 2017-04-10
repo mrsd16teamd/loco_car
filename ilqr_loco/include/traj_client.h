@@ -43,16 +43,16 @@ protected:
   bool state_estimate_received_;  // Initial estimate flag
   bool obs_received_;
 
-  // Ramp up
-  double cur_integral_;
-  double prev_error_;
-  double cur_vel_;
-
   // State variables
   nav_msgs::Odometry start_state_;
   nav_msgs::Odometry cur_state_;
   nav_msgs::Odometry prev_state_;
   geometry_msgs::Point obs_pos_;
+
+  // Ramp up
+  double cur_integral_;
+  double prev_error_;
+  double cur_vel_;
 
   //Constants for rampup planner
   float kp_, ki_, kd_;
@@ -60,6 +60,10 @@ protected:
   float target_vel_;
   float timeout_;
   float timestep_;
+
+  //iLQR parameters
+  float mpc_timeout_;
+  float goal_threshold_;
 
   void LoadParams();
 
@@ -72,6 +76,7 @@ protected:
   void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_init, std::vector<double> x_des,
                      geometry_msgs::Point obstacle_pos, int T, ilqr_loco::TrajExecGoal &goal);
   void ilqrMPC();
+  double DistToGoal();
 
   void RampAndiLQR();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
