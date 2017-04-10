@@ -9,7 +9,7 @@ TrajClient::TrajClient(): ac_("traj_executer", true), mode_(0), T_(0),
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
-  ROS_INFO("Action server started. Send me commands from teleop_keyboard!");
+  ROS_INFO("Action client started. Send me commands from teleop_keyboard!");
 
   state_estimate_received_ = false;
   obs_received_ = false;
@@ -22,6 +22,8 @@ void TrajClient::LoadParams()
 {
   try
   {
+    ROS_INFO("Loading parameters.");
+
     // Get parameters from ROS Param server
     nh_.getParam("timestep", timestep_);
 
@@ -80,8 +82,14 @@ void TrajClient::LoadCostParams()
 
 void TrajClient::LoadOpt()
 {
+  ROS_INFO("Loading opt.");
+
   LoadCarParams();
+  ROS_INFO("Loading cost.");
+
   LoadCostParams();
+
+  ROS_INFO("assigning stuff.");
 
   Opt = INIT_OPTSET;
   standard_parameters(&Opt);

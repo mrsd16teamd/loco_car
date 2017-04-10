@@ -3,6 +3,7 @@
 ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry prev_state,
                                                            nav_msgs::Odometry cur_state) {
 
+	std::cout << timeout_ << '\n';
   ilqr_loco::TrajExecGoal goal;
   FillGoalMsgHeader(goal);
 
@@ -40,7 +41,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
 void TrajClient::rampPlan() {
 
-  if(ros::Time::now() - start_time_ < ros::Duration(timeout_))
+  if(ros::Time::now() - start_time_ > ros::Duration(timeout_))
   {
     ilqr_loco::TrajExecGoal goal = rampGenerateTrajectory(prev_state_, cur_state_);
     SendTrajectory(goal);

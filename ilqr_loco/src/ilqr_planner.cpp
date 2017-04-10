@@ -2,6 +2,7 @@
 #define _ILQR_PLANNER_H_
 
 #include <vector>
+#include <ctime>
 
 #include <ilqr_loco/TrajExecAction.h>
 #include <tf/transform_datatypes.h>
@@ -40,8 +41,14 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_i
   Traj.x = (double *) malloc(n*N*sizeof(double));
   Traj.u = (double *) malloc(m*(N-1)*sizeof(double));
 
+  std::clock_t start = std::clock();
+
   // traj[0]: states, traj[1]: controls
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
+
+  // Temporary testing thing
+  double ilqr_time = (std::clock() - start) / (double)(CLOCKS_PER_SEC);
+  ROS_INFO("iLQR took %f sec.", ilqr_time);
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+N);
