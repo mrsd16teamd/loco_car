@@ -42,6 +42,74 @@ void TrajClient::LoadParams()
   }
 }
 
+void TrajClient::LoadCarParams()
+{ 
+  nh_.getParam('Opt_car_param/g', g_);
+  nh_.getParam('Opt_car_param/L', L_);
+  nh_.getParam('Opt_car_param/m', m_);
+  nh_.getParam('Opt_car_param/b', b_);
+  nh_.getParam('Opt_car_param/c_x', c_x_);
+  nh_.getParam('Opt_car_param/c_a', c_a_);
+  nh_.getParam('Opt_car_param/Iz', Iz_);
+  nh_.getParam('Opt_car_param/mu', mu_);
+  nh_.getParam('Opt_car_param/mu_s', mu_s_);
+
+  a_ = L_ - b_;
+  G_f_ = m_*g_*b_/L_;
+  G_r_ = m_*g_*a_/L_;
+}
+
+void TrajClient::LoadCost()
+{ 
+  nh_.getParam('Opt_cost/cu', cu_);
+  nh_.getParam('Opt_cost/cdu', cdu_);
+  nh_.getParam('Opt_cost/cf', cf_);
+  nh_.getParam('Opt_cost/pf', pf_);
+  nh_.getParam('Opt_cost/cx', cx_);
+  nh_.getParam('Opt_cost/cdx', cdx_);
+  nh_.getParam('Opt_cost/px', px_);
+  nh_.getParam('Opt_cost/cdrift', cdirft_);
+  nh_.getParam('Opt_cost/k_pos', k_pos_);
+  nh_.getParam('Opt_cost/k_vel', k_vel_);
+  nh_.getParam('Opt_cost/d_thres', d_thres_);
+}
+
+void TrajClient::LoadOpt()
+{
+  LoadCarParams();
+  LoadCost();
+  nh_.getParam('Opt_control_dt', dt);
+  Opt = INIT_OPTSET;
+  standard_parameters(&Opt);
+  Opt.p= (double **) malloc(n_params*sizeof(double *));
+  Opt.p[0] = assignPtrVal(&G_f_,1);
+  Opt.p[1] = assignPtrVal(&G_r_,1);;
+  Opt.p[2] = assignPtrVal(&Iz_,1);;
+  // [3] Obs
+  Opt.p[4] = assignPtrVal(&a_,1);
+  Opt.p[5] = assignPtrVal(&b_,1);
+  Opt.p[6] = assignPtrVal(&c_a_,1);
+  Opt.p[7] = assignPtrVal(&c_x_,1);
+  Opt.p[8] = assignPtrVal(&cdrift_,1);
+  Opt.p[9] = assignPtrVal(&cdu_[0],2);
+  Opt.p[10] = assignPtrVal(&cdx_[0],3);
+  Opt.p[11] = assignPtrVal(&cf_[0],6);
+  Opt.p[12] = assignPtrVal(&cu_[0],2);
+  Opt.p[13] = assignPtrVal(&cx_[0],3);
+  Opt.p[14] = assignPtrVal(&d_thres_,1);
+  Opt.p[15] = assignPtrVal(&dt,1);
+  Opt.p[16] = assignPtrVal(&k_pos_,1);
+  Opt.p[17] = assignPtrVal(&k_vel_,1);
+  Opt.p[18] = assignPtrVal(&limSteer_[0],2);
+  Opt.p[19] = assignPtrVal(&limThr_[0],2);
+  Opt.p[20] = assignPtrVal(&m_,1);
+  Opt.p[21] = assignPtrVal(&mu_,1);
+  Opt.p[22] = assignPtrVal(&mu_s_,1);
+  Opt.p[23] = assignPtrVal(&pf_[0],6);
+  Opt.p[24] = assignPtrVal(&px_[0],3);
+  // [25] xDes
+}
+
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 {
   prev_state_ = cur_state_;

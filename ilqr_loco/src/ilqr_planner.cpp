@@ -11,12 +11,13 @@
 #include "traj_client.h"
 
 extern "C"{
+  #include "iLQG.h"
   #include "iLQG_plan.h"
 }
 
 // Note that the inputs to this function can be whatever is convenient for client
 void TrajClient::iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_init, std::vector<double> x_des,
-                               geometry_msgs::Point obstacle_pos, int T, ilqr_loco::TrajExecGoal &goal)
+                               geometry_msgs::Point obstacle_pos, int T, tOptSet *o, ilqr_loco::TrajExecGoal &goal)
 {
   //Pre-process inputs - put them in format that C-code wants
   double theta = tf::getYaw(x_cur.pose.pose.orientation);
@@ -40,7 +41,7 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_i
   Traj.u = (double *) malloc(m*(N-1)*sizeof(double));
 
   // traj[0]: states, traj[1]: controls
-  plan_trajectory(x0,u0,xDes,Obs,T,&Traj);
+  plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+N);

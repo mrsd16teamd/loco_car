@@ -14,6 +14,11 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Point.h>
 
+extern "C"{
+  #include "iLQG.h"
+  #include "iLQG_plan.h"
+}
+
 #define PI 3.1415926535
 
 class TrajClient
@@ -35,6 +40,37 @@ protected:
   int T_horizon_;
   std::vector<double> init_control_seq_;
   std::vector<double> x_des_;
+  tOptSet Opt;
+  double dt;
+
+  // iLQR Opt.p: Car Params
+  double g_;
+  double L_;
+  double m_;
+  double b_;
+  double a_;
+  double G_f_;
+  double G_r_;
+  double c_x_;
+  double c_a_;
+  double Iz_;
+  double mu_;
+  double mu_s_;
+  std::vector<double> limThr_;
+  std::vector<double> limSteer_;
+
+  // iLQR Opt.p: Costs
+  std::vector<double> cu_;        // Control cost
+  std::vector<double> cdu_;       // Change of control cost
+  std::vector<double> cf_;        // Final cost
+  std::vector<double> pf_;        // Final cost smooth terms
+  std::vector<double> cx_;        // Running cost of position
+  std::vector<double> cdx_;       // Running cost of velocity
+  std::vector<double> px_;        // Running cost smooth terms
+  double cdrift_;                 // Drift cost
+  double k_pos_;                  // Obstacle pos cost
+  double k_vel_;                  // Obstacle vel cost
+  double d_thres_;                // Obstacle threshold
 
   // Helper variables
   int T_;                         // Sequence ID number (starts from 0, in lifetime of client)
