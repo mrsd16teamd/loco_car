@@ -205,46 +205,20 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        clustermapframe.data.push_back(mapframe.point.x);
        clustermapframe.data.push_back(mapframe.point.y);
        clustermapframe.data.push_back(mapframe.point.z);
-<<<<<<< HEAD
-       
-
-
-
-=======
-      
->>>>>>> bc6ea36ef4f7d0ea203a1dba8465a820d21a07ab
     }
 
 
    else 
     {
-            
        mapframe.point.x = xcoordinate;
        mapframe.point.y  = ycoordinate;
        mapframe.point.z  = zcoordinate;
-
-
-
-
     }
 
 
-       cc_pos.publish(mapframe);
-
-       markerPub1.publish(clusterMarkers1);
-
-
-
-//       cc_pos.publish(mapframe);
-
-//       markerPub1.publish(clusterMarkers1);
-    }
-
-
+       
 cc_pos.publish(mapframe);
 markerPub1.publish(clusterMarkers1);
-
-
 
 
 
@@ -269,10 +243,7 @@ int main(int argc, char** argv)
     markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
 
 
-
-
     ros::spin();
-
 
 }
 
