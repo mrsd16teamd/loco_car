@@ -73,7 +73,7 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     obs_received_ = true;
 
     if (mode_==1){
-      // TODO put brake here?
+      SendZeroCommand();
     }
     else if (mode_==2 || mode_==3){
       ilqrPlan();
@@ -93,7 +93,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     ROS_INFO("Haven't received state info yet.");
     return;
   }
-  
+
   switch (command)
   {
     //DONT CHANGE THESE! TOO MUCH WORK
