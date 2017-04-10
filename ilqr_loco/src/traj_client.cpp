@@ -24,10 +24,26 @@ TrajClient::TrajClient(): ac_("traj_executer", true)
 
 void TrajClient::LoadParams()
 {
-  // Get parameters from ROS Param server
-  nh_.getParam("T_horizon", T_horizon_);
-  nh_.getParam("init_control_seq", init_control_seq_);
-  nh_.getParam("X_des", x_des_);
+  try
+  {
+    // Get parameters from ROS Param server
+    nh_.getParam("T_horizon", T_horizon_);
+    nh_.getParam("init_control_seq", init_control_seq_);
+    nh_.getParam("X_des", x_des_);
+
+    nh_.getParam("timestep", timestep_);
+
+    nh_.getParam("kp_ramp", kp_);
+    nh_.getParam("ki_ramp", ki_);
+    nh_.getParam("kd_ramp", kd_);
+    nh_.getParam("accel_ramp", accel_);
+    nh_.getParam("target_vel_ramp", target_vel_);
+    nh_.getParam("timeout_ramp", timeout_);
+  }
+  catch(...)
+  {
+    ROS_ERROR("Please put all params into yaml file, and load it.");
+  }
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
@@ -94,7 +110,9 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       break;
       //wait for next stateCb
     }
-    //TODO add 4 here - ramp and iLQR closed-loop
+    case 4: { //ramp and iLQR closed loop
+      //TODO fill this
+    }
     case 8: { //reset obs
       obs_received_ = false;
       break;
@@ -104,16 +122,13 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ros::shutdown();
       break;
     }
+    default: {
+      ROS_INFO("Please enter valid command.");
+    }
   }
 }
 
 
-// void TrajClient::activeCb() {}
-//
-// void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback) {}
-//
-// void TrajClient::doneCb(const actionlib::SimpleClientGoalState& state,
-//                         const ilqr_loco::TrajExecResultConstPtr& result) {}
 
 void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 {
@@ -174,11 +189,14 @@ void TrajClient::rampPlan() {
     // Stop car after ramp timeout
     ROS_INFO("Timeout exceeded, stopping car");
     ilqr_loco::TrajExecGoal end_goal;
+
     geometry_msgs::Twist control_msg;
     FillTwistMsg(control_msg, 0, 0);
+
     end_goal.traj.commands.push_back(control_msg);
     end_goal.traj.states.push_back(cur_state_);
     SendTrajectory(end_goal);
+    
     obs_received_ = true;
     mode_ = 0;
   }

@@ -5,6 +5,18 @@ Sends feedback to action client (planner) in terms of "almost done", "done".
 
 #include "traj_server.h"
 
+void TrajServer::LoadParams()
+{
+  try
+	{
+    nh.getParam("old_msg_discard_thres", old_msg_thres);
+  }
+  catch(...)
+	{
+    ROS_ERROR("Please put all params into yaml file, and load it.");
+  }
+}
+
 // provides action to execute plans
 void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
   // TODO? check that states and commands are right length

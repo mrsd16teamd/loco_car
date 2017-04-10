@@ -1,6 +1,6 @@
 // MATLAB Mex function wrapper for iLQG algorithm
 // Copyright (c) 2016 Jens Geisler
-#include "iLQG_mpc.h"
+#include "iLQG_plan.h"
 
 double* assignPtrVal(double* values, int numVal) {
     double* temp = (double *) malloc(numVal*sizeof(double));
@@ -98,28 +98,21 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, s
 
     n= sizeof(x0)/sizeof(x0[0]);  // length of state vector
     m= 2; // number of inputs
-    N= T+1; // T+1 TODO how to make this variable?
-
-    // srand(time(NULL));
-    // double u0[m*(N-1)]; // TODO row-first
-    // for(i=0; i<N-1; i++) {
-    //     u0[i*m] = ((double)rand()/(double)(RAND_MAX)) * 0.5 + 3;// (x0[3]>1 ? x0[3] : 1);
-    //     u0[i*m+1] = ((double)rand()/(double)(RAND_MAX)) * 0.2 + 0.1;
-    // }
+    N= T+1;
 
     // inputs
     o.x0= x0; //double *
     u_nom= u0;  // double **
     o.n_hor= N-1;
 
-    standard_parameters(&o);
     // Set optimization parameters
+    standard_parameters(&o);
     fname = "max_iter";
     double max_iter = 100;
 
     err_msg = setOptParam(&o, fname, &max_iter, 1);
     if(err_msg) {
-        printf("MATLAB:dimagree, Error setting optimization parameter '%s': %s.\n", fname, err_msg);
+        printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", fname, err_msg);
     }
 
     // Set model and problem parameters
@@ -128,9 +121,6 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, s
     // outputs
     double success[1];
     double new_cost[1];
-
-    // double x_new[n*N];
-    // double u_new[m*(N-1)];
 
     // aux
     for(i= 0; i<NUMBER_OF_THREADS+1; i++)
@@ -181,24 +171,3 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, s
     for(i= 0; i<NUMBER_OF_THREADS+1; i++)
         free(o.trajectories[i].t);
 }
-
-// int main() {
-//     int T = 50;
-//     double x0[10] = {0,0,0, 3,0,0,3,0,0,0};
-//     double xDes[6] = {3.0, 3.0, 1.5, 3.0, 0.0, 0.0};
-//     double Obs[2] = {1.0, 0.0};
-
-//     int N = T+1;
-//     int n = 10;
-//     int m = 2;
-
-//     struct trajectory Traj;
-//     Traj.x = malloc(n*N*sizeof(double));
-//     Traj.u = malloc(m*(N-1)*sizeof(double));
-//     // traj[0]: states, traj[1]: controls
-//     plan_trajectory(x0,xDes,Obs,50,&Traj);
-
-//     // free at the end
-//     free(Traj.x);
-//     free(Traj.u);
-// }

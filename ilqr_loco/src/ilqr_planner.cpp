@@ -11,7 +11,7 @@
 #include "traj_client.h"
 
 extern "C"{
-  #include "iLQG_mpc.h"
+  #include "iLQG_plan.h"
 }
 
 // Note that the inputs to this function can be whatever is convenient for client

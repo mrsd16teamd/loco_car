@@ -20,14 +20,16 @@ class TrajServer
 public:
   TrajServer():
     as(nh, "traj_executer", boost::bind(&TrajServer::execute_trajectory, this,
-    _1), false), traj_action("traj_executer"), old_msg_thres(0.5)
+    _1), false), traj_action("traj_executer")
     {
       as.start();
       cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
       path_pub = nh.advertise<nav_msgs::Path>("path", 1);
+      LoadParams();
       ROS_INFO("Started iLQR executer node. Send me actions!");
     }
 
+  void LoadParams();
   void execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal);
 
 private:
@@ -37,7 +39,6 @@ private:
 
   // If a command was planned to be executed more than this many seconds, then
   // client will ignore it and move to processing next command.
-  // Arbitrarily set to 0.5sec in constructor above.
   double old_msg_thres;
 
   // create messages that are used to published feedback/result

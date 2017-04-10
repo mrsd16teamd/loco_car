@@ -4,16 +4,13 @@
 #include <vector>
 #include <math.h>
 
-// #include "ilqr_planner.h"
 #include <ilqr_loco/TrajExecAction.h>
 
 #include <ros/ros.h>
-
 #include <tf/transform_listener.h>
 #include <tf/transform_datatypes.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
-
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Point.h>
 
@@ -43,29 +40,27 @@ protected:
   int T_;                         // Sequence ID number (starts from 0, in lifetime of client)
   int mode_;                      // Operation mode from keyboard teleop
   ros::Time start_time_;          // Operation start time
+  bool state_estimate_received_;  // Initial estimate flag
+  bool obs_received_;
+
+  // Ramp up
   double cur_integral_;
   double prev_error_;
   double cur_vel_;
-  bool state_estimate_received_;  // Initial estimate flag
-  bool obs_received_;
 
   // State variables
   nav_msgs::Odometry start_state_;
   nav_msgs::Odometry cur_state_;
   nav_msgs::Odometry prev_state_;
   geometry_msgs::Point obs_pos_;
-  std::vector<double> desired_state_; // Not used anywhere?
 
   //Constants for rampup planner
-  static constexpr float kp_ = 0.45;
-  static constexpr float ki_ = 0.05;
-  static constexpr float kd_ = 0.1;
-  static constexpr float accel_ = 3;
-  static constexpr float target_vel_ = 3;
-  static constexpr float timeout_ = 2.5;
-  static constexpr float timestep_ = 0.02;
+  float kp_, ki_, kd_;
+  float accel_;
+  float target_vel_;
+  float timeout_;
+  float timestep_;
 
-  // Member functions
   void LoadParams();
 
   void rampPlan();
