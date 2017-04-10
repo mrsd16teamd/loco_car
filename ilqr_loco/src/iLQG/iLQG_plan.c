@@ -19,8 +19,8 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
 {
     // dims
     int N, n, m, m_, n_, si, i, k;
+
     // inputs
-    // tOptSet o= INIT_OPTSET;
     int dims[3];
 
     //outputs
@@ -38,20 +38,8 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
     u_nom= u0;  // double **
     o->n_hor= N-1;
 
-    // Set optimization parameters
-    // standard_parameters(o);
-    // fname = "max_iter";
-    // double max_iter = 100;
-
-    // err_msg = setOptParam(o, fname, &max_iter, 1);
-    // if(err_msg) {
-    //     printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", fname, err_msg);
-    // }
-
     // Set model and problem parameters
     init_params(o, xDes, Obs);
-
-		// TODO store o in traj_client so we can skip above
 
     // outputs
     double success[1];

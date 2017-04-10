@@ -103,7 +103,7 @@ protected:
 
   void LoadParams();
 	void LoadCarParams();
-  void LoadCost();
+  void LoadCostParams();
   void LoadOpt();
 
   void rampPlan();
@@ -121,11 +121,6 @@ protected:
 	void SendZeroCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
 
-  void activeCb();
-  void feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback);
-  void doneCb(const actionlib::SimpleClientGoalState& state,
-              const ilqr_loco::TrajExecResultConstPtr& result);
-
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const geometry_msgs::PointStamped &msg);
   void modeCb(const geometry_msgs::Point &msg);
@@ -134,6 +129,11 @@ protected:
   void FillTwistMsg(geometry_msgs::Twist &twist, double lin_x, double ang_z);
   void FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
                    double yaw, double Ux, double Uy, double w);
+
+   void activeCb();
+   void feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback);
+   void doneCb(const actionlib::SimpleClientGoalState& state,
+               const ilqr_loco::TrajExecResultConstPtr& result);
 };
 
 #endif
