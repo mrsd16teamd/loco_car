@@ -208,7 +208,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        clustermapframe.data.push_back(mapframe.point.z);
        
 
-<<<<<<< HEAD:lidartracking/src/main.cpp
+
 
     }
 
@@ -230,7 +230,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
        markerPub1.publish(clusterMarkers1);
 
-=======
+
 //       cc_pos.publish(mapframe);
 
 //       markerPub1.publish(clusterMarkers1);
@@ -239,7 +239,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 cc_pos.publish(mapframe);
 markerPub1.publish(clusterMarkers1);
->>>>>>> 47442b317c6c5ab0e3645fc9117f71c5df2cadf5:obstacle_detection/lidartracking/src/main.cpp
+
 
 
 
