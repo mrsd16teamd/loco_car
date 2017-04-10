@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# IMPORTANT: do not run this script directly, ex - $rosip
+# because environment variables are set only in subshells
+# USAGE: "$. rosip" OR "$source rosip"
+
+echo "----------------"
+echo "Updating Time"
+echo "-----------------"
+
+sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
