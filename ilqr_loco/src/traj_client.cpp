@@ -98,7 +98,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   {
     //DONT CHANGE THESE! TOO MUCH WORK
     case 1: {
-      ROS_INFO("Mode 1: ramp.");
+      ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
       mode_ = 1;
       start_time_ = ros::Time::now();
       // wait for stateCb to ramp
