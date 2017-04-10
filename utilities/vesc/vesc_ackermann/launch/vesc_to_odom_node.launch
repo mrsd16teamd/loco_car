@@ -22,6 +22,7 @@ wheelbase: 0.257
   <!-- VESC to Odom node -->
   <node pkg="vesc_ackermann" type="vesc_to_odom_node" name="vesc_to_odom_node"
         output="screen" launch-prefix="$(arg launch_prefix)" >
+        <remap from="cmd_vel" to="cmd_vel_out" />
   </node>
 
 </launch>

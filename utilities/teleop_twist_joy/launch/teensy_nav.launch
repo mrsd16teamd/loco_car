@@ -18,6 +18,7 @@
     <param name="enable_turbo_button" value="5"/>
     <param name="axis_linear" value="3"/>
     <param name="axis_angular" value="0"/>
+    <remap from="cmd_vel" to="joy_vel" />
   </node>
 
    <node pkg="rosserial_python" name="rosserial_python" type="serial_node.py">
