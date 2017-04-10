@@ -138,7 +138,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
     tf::StampedTransform transform;
 
-
    // setting up laserframe coordinates from cluster centers
    laserframe.point.x = xcoordinate;
    laserframe.point.y = ycoordinate;
@@ -206,10 +205,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        clustermapframe.data.push_back(mapframe.point.x);
        clustermapframe.data.push_back(mapframe.point.y);
        clustermapframe.data.push_back(mapframe.point.z);
-       
-
-<<<<<<< HEAD:lidartracking/src/main.cpp
-
+      
     }
 
 
@@ -218,7 +214,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
             
        mapframe.point.x = xcoordinate;
        mapframe.point.y  = ycoordinate;
-       mapfrmae.point.z  = zcoordinate;
+       mapframe.point.z  = zcoordinate;
 
 
 
@@ -229,21 +225,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        cc_pos.publish(mapframe);
 
        markerPub1.publish(clusterMarkers1);
-
-=======
-//       cc_pos.publish(mapframe);
-
-//       markerPub1.publish(clusterMarkers1);
-    }
-
-
-cc_pos.publish(mapframe);
-markerPub1.publish(clusterMarkers1);
->>>>>>> 47442b317c6c5ab0e3645fc9117f71c5df2cadf5:obstacle_detection/lidartracking/src/main.cpp
-
-
-
-
 
 };
 
