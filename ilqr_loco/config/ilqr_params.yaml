@@ -19,3 +19,8 @@ init_control_seq: [0.159000,-0.095000,0.298000,-0.035000,0.386000,-0.131000,0.45
 
 # Traj server params
 old_msg_discard_thres: 0.5
+
+# Obstacle detection params
+scan_clip_angle: 0.35 #radians
+naive_obstacle_dist_thres: 1.5
+naive_obstacle_percent_thres: 0.2
