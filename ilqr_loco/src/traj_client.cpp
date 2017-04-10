@@ -92,7 +92,13 @@ void TrajClient::LoadOpt()
   ROS_INFO("assigning stuff.");
 
   Opt = INIT_OPTSET;
+
+  ROS_INFO("assigning stuff2.");
+
   standard_parameters(&Opt);
+
+  ROS_INFO("assigning stuff3.");
+
   Opt.p= (double **) malloc(n_params*sizeof(double *));
   Opt.p[0] = assignPtrVal(&G_f_,1);
   Opt.p[1] = assignPtrVal(&G_r_,1);;
