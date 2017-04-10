@@ -63,7 +63,6 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_i
   geometry_msgs::Twist twist;
   FillTwistMsg(twist, 0.0, 0.0);
   goal.traj.commands[N-1] = twist;
-
 }
 
 #endif

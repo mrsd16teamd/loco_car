@@ -118,6 +118,8 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, s
     // Set model and problem parameters
     init_params(&o, xDes, Obs);
 
+		// TODO store o in traj_client so we can skip above
+
     // outputs
     double success[1];
     double new_cost[1];

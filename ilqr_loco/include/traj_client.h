@@ -67,8 +67,7 @@ protected:
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
                                                  nav_msgs::Odometry cur_state_);
 
-  void ilqgPlan();
-  ilqr_loco::TrajExecGoal ilqgGenerateTrajectory(nav_msgs::Odometry cur_state);
+  void ilqrPlan();
   void iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_init, std::vector<double> x_des,
                      geometry_msgs::Point obstacle_pos, int T, ilqr_loco::TrajExecGoal &goal);
 

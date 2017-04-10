@@ -73,7 +73,7 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.x, obs_pos_.y);
     obs_received_ = true;
     if (mode_==3){
-      ilqgPlan();
+      ilqrPlan();
     }
   }
 }
@@ -100,7 +100,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
         break;
       }
       mode_=2;
-      ilqgPlan();
+      ilqrPlan();
       break;
     }
     case 3: { //ramp and iLQR open loop
@@ -196,7 +196,7 @@ void TrajClient::rampPlan() {
     end_goal.traj.commands.push_back(control_msg);
     end_goal.traj.states.push_back(cur_state_);
     SendTrajectory(end_goal);
-    
+
     obs_received_ = true;
     mode_ = 0;
   }
@@ -227,7 +227,7 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
   return goal;
 }
 
-void TrajClient::ilqgPlan()
+void TrajClient::ilqrPlan()
 {
   ilqr_loco::TrajExecGoal goal = ilqgGenerateTrajectory(cur_state_);
   SendTrajectory(goal);
