@@ -29,7 +29,7 @@ class TwistMarker
 {
 public:
 
-  TwistMarker(double scale = 1.0, double z = 0.0, const std::string& frame_id = "base_footprint")
+  TwistMarker(double scale = 1.0, double z = 0.0, const std::string& frame_id = "base_link")
     : frame_id_(frame_id)
     , scale_(scale)
     , z_(z)
