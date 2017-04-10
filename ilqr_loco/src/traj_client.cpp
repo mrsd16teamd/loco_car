@@ -82,7 +82,7 @@ void TrajClient::LoadOpt()
 {
   LoadCarParams();
   LoadCost();
-  nh_.getParam("Opt_control_dt", dt);
+
   Opt = INIT_OPTSET;
   standard_parameters(&Opt);
   Opt.p= (double **) malloc(n_params*sizeof(double *));
@@ -101,7 +101,7 @@ void TrajClient::LoadOpt()
   Opt.p[12] = assignPtrVal(&cu_[0],2);
   Opt.p[13] = assignPtrVal(&cx_[0],3);
   Opt.p[14] = assignPtrVal(&d_thres_,1);
-  Opt.p[15] = assignPtrVal(&dt,1);
+  Opt.p[15] = assignPtrVal(&timestep_,1);
   Opt.p[16] = assignPtrVal(&k_pos_,1);
   Opt.p[17] = assignPtrVal(&k_vel_,1);
   Opt.p[18] = assignPtrVal(&limSteer_[0],2);
