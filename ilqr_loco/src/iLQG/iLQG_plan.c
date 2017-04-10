@@ -27,7 +27,6 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
     double *x_nom, *u_nom; //, *l, *L;
 
     // aux
-    char *err_msg, *fname;
     clock_t begin, end;
 
     n= sizeof(x0)/sizeof(x0[0]);  // length of state vector

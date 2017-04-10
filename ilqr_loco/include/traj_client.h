@@ -102,6 +102,9 @@ protected:
   float goal_threshold_;
 
   void LoadParams();
+	void LoadCarParams();
+  void LoadCost();
+  void LoadOpt();
 
   void rampPlan();
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,

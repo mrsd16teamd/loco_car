@@ -14,6 +14,8 @@ TrajClient::TrajClient(): ac_("traj_executer", true), mode_(0), T_(0),
   state_estimate_received_ = false;
   obs_received_ = false;
   ramp_goal_flag_ = false;
+
+	LoadParams();
 }
 
 void TrajClient::LoadParams()
@@ -45,16 +47,16 @@ void TrajClient::LoadParams()
 }
 
 void TrajClient::LoadCarParams()
-{ 
-  nh_.getParam('Opt_car_param/g', g_);
-  nh_.getParam('Opt_car_param/L', L_);
-  nh_.getParam('Opt_car_param/m', m_);
-  nh_.getParam('Opt_car_param/b', b_);
-  nh_.getParam('Opt_car_param/c_x', c_x_);
-  nh_.getParam('Opt_car_param/c_a', c_a_);
-  nh_.getParam('Opt_car_param/Iz', Iz_);
-  nh_.getParam('Opt_car_param/mu', mu_);
-  nh_.getParam('Opt_car_param/mu_s', mu_s_);
+{
+  nh_.getParam("Opt_car_param/g", g_);
+  nh_.getParam("Opt_car_param/L", L_);
+  nh_.getParam("Opt_car_param/m", m_);
+  nh_.getParam("Opt_car_param/b", b_);
+  nh_.getParam("Opt_car_param/c_x", c_x_);
+  nh_.getParam("Opt_car_param/c_a", c_a_);
+  nh_.getParam("Opt_car_param/Iz", Iz_);
+  nh_.getParam("Opt_car_param/mu", mu_);
+  nh_.getParam("Opt_car_param/mu_s", mu_s_);
 
   a_ = L_ - b_;
   G_f_ = m_*g_*b_/L_;
@@ -62,25 +64,25 @@ void TrajClient::LoadCarParams()
 }
 
 void TrajClient::LoadCost()
-{ 
-  nh_.getParam('Opt_cost/cu', cu_);
-  nh_.getParam('Opt_cost/cdu', cdu_);
-  nh_.getParam('Opt_cost/cf', cf_);
-  nh_.getParam('Opt_cost/pf', pf_);
-  nh_.getParam('Opt_cost/cx', cx_);
-  nh_.getParam('Opt_cost/cdx', cdx_);
-  nh_.getParam('Opt_cost/px', px_);
-  nh_.getParam('Opt_cost/cdrift', cdirft_);
-  nh_.getParam('Opt_cost/k_pos', k_pos_);
-  nh_.getParam('Opt_cost/k_vel', k_vel_);
-  nh_.getParam('Opt_cost/d_thres', d_thres_);
+{
+  nh_.getParam("Opt_cost/cu", cu_);
+  nh_.getParam("Opt_cost/cdu", cdu_);
+  nh_.getParam("Opt_cost/cf", cf_);
+  nh_.getParam("Opt_cost/pf", pf_);
+  nh_.getParam("Opt_cost/cx", cx_);
+  nh_.getParam("Opt_cost/cdx", cdx_);
+  nh_.getParam("Opt_cost/px", px_);
+  nh_.getParam("Opt_cost/cdrift", cdrift_);
+  nh_.getParam("Opt_cost/k_pos", k_pos_);
+  nh_.getParam("Opt_cost/k_vel", k_vel_);
+  nh_.getParam("Opt_cost/d_thres", d_thres_);
 }
 
 void TrajClient::LoadOpt()
 {
   LoadCarParams();
   LoadCost();
-  nh_.getParam('Opt_control_dt', dt);
+  nh_.getParam("Opt_control_dt", dt);
   Opt = INIT_OPTSET;
   standard_parameters(&Opt);
   Opt.p= (double **) malloc(n_params*sizeof(double *));
@@ -110,6 +112,8 @@ void TrajClient::LoadOpt()
   Opt.p[23] = assignPtrVal(&pf_[0],6);
   Opt.p[24] = assignPtrVal(&px_[0],3);
   // [25] xDes
+
+  char *err_msg, *fname;
   fname = "max_iter";
   double max_iter = 100;
 
