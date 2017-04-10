@@ -25,7 +25,7 @@
 
   <group if="$(arg csm)">
     <node pkg="urg_node" type="urg_node" name="urg_node" args="$(arg lidar_path)"/>
-    <include file="$(find loco)/launch/robot_tf.launch" />
+    <include file="$(find loco)/launch/core/robot_tf.launch" />
     <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" /> 
 <!-- <node pkg="um7" type="um7_driver" name="um7_driver" args="_port:=/dev/ttyUSB0" output="screen"/> -->
 
@@ -61,7 +61,7 @@
   </group>
 
   <group if="$(arg cmd)">
-    <include file="$(find loco)/launch/robot_tf.launch" />
+    <include file="$(find loco)/launch/core/robot_tf.launch" />
     <node pkg="loco" type="cmd_vel_odom" name="cmd_vel_odom" args="$(arg lidar_path)"/>
   </group>
 

@@ -59,8 +59,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
     float xcoordinate(9.0);
-    float ycoordinate(9.0);
-    float zcoordinate(9.0);
+    float ycoordinate(0.0f);
+    float zcoordinate(0.0f);
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
     //initialize the clustercenter
     std_msgs::Float32MultiArray clustermapframe;
@@ -116,7 +116,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         centroid.y=y/numPts;
         centroid.z=0.0;
  
-        if (centroid.x < 1.5  && centroid.x > -1.5 && centroid.y > -0.75 && centroid.y < 0.75 && centroid.x != 0 && centroid.y != 0 )
+        if (centroid.x < 1.5  && centroid.x > -1.5 && centroid.y > -1.5 && centroid.y < 1.5 && centroid.x != 0 && centroid.y != 0 )
         {
              
             xcoordinate = centroid.x;
@@ -138,13 +138,12 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
     tf::StampedTransform transform;
 
-
-
+   // setting up laserframe coordinates from cluster centers
    laserframe.point.x = xcoordinate;
    laserframe.point.y = ycoordinate;
    laserframe.point.z = zcoordinate;
 
-
+    // converting laserframe to mapframe 
     try
     {
 	    tran->waitForTransform("/map","/laser",ros::Time::now(), ros::Duration(0.01));
@@ -173,7 +172,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
     }
 
-
+    //setting up the marker 
     visualization_msgs::MarkerArray clusterMarkers1;
 
 
@@ -189,9 +188,10 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         m1.color.g=0;
         m1.color.b=0;
 
+     
+// checking if the cluster was found near the give radious of robot 
 
-
-   if (  abs(laserframe.point.x)  != 9  &&  abs(laserframe.point.y)  != 9 )
+   if (  abs(laserframe.point.x)  != 9.0  &&  abs(laserframe.point.y)  != 0.0)
    {
 
 
@@ -205,16 +205,20 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        clustermapframe.data.push_back(mapframe.point.x);
        clustermapframe.data.push_back(mapframe.point.y);
        clustermapframe.data.push_back(mapframe.point.z);
-       
-
-       cc_pos.publish(mapframe);
-
-       markerPub1.publish(clusterMarkers1);
     }
 
 
+   else 
+    {
+       mapframe.point.x = xcoordinate;
+       mapframe.point.y  = ycoordinate;
+       mapframe.point.z  = zcoordinate;
+    }
 
 
+       
+cc_pos.publish(mapframe);
+markerPub1.publish(clusterMarkers1);
 
 
 
@@ -233,15 +237,13 @@ int main(int argc, char** argv)
     std::cout<<"About to setup callback tracker\n";
     tf::TransformListener lr(ros::Duration(10));
     tran=&lr;
-    ros::Subscriber sub = nh.subscribe ("cloudnear", 1, cloud_cb);
+    ros::Subscriber sub = nh.subscribe ("scan_cloud", 1, cloud_cb);
     cc_pos=nh.advertise<geometry_msgs::PointStamped>("cluster_center",100);//clusterCenter1
 
     markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
 
 
-
-
     ros::spin();
 
-
 }
+

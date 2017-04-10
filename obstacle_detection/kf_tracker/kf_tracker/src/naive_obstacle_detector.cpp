@@ -20,8 +20,8 @@ float obs_dist = 0;
 bool found_obs = false;
 
 // Parameters
-float obstacle_thres = 1.5; //[m]f
-float percent_thres = 0.2;
+float obstacle_thres; //[m]f
+float percent_thres;
 
 void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
 {
@@ -93,6 +93,15 @@ int main(int argc, char **argv) {
 
   ros::Subscriber sub = nh.subscribe("scan_front", 1, scan_cb);
   ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
+
+  try{
+    nh.getParam("naive_obstacle_dist_thres", obstacle_thres);
+    nh.getParam("naive_obstacle_percent_thres", percent_thres);
+  }
+  catch(...){
+    ROS_ERROR("Need param obstacle_thres and percent_thres!");
+    ros::shutdown();
+  }
 
   tf::TransformListener lr(ros::Duration(10));
   tran = &lr;

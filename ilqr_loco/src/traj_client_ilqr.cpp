@@ -52,11 +52,7 @@ void TrajClient::ilqrMPC()
 
     if (DistToGoal() < goal_threshold_){
       ROS_INFO("Reached goal point.");
-      ilqr_loco::TrajExecGoal stop;
-      geometry_msgs::Twist twist;
-      FillTwistMsg(twist, 0.0, 0.0);
-      stop.traj.commands.push_back(twist);
-      SendTrajectory(stop);
+			SendZeroCommand();
       return;
     }
 

@@ -2,7 +2,7 @@
 
 <launch>
 
-  <include file="$(find loco)/launch/odometry.launch" />
+  <include file="$(find loco)/launch/core/odometry.launch" />
 
   <node pkg="map_server" type="map_server" name="map_server" args="$(find loco)/maps/extended.yaml" />
 

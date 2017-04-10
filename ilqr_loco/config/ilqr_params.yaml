@@ -23,3 +23,8 @@ Opt_cost: {cu: [1e-2, 1e-2], cdu: [10e-1, 15e-1], cf: [10, 10, 5, 10, 0.1, 0.1],
 
 # Traj server params
 old_msg_discard_thres: 0.5
+
+# Obstacle detection params
+scan_clip_angle: 0.35 #radians
+naive_obstacle_dist_thres: 1.5
+naive_obstacle_percent_thres: 0.2
