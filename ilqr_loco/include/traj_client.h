@@ -95,7 +95,7 @@ protected:
   float accel_;
   float target_vel_;
   float timeout_;
-  float timestep_;
+  double timestep_;
 
   //iLQR parameters
   float mpc_timeout_;
