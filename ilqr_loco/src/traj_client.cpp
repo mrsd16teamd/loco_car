@@ -35,6 +35,8 @@ void TrajClient::LoadParams()
     nh_.getParam("X_des", x_des_);
     nh_.getParam("timeout_ilqr_mpc", mpc_timeout_);
     nh_.getParam("stop_goal_threshold", goal_threshold_);
+
+    // TODO put tOptSet stuff here
   }
   catch(...)
   {
@@ -53,8 +55,8 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   double old_vy = cur_state_.twist.twist.linear.y;
   cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
   cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
-
   state_estimate_received_ = true;
+
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
   {
     rampPlan();
@@ -69,10 +71,15 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     obs_pos_.y = msg.point.y;
     ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.x, obs_pos_.y);
     obs_received_ = true;
-    if (mode_ == 3){
-      ilqrPlan();
+
+    if (mode_==1){
+      // TODO put brake here?
     }
-    else if (mode_ == 4){
+    else if (mode_==2 || mode_==3){
+      ilqrPlan();
+      mode_ = 0;
+    }
+    else if (mode_==4){
       ilqrMPC();
     }
   }
@@ -86,41 +93,45 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     ROS_INFO("Haven't received state info yet.");
     return;
   }
+  
   switch (command)
   {
     //DONT CHANGE THESE! TOO MUCH WORK
-    case 1: { //ramp
+    case 1: {
+      ROS_INFO("Mode 1: ramp.");
       mode_ = 1;
       start_time_ = ros::Time::now();
+      // wait for stateCb to ramp
       break;
     }
-    case 2: { //iLQR static
-      if(!obs_received_){
-        ROS_INFO("Haven't received obstacle info yet.");
-        break;
-      }
+    case 2: {
+      ROS_INFO("Mode 2: iLQR from static initial conditions.");
       mode_ = 2;
-      ilqrPlan();
+		  // wait for obsCb to plan
       break;
     }
-    case 3: { //ramp and iLQR open loop
+    case 3: {
+      ROS_INFO("Mode 3: ramp -> iLQR open loop.");
       mode_ = 3;
       obs_received_ = false;
       start_time_ = ros::Time::now();
       break;
-      //wait for next stateCb
+      //wait for stateCb to ramp
     }
-    case 4: { //ramp and iLQR closed loop
+    case 4: {
+      ROS_INFO("Mode 4: ramp -> iLQR closed loop.");
       mode_ = 4;
       obs_received_ = false;
-      //wait for next stateCb
+      //wait for stateCb to ramp
     }
-    case 8: { //reset obs
+    case 8: {
+      ROS_INFO("Resetting obs_received_ to false.");
       obs_received_ = false;
       break;
     }
-    case 9: { //kill client
+    case 9: {
       ROS_INFO("Killing node.");
+      mode_ = 0;
       ros::shutdown();
       break;
     }
@@ -141,7 +152,7 @@ void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "test_client");
+  ros::init(argc, argv, "traj_client");
   TrajClient client;
   ros::spin();
 

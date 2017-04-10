@@ -27,3 +27,15 @@ void TrajClient::FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
   odom.twist.twist.linear.y = Uy;
   odom.twist.twist.angular.z = w;
 }
+
+void TrajClient::SendZeroCommand()
+{
+  ilqr_loco::TrajExecGoal end_goal;
+
+  geometry_msgs::Twist control_msg;
+  FillTwistMsg(control_msg, 0, 0);
+
+  end_goal.traj.commands.push_back(control_msg);
+  end_goal.traj.states.push_back(cur_state_);
+  SendTrajectory(end_goal);
+}

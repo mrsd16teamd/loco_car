@@ -79,6 +79,7 @@ protected:
   double DistToGoal();
 
   void RampAndiLQR();
+	void SendZeroCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
 
   void activeCb();

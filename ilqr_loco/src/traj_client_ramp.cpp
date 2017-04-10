@@ -32,7 +32,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   goal.traj.states.push_back(state_msg);
 
   ++T_;
-  ramp_goal_flag_ = v>=target_vel_ ? true : false;  // Ramp completion flag
+  ramp_goal_flag_ = (v >= target_vel_) ? true : false;  // Ramp completion flag
 
   return goal;
 }
@@ -49,16 +49,7 @@ void TrajClient::rampPlan() {
   {
     // Stop car after ramp timeout
     ROS_INFO("Timeout exceeded, stopping car");
-    ilqr_loco::TrajExecGoal end_goal;
-
-    geometry_msgs::Twist control_msg;
-    FillTwistMsg(control_msg, 0, 0);
-
-    end_goal.traj.commands.push_back(control_msg);
-    end_goal.traj.states.push_back(cur_state_);
-    SendTrajectory(end_goal);
-
-    obs_received_ = true;
+    SendZeroCommand();
     mode_ = 0;
   }
 }
