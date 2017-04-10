@@ -2,9 +2,14 @@
 
 <!--  <include file="$(find loco)/launch/openloop_sve.launch" /> -->
 
+<!-- Start perception nodes-->
   <node pkg="lidartracking" type="naivedetector" name="naivedetector" output="screen"/>
   <node pkg="publishpcl" type="publishpcl" name="publishpcl" output="screen"/>
 
+  <!-- Load Planner configs from YAML -->
+    <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params.yaml"/>
+
+  <!-- Start planner client-server nodes-->
   <node pkg="ilqr_loco" type="traj_client" name="traj_client" output="screen"/>
   <node pkg="ilqr_loco" type="traj_server" name="traj_server" output="screen"/>
 

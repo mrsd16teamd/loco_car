@@ -12,28 +12,9 @@ find_package(catkin REQUIRED
   message_generation
   )
 
-# For actions
-#find_package(catkin REQUIRED genmsg actionlib_msgs actionlib)
-#add_action_files(DIRECTORY action FILES
-  # DoDishes.action TODO add our own here
-#)
-
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-
-#add_message_files(
-#   FILES
-#   Trajectory.msg
-#)
-
-# generate_messages(
-#    DEPENDENCIES
-#   std_msgs
-#   nav_msgs
-#   geometry_msgs
-#   actionlib_msgs
-#)
 
 catkin_package(
   CATKIN_DEPENDS message_runtime
