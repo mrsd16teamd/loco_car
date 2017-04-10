@@ -61,7 +61,7 @@
   </group>
 
   <group if="$(arg cmd)">
-    <include file="$(find loco)/launch/robot_tf.launch" />
+    <include file="$(find loco)/launch/core/robot_tf.launch" />
     <node pkg="loco" type="cmd_vel_odom" name="cmd_vel_odom" args="$(arg lidar_path)"/>
   </group>
 

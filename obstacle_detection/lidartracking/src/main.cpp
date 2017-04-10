@@ -138,7 +138,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
     tf::StampedTransform transform;
 
-
    // setting up laserframe coordinates from cluster centers
    laserframe.point.x = xcoordinate;
    laserframe.point.y = ycoordinate;
@@ -206,10 +205,14 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        clustermapframe.data.push_back(mapframe.point.x);
        clustermapframe.data.push_back(mapframe.point.y);
        clustermapframe.data.push_back(mapframe.point.z);
+<<<<<<< HEAD
        
 
 
 
+=======
+      
+>>>>>>> bc6ea36ef4f7d0ea203a1dba8465a820d21a07ab
     }
 
 
@@ -218,7 +221,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
             
        mapframe.point.x = xcoordinate;
        mapframe.point.y  = ycoordinate;
-       mapfrmae.point.z  = zcoordinate;
+       mapframe.point.z  = zcoordinate;
 
 
 
@@ -230,6 +233,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
        markerPub1.publish(clusterMarkers1);
 
+<<<<<<< HEAD
 
 //       cc_pos.publish(mapframe);
 
@@ -245,6 +249,8 @@ markerPub1.publish(clusterMarkers1);
 
 
 
+=======
+>>>>>>> bc6ea36ef4f7d0ea203a1dba8465a820d21a07ab
 };
 
 
