@@ -42,6 +42,10 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_i
   // traj[0]: states, traj[1]: controls
   plan_trajectory(x0,u0,xDes,Obs,T,&Traj);
 
+  // TODO find better way that doesn't copy twice
+  std::vector<double> u_sol(Traj.u, Traj.u+N);
+  u_init = u_sol;
+
   //Put states and controls into format that action client wants.
   goal.traj.states.reserve(N);
   goal.traj.commands.reserve(N);
