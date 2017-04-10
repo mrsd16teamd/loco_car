@@ -233,7 +233,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
        markerPub1.publish(clusterMarkers1);
 
-<<<<<<< HEAD
+
 
 //       cc_pos.publish(mapframe);
 
@@ -249,8 +249,7 @@ markerPub1.publish(clusterMarkers1);
 
 
 
-=======
->>>>>>> bc6ea36ef4f7d0ea203a1dba8465a820d21a07ab
+
 };
 
 
