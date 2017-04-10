@@ -3,10 +3,7 @@
 #include "iLQG_plan.h"
 
 double* assignPtrVal(double* values, int numVal) {
-    printf("wtf1");
     double* temp = (double *) malloc(numVal*sizeof(double));
-    printf("wtf2");
-
     memcpy(temp, values, numVal*sizeof(double));
 
     return temp;

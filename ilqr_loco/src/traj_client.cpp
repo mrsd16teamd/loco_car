@@ -59,6 +59,8 @@ void TrajClient::LoadCarParams()
   nh_.getParam("Opt_car_param/Iz", Iz_);
   nh_.getParam("Opt_car_param/mu", mu_);
   nh_.getParam("Opt_car_param/mu_s", mu_s_);
+  nh_.getParam("Opt_car_param/limSteer", limSteer_);
+  nh_.getParam("Opt_car_param/limThr", limThr_);
 
   a_ = L_ - b_;
   G_f_ = m_*g_*b_/L_;
@@ -82,24 +84,15 @@ void TrajClient::LoadCostParams()
 
 void TrajClient::LoadOpt()
 {
-  ROS_INFO("Loading opt.");
-
   LoadCarParams();
-  ROS_INFO("Loading cost.");
-
   LoadCostParams();
-
-  ROS_INFO("assigning stuff.");
 
   Opt = INIT_OPTSET;
 
-  ROS_INFO("assigning stuff2.");
-
   standard_parameters(&Opt);
 
-  ROS_INFO("assigning stuff3.");
-
   Opt.p= (double **) malloc(n_params*sizeof(double *));
+
   Opt.p[0] = assignPtrVal(&G_f_,1);
   Opt.p[1] = assignPtrVal(&G_r_,1);;
   Opt.p[2] = assignPtrVal(&Iz_,1);;
