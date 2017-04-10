@@ -21,7 +21,7 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
             cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
   ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
 
-  iLQR_gen_traj(cur_state, init_control_seq_, x_des_, obs_pos_, T_horizon_, Opt, goal);
+  iLQR_gen_traj(cur_state, init_control_seq_, x_des_, obs_pos_, T_horizon_, &Opt, goal);
   ++T_;
 
   return goal;

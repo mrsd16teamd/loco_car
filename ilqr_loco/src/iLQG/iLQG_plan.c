@@ -20,7 +20,7 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
     // dims
     int N, n, m, m_, n_, si, i, k;
     // inputs
-    tOptSet o= INIT_OPTSET;
+    // tOptSet o= INIT_OPTSET;
     int dims[3];
 
     //outputs
