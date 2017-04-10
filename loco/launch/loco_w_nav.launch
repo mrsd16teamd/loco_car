@@ -19,7 +19,7 @@
                   <param name="clearing_rotation_allowed" value="false" /> <!-- Our carlike robot is not able to rotate in place -->
   	</node>
 
-  <include file="$(find loco)/launch/amcl_sve.launch" />
+  <include file="$(find loco)/launch/amcl/amcl_sve.launch" />
 
   <include file="$(find teleop_twist_joy)/launch/teensy_nav.launch" />
 
