@@ -59,8 +59,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
     float xcoordinate(9.0);
-    float ycoordinate(9.0);
-    float zcoordinate(9.0);
+    float ycoordinate(0.0f);
+    float zcoordinate(0.0f);
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
     //initialize the clustercenter
     std_msgs::Float32MultiArray clustermapframe;
@@ -116,7 +116,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         centroid.y=y/numPts;
         centroid.z=0.0;
  
-        if (centroid.x < 1.5  && centroid.x > -1.5 && centroid.y > -0.75 && centroid.y < 0.75 && centroid.x != 0 && centroid.y != 0 )
+        if (centroid.x < 1.5  && centroid.x > -1.5 && centroid.y > -1.5 && centroid.y < 1.5 && centroid.x != 0 && centroid.y != 0 )
         {
              
             xcoordinate = centroid.x;
@@ -139,12 +139,12 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     tf::StampedTransform transform;
 
 
-
+   // setting up laserframe coordinates from cluster centers
    laserframe.point.x = xcoordinate;
    laserframe.point.y = ycoordinate;
    laserframe.point.z = zcoordinate;
 
-
+    // converting laserframe to mapframe 
     try
     {
 	    tran->waitForTransform("/map","/laser",ros::Time::now(), ros::Duration(0.01));
@@ -173,7 +173,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
     }
 
-
+    //setting up the marker 
     visualization_msgs::MarkerArray clusterMarkers1;
 
 
@@ -189,9 +189,10 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         m1.color.g=0;
         m1.color.b=0;
 
+     
+// checking if the cluster was found near the give radious of robot 
 
-
-   if (  abs(laserframe.point.x)  != 9  &&  abs(laserframe.point.y)  != 9 )
+   if (  abs(laserframe.point.x)  != 9.0  &&  abs(laserframe.point.y)  != 0.0)
    {
 
 
@@ -207,6 +208,29 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        clustermapframe.data.push_back(mapframe.point.z);
        
 
+<<<<<<< HEAD:lidartracking/src/main.cpp
+
+    }
+
+
+   else 
+    {
+            
+       mapframe.point.x = xcoordinate;
+       mapframe.point.y  = ycoordinate;
+       mapfrmae.point.z  = zcoordinate;
+
+
+
+
+    }
+
+
+       cc_pos.publish(mapframe);
+
+       markerPub1.publish(clusterMarkers1);
+
+=======
 //       cc_pos.publish(mapframe);
 
 //       markerPub1.publish(clusterMarkers1);
@@ -215,6 +239,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 cc_pos.publish(mapframe);
 markerPub1.publish(clusterMarkers1);
+>>>>>>> 47442b317c6c5ab0e3645fc9117f71c5df2cadf5:obstacle_detection/lidartracking/src/main.cpp
 
 
 
