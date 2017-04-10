@@ -207,14 +207,14 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        clustermapframe.data.push_back(mapframe.point.z);
        
 
-       cc_pos.publish(mapframe);
+//       cc_pos.publish(mapframe);
 
-       markerPub1.publish(clusterMarkers1);
+//       markerPub1.publish(clusterMarkers1);
     }
 
 
-
-
+cc_pos.publish(mapframe);
+markerPub1.publish(clusterMarkers1);
 
 
 
@@ -233,7 +233,7 @@ int main(int argc, char** argv)
     std::cout<<"About to setup callback tracker\n";
     tf::TransformListener lr(ros::Duration(10));
     tran=&lr;
-    ros::Subscriber sub = nh.subscribe ("cloudnear", 1, cloud_cb);
+    ros::Subscriber sub = nh.subscribe ("scan_cloud", 1, cloud_cb);
     cc_pos=nh.advertise<geometry_msgs::PointStamped>("cluster_center",100);//clusterCenter1
 
     markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
@@ -245,3 +245,4 @@ int main(int argc, char** argv)
 
 
 }
+
