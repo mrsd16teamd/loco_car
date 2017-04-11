@@ -27,6 +27,7 @@ void TrajClient::LoadParams()
     nh_.getParam("ilqr_tolGrad", ilqr_tolGrad_);
     nh_.getParam("ilqr_max_iter", ilqr_max_iter_);
     nh_.getParam("ilqr_regType", ilqr_regType_);
+    nh_.getParam("ilqr_debug_level", ilqr_debug_level_);
 
     LoadOpt();
   }
@@ -70,30 +71,31 @@ void TrajClient::LoadCostParams()
   nh_.getParam("Opt_cost/d_thres", d_thres_);
 }
 
-void TrajClient::SetOptParams(tOptSet o)
+// changed to pass by reference to apply and keep edit
+void TrajClient::SetOptParams(tOptSet *o)
 {
-    o.tolFun= 1e-7;
-    o.tolConstraint= 1e-7;
-    o.tolGrad= 1e-5;
-    o.max_iter= 20;
-    o.regType= 1;
+    o->tolFun= ilqr_tolFun_;
+    o->tolConstraint= ilqr_tolConstraint_;
+    o->tolGrad= ilqr_tolGrad_;
+    o->max_iter= ilqr_max_iter_;
+    o->regType= ilqr_regType_;
+    o->debug_level= ilqr_debug_level_;
 
     double default_alpha[]= {1.0, 0.3727594, 0.1389495, 0.0517947, 0.0193070, 0.0071969, 0.0026827, 0.0010000};
-    o.alpha= default_alpha;
-    o.n_alpha= 8;
-    o.lambdaInit= 1;
-    o.dlambdaInit= 1;
-    o.lambdaFactor= 1.6;
-    o.lambdaMax= 1e10;
-    o.lambdaMin= 1e-6;
-    o.zMin= 0.0;
-    o.debug_level= 2;
-    o.w_pen_init_l= 1.0;
-    o.w_pen_init_f= 1.0;
-    o.w_pen_max_l= INF;
-    o.w_pen_max_f= INF;
-    o.w_pen_fact1= 4.0; // 4...10 Bertsekas p. 123
-    o.w_pen_fact2= 1.0;
+    o->alpha= default_alpha;
+    o->n_alpha= 8;
+    o->lambdaInit= 1;
+    o->dlambdaInit= 1;
+    o->lambdaFactor= 1.6;
+    o->lambdaMax= 1e10;
+    o->lambdaMin= 1e-6;
+    o->zMin= 0.0;
+    o->w_pen_init_l= 1.0;
+    o->w_pen_init_f= 1.0;
+    o->w_pen_max_l= INF;
+    o->w_pen_max_f= INF;
+    o->w_pen_fact1= 4.0; // 4...10 Bertsekas p. 123
+    o->w_pen_fact2= 1.0;
 }
 
 void TrajClient::LoadOpt()
@@ -103,7 +105,7 @@ void TrajClient::LoadOpt()
 
   Opt = INIT_OPTSET;
 
-  SetOptParams(Opt);
+  SetOptParams(&Opt);
 
   Opt.p= (double **) malloc(n_params*sizeof(double *));
 
