@@ -132,7 +132,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     Eigen::Vector4f obstaclepoint;
     geometry_msgs::PointStamped laserframe;
     geometry_msgs::PointStamped mapframe;
-    laserframe.header.frame_id = "base_link";
+    laserframe.header.frame_id = "laser";
    
  
 
@@ -146,8 +146,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     // converting laserframe to mapframe 
     try
     {
-	    tran->waitForTransform("map","base_link",ros::Time::now(), ros::Duration(0.01));
-            tran->lookupTransform("map","base_link", ros::Time(0), transform);
+	    tran->waitForTransform("map","laser",ros::Time::now(), ros::Duration(0.01));
+            tran->lookupTransform("map","laser", ros::Time(0), transform);
             tran->transformPoint("map",laserframe, mapframe);
     }
     catch (tf::TransformException& ex) 
