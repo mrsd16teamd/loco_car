@@ -7,15 +7,15 @@ TrajClient::TrajClient(): ac_("traj_executer", true), mode_(0), T_(0),
   obs_sub_ = nh_.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
   mode_sub_ = nh_.subscribe("client_command", 1, &TrajClient::modeCb, this);
 
-  ROS_INFO("Waiting for action server to start.");
-  ac_.waitForServer(); //will wait for infinite time
-  ROS_INFO("Action client started. Send me commands from teleop_keyboard!");
-
   state_estimate_received_ = false;
   obs_received_ = false;
   ramp_goal_flag_ = false;
 
 	LoadParams();
+
+  ROS_INFO("Waiting for action server to start.");
+  ac_.waitForServer(); //will wait for infinite time
+	ROS_INFO("Action client started. Send me commands from teleop_keyboard!");
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
