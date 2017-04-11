@@ -41,40 +41,35 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_i
   Traj.x = (double *) malloc(n*N*sizeof(double));
   Traj.u = (double *) malloc(m*(N-1)*sizeof(double));
 
-  std::clock_t start = std::clock();
-
   // traj[0]: states, traj[1]: controls
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
-
-  // Temporary testing thing
-  double ilqr_time = (std::clock() - start) / (double)(CLOCKS_PER_SEC);
-  ROS_INFO("iLQR took %f sec.", ilqr_time);
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+N);
   u_init = u_sol;
 
+  //TODO bring this back!
   //Put states and controls into format that action client wants.
-  goal.traj.states.reserve(N);
-  goal.traj.commands.reserve(N);
+  // goal.traj.states.reserve(N);
+  // goal.traj.commands.reserve(N);
 
   for(int i=0; i<N; i++) {
    	nav_msgs::Odometry odom;
     FillOdomMsg(odom, Traj.x[i*n+0], Traj.x[i*n+1], Traj.x[i*n+2],
                       Traj.x[i*n+3], Traj.x[i*n+4], Traj.x[i*n+5]);
-  	goal.traj.states[i] = odom;
+  	goal.traj.states.push_back(odom);
   }
 
   for(int i=0; i<N-1; i++) {
   	geometry_msgs::Twist twist;
     FillTwistMsg(twist, double(Traj.u[i*m+0]), double(Traj.u[i*m+1]));
-  	goal.traj.commands[i] = twist;
+  	goal.traj.commands.push_back(twist);
   }
 
   // append zero command to stop vehicle
   geometry_msgs::Twist twist;
   FillTwistMsg(twist, 0.0, 0.0);
-  goal.traj.commands[N-1] = twist;
+  goal.traj.commands.push_back(twist);
 }
 
 #endif

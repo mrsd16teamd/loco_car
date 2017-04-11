@@ -39,7 +39,7 @@ include_directories(
 )
 
 file(GLOB_RECURSE C_SOURCES "src/iLQG/*.c")
-add_definitions(-DPRNT=printf -DDEBUG_ILQG=0 -DDEBUG_BACKPASS=0 -DDEBUG_FORWARDPASS=0 -DFULL_DDP=0 -DMULTI_THREADED=0 -O3)
+add_definitions(-DPRNT=printf -DDEBUG_ILQG=0 -DDEBUG_BACKPASS=0 -DDEBUG_FORWARDPASS=0 -DFULL_DDP=0 -DMULTI_THREADED=1 -O3)
 
 add_executable(traj_client src/traj_client.cpp
 													 src/ilqr_planner.cpp
