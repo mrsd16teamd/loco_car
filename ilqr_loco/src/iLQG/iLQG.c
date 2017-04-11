@@ -32,9 +32,7 @@
 
 #define TRACE(x) do { if (DEBUG_ILQG) PRNT x; } while (0)
 
-
-double default_alpha[]= {1.0, 0.3727594, 0.1389495, 0.0517947, 0.0193070, 0.0071969, 0.0026827, 0.0010000};
-#if MULTI_THREADED  
+#if MULTI_THREADED
 pthread_mutex_t step_mutex= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  next_step_condition= PTHREAD_COND_INITIALIZER;
 int step_calc_done;
@@ -54,29 +52,6 @@ void printParams(double **p, int k) {
     }
 }
 
-void standard_parameters(tOptSet *o) {
-    o->alpha= default_alpha;
-    o->n_alpha= 8;
-    o->tolFun= 1e-7;
-    o->tolConstraint= 1e-7;
-    o->tolGrad= 1e-5;
-    o->max_iter= 20;
-    o->lambdaInit= 1;
-    o->dlambdaInit= 1;
-    o->lambdaFactor= 1.6;
-    o->lambdaMax= 1e10;
-    o->lambdaMin= 1e-6;
-    o->regType= 1;
-    o->zMin= 0.0;
-    o->debug_level= 2;
-    o->w_pen_init_l= 1.0;
-    o->w_pen_init_f= 1.0;
-    o->w_pen_max_l= INF;
-    o->w_pen_max_f= INF;
-    o->w_pen_fact1= 4.0; // 4...10 Bertsekas p. 123
-    o->w_pen_fact2= 1.0;
-}
-
 char setOptParamErr_not_scalar[]= "parameter must be scalar";
 char setOptParamErr_alpha_range[]= "all alpha must be in the range [1.0..0.0)";
 char setOptParamErr_alpha_monotonic[]= "all alpha must be monotonically decreasing";
@@ -90,7 +65,7 @@ char setOptParamErr_no_such_parameter[]= "no such parameter";
 
 char *setOptParam(tOptSet *o, const char *name, const double *value, const int n) {
     int i;
-    
+
     if(strcmp(name, "alpha")==0) {
         for(i= 0; i<n; i++) {
             if(value[i]<0.0 || value[i]>1.0)
@@ -216,7 +191,7 @@ char *setOptParam(tOptSet *o, const char *name, const double *value, const int n
 }
 
 
-#if MULTI_THREADED  
+#if MULTI_THREADED
 void *derivs_thread_function(void *o);
 void *bp_thread_function(void *o);
 #endif
@@ -225,21 +200,21 @@ int iLQG(tOptSet *o) {
     int iter, diverge, backPassDone, fwdPassDone;
     int newDeriv;
     double dlambda= o->dlambdaInit;
-#if MULTI_THREADED  
+#if MULTI_THREADED
     pthread_t derivs_thread;
     pthread_t bp_thread;
-#endif    
+#endif
     o->lambda= o->lambdaInit;
     o->w_pen_l= o->w_pen_init_l;
     o->w_pen_f= o->w_pen_init_f;
     newDeriv= 1;
-    
+
     update_multipliers(o, 1);
-    
+
     for(iter= 0; iter < o->max_iter; iter++) {
         // ====== STEP 1: differentiate dynamics and cost along new trajectory: integrated in back_pass
         if(newDeriv) {
-#if MULTI_THREADED  
+#if MULTI_THREADED
             step_calc_done= o->n_hor+1;
             pthread_create(&derivs_thread, NULL, &derivs_thread_function, o);
 #else
@@ -249,22 +224,22 @@ int iLQG(tOptSet *o) {
             } else {
 //                 TRACE(("\n"));
             }
-            
+
             newDeriv= 0;
 #endif
         }
-            
+
         // ====== STEP 2: backward pass, compute optimal control law and cost-to-go
         backPassDone= 0;
 //         TRACE(("Back pass:\n"));
         while(!backPassDone) {
-#if MULTI_THREADED  
+#if MULTI_THREADED
             pthread_create(&bp_thread, NULL, &bp_thread_function, o);
             pthread_join(bp_thread, NULL);
             if(bp_result==1) {
 #else
             if(back_pass(o)) {
-#endif            
+#endif
                 if(o->debug_level>=1)
                     TRACE(("Back pass failed.\n"));
 
@@ -272,7 +247,7 @@ int iLQG(tOptSet *o) {
                 o->lambda= max(o->lambda * dlambda, o->lambdaMin);
                 if(o->lambda > o->lambdaMax)
                     break;
-#if MULTI_THREADED               
+#if MULTI_THREADED
             } else if(bp_result==2) {
                 TRACE(("Back pass derivatives failed.\n"));
 #endif
@@ -281,8 +256,8 @@ int iLQG(tOptSet *o) {
 //                 TRACE(("...done\n"));
             }
         }
-        
-#if MULTI_THREADED               
+
+#if MULTI_THREADED
         pthread_join(derivs_thread, NULL);
         newDeriv= 0;
         if(!derivs_result) {
@@ -290,7 +265,7 @@ int iLQG(tOptSet *o) {
             break;
         }
 #endif
-        
+
         // check for termination due to small gradient
         // TODO: add constraint tolerance check
         if(o->g_norm < o->tolGrad && o->lambda < 1e-5) {
@@ -300,35 +275,35 @@ int iLQG(tOptSet *o) {
                 TRACE(("\nSUCCESS: gradient norm < tolGrad\n"));
             break;
         }
-    
+
         // ====== STEP 3: line-search to find new control sequence, trajectory, cost
         if(backPassDone)
             fwdPassDone= line_search(o, iter);
         else
             break;
-        
+
         // ====== STEP 4: accept (or not), draw graphics
         if(fwdPassDone) {
             if(o->debug_level>=1)
                 TRACE(("iter: %-3d  cost: %-9.6g  reduction: %-9.3g  gradient: %-9.3g  z: %-5.3g log10(lam): %3.1f w_pen_l: %-9.3g w_pen_f: %-9.3g\n", iter+1, o->cost, o->dcost, o->g_norm, o->dcost/o->expected, log10(o->lambda), o->w_pen_l, o->w_pen_f));
-            
+
             // decrease lambda
             dlambda= min(dlambda / o->lambdaFactor, 1.0/o->lambdaFactor);
             o->lambda= o->lambda * dlambda * (o->lambda > o->lambdaMin);
 
-            
+
             // accept changes
             makeCandidateNominal(o, 0);
 
             o->cost= o->new_cost;
             newDeriv= 1;
-            
+
             // terminate ?
             // TODO: add constraint tolerance check
             if(o->dcost < o->tolFun) {
                 if(o->debug_level>=1)
                     TRACE(("\nSUCCESS: cost change < tolFun\n"));
-            
+
                 break;
             }
             // adapt w_pen
@@ -346,11 +321,11 @@ int iLQG(tOptSet *o) {
                 o->w_pen_f= min(o->w_pen_max_f, o->w_pen_f*o->w_pen_fact2);
                 forward_pass(o->nominal, o, 0.0, &o->cost, 1);
             }
-            
+
             // print status
             if(o->debug_level>=1)
                 TRACE(("iter: %-3d  REJECTED    expected: %-11.3g    actual: %-11.3g    log10lam: %3.1f w_pen_l: %-9.3g w_pen_l: %-9.3g\n", iter+1, o->expected , o->dcost, log10(o->lambda), o->w_pen_l, o->w_pen_f));
-            
+
             // terminate ?
             if(o->lambda > o->lambdaMax) {
                 if(o->debug_level>=1)
@@ -359,19 +334,19 @@ int iLQG(tOptSet *o) {
             }
         }
     }
-    
-    
+
+
     o->iterations= iter;
-    
+
     if(!backPassDone) {
         if(o->debug_level>=1)
             TRACE(("\nEXIT: no descent direction found.\n"));
-        
-        return 0;    
+
+        return 0;
     } else if(iter>=o->max_iter) {
         if(o->debug_level>=1)
             TRACE(("\nEXIT: Maximum iterations reached.\n"));
-        
+
         return 0;
     }
     return 1;
@@ -384,7 +359,7 @@ void makeCandidateNominal(tOptSet *o, int idx) {
     o->candidates[idx]= temp;
 }
 
-#if MULTI_THREADED  
+#if MULTI_THREADED
 void *derivs_thread_function(void *o) {
     derivs_result= calc_derivs((tOptSet *)o);
     if(!derivs_result || step_calc_done>0) {

@@ -16,7 +16,7 @@
 #ifndef MULTI_THREADED
 #define MULTI_THREADED 0
 #endif
-#if MULTI_THREADED  
+#if MULTI_THREADED
 #include <pthread.h>
 #endif
 
@@ -57,7 +57,7 @@ typedef struct optSet {
     double *log_z;
     double *log_cost;
     double dV[2];
-    
+
     double w_pen_l;
     double w_pen_f;
     double w_pen_max_l;
@@ -66,17 +66,16 @@ typedef struct optSet {
     double w_pen_init_f;
     double w_pen_fact1;
     double w_pen_fact2;
-    
+
     traj_t *nominal;
-    traj_t *candidates[NUMBER_OF_THREADS]; 
-    
+    traj_t *candidates[NUMBER_OF_THREADS];
+
     traj_t trajectories[NUMBER_OF_THREADS+1];
-    
+
     multipliers_t multipliers;
 } tOptSet;
 
 void printParams(double **p, int k);
-void standard_parameters(tOptSet *o);
 int iLQG(tOptSet *o);
 char *setOptParam(tOptSet *o, const char *name, const double *value, const int n);
 int forward_pass(traj_t *c, tOptSet *o, double alpha, double *csum, int cost_only);
@@ -98,7 +97,7 @@ extern int n_params;
 extern int n_vars;
 extern tParamDesc *paramdesc[];
 
-#if MULTI_THREADED  
+#if MULTI_THREADED
 extern pthread_mutex_t step_mutex;
 extern pthread_cond_t  next_step_condition;
 extern int step_calc_done;
