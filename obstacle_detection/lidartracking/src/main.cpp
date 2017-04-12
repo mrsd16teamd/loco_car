@@ -197,11 +197,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
    {
 
 
-       m1.pose.position.x=mapframe.point.x;
-       m1.pose.position.y=mapframe.point.y;
-       m1.pose.position.z=mapframe.point.z;
 
-       clusterMarkers1.markers.push_back(m1);
 
 
        clustermapframe.data.push_back(mapframe.point.x);
@@ -218,7 +214,11 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     }
 
 
-       
+       m1.pose.position.x=mapframe.point.x;
+       m1.pose.position.y=mapframe.point.y;
+       m1.pose.position.z=mapframe.point.z;
+
+       clusterMarkers1.markers.push_back(m1);  
 cc_pos.publish(mapframe);
 markerPub1.publish(clusterMarkers1);
 
