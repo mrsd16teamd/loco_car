@@ -132,7 +132,9 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     Eigen::Vector4f obstaclepoint;
     geometry_msgs::PointStamped laserframe;
     geometry_msgs::PointStamped mapframe;
-    laserframe.header.frame_id = "laser";
+    laserframe.header.frame_id = "laser";  
+
+    mapframe.header.frame_id  = "map";
    
  
 
