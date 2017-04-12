@@ -50,7 +50,7 @@ tf::TransformListener* tran;
 
 void cluster_extraction (const sensor_msgs::PointCloud2ConstPtr& input, std::vector<pcl::PointIndices>& cluster_indices);
 
-int DEBUGMODE = 0;
+int DEBUGMODE = 1;
 
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
