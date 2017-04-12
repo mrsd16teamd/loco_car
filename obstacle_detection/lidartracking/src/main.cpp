@@ -219,7 +219,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        m1.pose.position.z=mapframe.point.z;
 
        clusterMarkers1.markers.push_back(m1);  
-cc_pos.publish(mapframe);
+cc_pos.publish(laserframe);
 markerPub1.publish(clusterMarkers1);
 
 
