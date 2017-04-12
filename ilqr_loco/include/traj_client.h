@@ -100,16 +100,17 @@ protected:
   //iLQR parameters
   float mpc_timeout_;
   float goal_threshold_;
-  float ilqr_tolFun_;
-  float ilqr_tolConstraint_;
-  float ilqr_tolGrad_;
-  float ilqr_max_iter_;
-  float ilqr_regType_;
+  double ilqr_tolFun_;
+  double ilqr_tolConstraint_;
+  double ilqr_tolGrad_;
+  int ilqr_max_iter_;
+  int ilqr_regType_;
+  int ilqr_debug_level_;
 
   void LoadParams();
 	void LoadCarParams();
   void LoadCostParams();
-	void SetOptParams(tOptSet o);
+	void SetOptParams(tOptSet *o);
   void LoadOpt();
 
   void rampPlan();
