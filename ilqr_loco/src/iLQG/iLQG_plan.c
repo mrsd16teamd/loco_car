@@ -50,12 +50,12 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
         o->trajectories[i].t= (trajEl_t *) malloc(sizeof(trajEl_t)*(N-1));
     o->multipliers.t= (multipliersEl_t *) malloc(sizeof(multipliersEl_t)*N);
 
-    printf("Set const vars\n");
+    // printf("Set const vars\n");
     if(!init_opt(o)) {
         success[0]= 0;
         new_cost[0]= o->cost;
     } else {
-        printf("Initializing trajectory\n");
+        // printf("Initializing trajectory\n");
         for(k= 0; k<N-1; k++)
             for(i= 0; i<N_U; i++)
                 o->nominal->t[k].u[i]= u_nom[MAT_IDX(i, k, N_U)];
@@ -84,7 +84,6 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
             new_cost[0]= o->cost;
         }
     }
-    printf("runs to here");
 
     for(i= 0; i<NUMBER_OF_THREADS+1; i++)
         free(o->trajectories[i].t);
