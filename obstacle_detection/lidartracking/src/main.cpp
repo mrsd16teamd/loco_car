@@ -59,7 +59,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
-    float xcoordinate(9.0);
+    float xcoordinate(9.0f);
     float ycoordinate(0.0f);
     float zcoordinate(0.0f);
     bool obstaclepresent(0);
@@ -226,7 +226,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 */
 
-   if( obstaclepresent == 1)
+   if( laserframe.point.x == 9.0f)
    {    
        mapframe.point.x = xcoordinate;
        mapframe.point.y  = ycoordinate;
