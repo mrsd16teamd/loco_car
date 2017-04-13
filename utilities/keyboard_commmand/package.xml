@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>keyboard_command</name>
+  <version>0.1.0</version>
+  <description>Keyboard command node, based on teleop_keyboard by Austin Hendrix.</description>
+
+  <maintainer email="kazuotani14@gmail.com">Kazu Otani</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+</package>
