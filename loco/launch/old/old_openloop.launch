@@ -1,0 +1,20 @@
+<launch>
+
+
+  <include file="$(find loco)/launch/amcl/amcl.launch" />
+
+  <include file="$(find loco)/launch/core/teleop.launch"/>
+
+  <include file="$(find robot_localization)/launch/ekf_state_estimate.launch" />x
+
+
+
+  <node pkg="loco" type="amcl_echo" name="amcl_echo" output="screen"/>
+
+
+<!--   <node pkg="rosbag" type="record" name="rosbag_record_main"
+     	args="record -a -O /home/ubuntu/catkin_ws/mostrecent.bag"/>
+-->
+
+
+</launch>
