@@ -193,6 +193,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
      
 // checking if the cluster was found near the give radious of robot 
 
+/*
+
    if (  abs(laserframe.point.x)  != 9.0  &&  abs(laserframe.point.y)  != 0.0)
    {
 
@@ -218,8 +220,10 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        m1.pose.position.y=mapframe.point.y;
        m1.pose.position.z=mapframe.point.z;
 
+*/
+
        clusterMarkers1.markers.push_back(m1);  
-cc_pos.publish(laserframe);
+cc_pos.publish(mapframe);
 markerPub1.publish(clusterMarkers1);
 
 
