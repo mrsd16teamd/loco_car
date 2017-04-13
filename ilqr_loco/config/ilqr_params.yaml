@@ -1,4 +1,4 @@
-# Traj client params
+# TrajClient params
 T_horizon: 150
 X_des: [8.000000,0.300000,0.000000,0.000000,0.000000,0.000000]
 timestep: 0.02
@@ -35,7 +35,8 @@ Opt_cost: {cu: [1e-2, 1e-2], cdu: [10e-1, 15e-1],
            cdrift: -0.001,
            k_pos: 0.5, k_vel: 0, d_thres: 0.3}
 
-# Traj server params
+######
+# TrajServer params
 old_msg_discard_thres: 0.5
 
 # Obstacle detection params
