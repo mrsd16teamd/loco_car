@@ -102,7 +102,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointX
 
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
   ec.setClusterTolerance (0.04);
-  ec.setMinClusterSize (30);
+  ec.setMinClusterSize (10);
   ec.setMaxClusterSize (100);
   ec.setSearchMethod (tree);
   ec.setInputCloud (input_cloud);
