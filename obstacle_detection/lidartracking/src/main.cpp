@@ -50,7 +50,8 @@ tf::TransformListener* tran;
 
 void cluster_extraction (const sensor_msgs::PointCloud2ConstPtr& input, std::vector<pcl::PointIndices>& cluster_indices);
 
-int DEBUGMODE = 1;
+int DEBUGMODE = 0;
+
 
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
@@ -61,6 +62,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     float xcoordinate(9.0);
     float ycoordinate(0.0f);
     float zcoordinate(0.0f);
+    bool obstaclepresent(0);
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
     //initialize the clustercenter
     std_msgs::Float32MultiArray clustermapframe;
@@ -122,6 +124,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
             xcoordinate = centroid.x;
             ycoordinate = centroid.y;
 	    zcoordinate = centroid.z;
+	    obstaclepresent = 1;
+
 	    
         }
 
@@ -222,7 +226,17 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 */
 
-       clusterMarkers1.markers.push_back(m1);  
+   if( obstaclepresent == 1)
+   {    
+       mapframe.point.x = xcoordinate;
+       mapframe.point.y  = ycoordinate;
+       mapframe.point.z  = zcoordinate;
+
+   }
+      
+	
+
+clusterMarkers1.markers.push_back(m1);  
 cc_pos.publish(mapframe);
 markerPub1.publish(clusterMarkers1);
 
