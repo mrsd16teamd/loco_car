@@ -15,7 +15,7 @@ TrajClient::TrajClient(): ac_("traj_executer", true), mode_(0), T_(0),
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
-	ROS_INFO("Action client started. Send me commands from teleop_keyboard!");
+	ROS_INFO("Action client started. Send me commands from keyboard_command!");
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
@@ -53,7 +53,7 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       ilqrPlan();
       mode_ = 0;
     }
-    else if (mode_==4){
+    else if (mode_==4 || mode_==5){
       ilqrMPC();
     }
   }
@@ -75,14 +75,15 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
       mode_ = 1;
       start_time_ = ros::Time::now();
-      // wait for stateCb to ramp
       break;
+      // wait for stateCb to ramp
     }
     case 2: {
       ROS_INFO("Mode 2: iLQR from static initial conditions.");
       mode_ = 2;
-		  // wait for obsCb to plan
+      obs_received_ = false;
       break;
+		  // wait for obsCb to plan
     }
     case 3: {
       ROS_INFO("Mode 3: ramp -> iLQR open loop.");
@@ -93,10 +94,18 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       //wait for stateCb to ramp
     }
     case 4: {
-      ROS_INFO("Mode 4: ramp -> iLQR closed loop.");
+      ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
       mode_ = 4;
       obs_received_ = false;
+      break;
       //wait for stateCb to ramp
+    }
+    case 5: {
+      ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
+      mode_= 5;
+      obs_received_ = false;
+      break;
+      //wait for obsCb to plan
     }
     case 8: {
       ROS_INFO("Resetting obs_received_ to false.");

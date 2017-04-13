@@ -35,27 +35,38 @@ void TrajClient::ilqrPlan()
 
 void TrajClient::ilqrMPC()
 {
+  start_time_ = ros::Time::now();
+
   ilqr_loco::TrajExecGoal goal;
 
-  if(ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_))
-  {
-    ROS_INFO("iLQR timed out.");
-    return;;
-  }
-
+  int iter_count = 0;
   bool goal_achieved = false;
 
   while(!goal_achieved)
   {
-    ilqr_loco::TrajExecGoal goal = ilqgGenerateTrajectory(cur_state_);
+    if(ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_))
+    {
+      ROS_INFO("iLQR timed out.");
+      SendZeroCommand();
+      return;
+    }
+
+    ROS_INFO("Receding horizon iteration #%d", iter_count);
+
+    goal = ilqgGenerateTrajectory(cur_state_);
+
+    // TODO do some quick checks on trajectory
+
     SendTrajectory(goal);
 
-    if (DistToGoal() < goal_threshold_){
+    ROS_INFO("DistToGoal: %f", DistToGoal());
+    if (DistToGoal() < goal_threshold_) {
       ROS_INFO("Reached goal point.");
 			SendZeroCommand();
       return;
     }
 
-    ros::spinOnce();
+    ros::spinOnce(); // to pick up new state estimates
+    iter_count++;
   }
 }
