@@ -2,8 +2,9 @@
 
 double TrajClient::DistToGoal()
 {
+  ROS_INFO("x_des: %f, %f. x_cur: %f, %f", x_des_[0], x_des_[1], cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y);
   return sqrt( pow((x_des_[0]- cur_state_.pose.pose.position.x), 2) +
-               pow((x_des_[1]- cur_state_.pose.pose.position.x), 2) );
+               pow((x_des_[1]- cur_state_.pose.pose.position.y), 2) );
 }
 
 // Calls iLQG_plan.c to generate new trajectory
@@ -44,7 +45,7 @@ void TrajClient::ilqrMPC()
 
   while(!goal_achieved)
   {
-    if(ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_))
+    if(ros::Time::now() - start_time_ > ros::Duration(mpc_timeout_))
     {
       ROS_INFO("iLQR timed out.");
       SendZeroCommand();
@@ -52,6 +53,7 @@ void TrajClient::ilqrMPC()
     }
 
     ROS_INFO("Receding horizon iteration #%d", iter_count);
+    ROS_INFO("u0[0]: %f", init_control_seq_[0]);
 
     goal = ilqgGenerateTrajectory(cur_state_);
 
@@ -61,8 +63,8 @@ void TrajClient::ilqrMPC()
 
     ROS_INFO("DistToGoal: %f", DistToGoal());
     if (DistToGoal() < goal_threshold_) {
-      ROS_INFO("Reached goal point.");
-			SendZeroCommand();
+    	ROS_INFO("Reached goal point.");
+	  	SendZeroCommand();
       return;
     }
 

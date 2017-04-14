@@ -3,9 +3,7 @@
 ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry prev_state,
                                                            nav_msgs::Odometry cur_state) {
 
-	std::cout << timeout_ << '\n';
-  ilqr_loco::TrajExecGoal goal;
-  FillGoalMsgHeader(goal);
+  std::cout << timeout_ << '\n';
 
   double dt = (cur_state.header.stamp).toSec() - (prev_state.header.stamp).toSec();
   double yaw = tf::getYaw(cur_state.pose.pose.orientation);
@@ -21,6 +19,8 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   double v = cur_state.twist.twist.linear.x + accel_*dt + 0.75;
   v = cur_vel_<target_vel_ ? cur_vel_ : target_vel_;
 
+  ilqr_loco::TrajExecGoal goal;
+
   geometry_msgs::Twist control_msg;
   FillTwistMsg(control_msg, v, output);
   goal.traj.commands.push_back(control_msg);
@@ -34,6 +34,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
   ++T_;
   ramp_goal_flag_ = (v >= target_vel_) ? true : false;  // Ramp completion flag
+  FillGoalMsgHeader(goal);
 
   return goal;
 }

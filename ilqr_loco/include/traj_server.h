@@ -19,8 +19,8 @@ class TrajServer
 {
 public:
   TrajServer():
-    as(nh, "traj_executer", boost::bind(&TrajServer::execute_trajectory, this,
-    _1), false), traj_action("traj_executer")
+    as(nh, "traj_server", boost::bind(&TrajServer::execute_trajectory, this,
+    _1), false), traj_action("traj_server")
     {
       as.start();
       cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);

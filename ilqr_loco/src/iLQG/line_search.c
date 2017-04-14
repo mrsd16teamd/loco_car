@@ -15,7 +15,7 @@
 #include "line_search.h"
 #include "matMult.h"
 #include "printMat.h"
- 
+
 #ifndef DEBUG_FORWARDPASS
 #define DEBUG_FORWARDPASS 1
 #else
@@ -28,19 +28,20 @@
 #define TRACE(x) do { if (DEBUG_FORWARDPASS) PRNT x; } while (0)
 #define printVec_(x) do { if (DEBUG_FORWARDPASS) printVec x; } while (0)
 #define printMat_(x) do { if (DEBUG_FORWARDPASS) printMat x; } while (0)
-   
+
 
 int line_search(tOptSet *o, int iter) {
     double expected, z, alpha, dcost, cnew;
     int i, success;
-    
+
     for(i= 0; i < o->n_alpha; i++) {
         alpha= o->alpha[i];
-        
+
         success= forward_pass(o->candidates[0], o, alpha, &cnew, 0);
         if(success) {
             dcost= o->cost - cnew;
             expected= -alpha*(o->dV[0] + alpha*o->dV[1]);
+			printf("dV: %f %f, expected: %f, alpha: %f\n", o->dV[0], o->dV[1], expected, alpha);
             if(expected > 0)
                 z = dcost/expected;
             else {
@@ -58,7 +59,7 @@ int line_search(tOptSet *o, int iter) {
             }
         }
     }
-    
+
     if(o->debug_level>=2) {
         if(!success) {
             TRACE(("max number of line searches reached\n"));
@@ -66,7 +67,7 @@ int line_search(tOptSet *o, int iter) {
 //             TRACE(("iter: %-3d  alpha: %-9.6g cost: %-9.6g  reduction: %-9.3g  z: %-9.3g\n", iter, alpha, o->cost, dcost, z));
         }
     }
-    
+
     if(o->log_linesearch!=NULL) o->log_linesearch[iter]= i+1;
     if(o->log_z!=NULL) o->log_z[iter]= z;
     if(o->log_cost!=NULL) o->log_cost[iter]= cnew;

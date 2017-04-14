@@ -28,10 +28,22 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   // ros::Rate loop_rate(1/timestep);
   ros::Rate loop_rate(50); //TODO make this work without hard-coding?
+
+  // For visualization
   nav_msgs::Path path_msg;
   path_msg.header.stamp = goal->traj.header.stamp;
   path_msg.header.frame_id = "map";
   std::vector<geometry_msgs::PoseStamped> poses(goal->traj.states.size());
+
+  for (int i=0; i < goal->traj.commands.size(); i++)
+  {
+	  poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.x;
+	  poses.at(i).pose.position.y = goal->traj.states[i].pose.pose.position.y;
+	  poses.at(i).pose.orientation = goal->traj.states[i].pose.pose.orientation;
+  }
+  path_msg.poses = poses;
+  path_pub.publish(path_msg);
+
   ROS_INFO("Executing trajectory."); // TODO print client name
 
   for (int i=0; i < goal->traj.commands.size(); i++)
@@ -63,15 +75,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       as.publishFeedback(feedback);
       loop_rate.sleep();
     }
-
-    poses.at(i).header.stamp = ros::Time::now();
-    poses.at(i).pose.position.x = goal->traj.states[i].pose.pose.position.x;
-    poses.at(i).pose.position.y = goal->traj.states[i].pose.pose.position.y;
-    poses.at(i).pose.orientation = goal->traj.states[i].pose.pose.orientation;
   }
 
-  path_msg.poses = poses;
-  path_pub.publish(path_msg);
   ros::spinOnce();
 
   if(success)

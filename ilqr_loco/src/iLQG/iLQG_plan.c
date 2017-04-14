@@ -32,13 +32,14 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
     n= sizeof(x0)/sizeof(x0[0]);  // length of state vector
     m= 2; // number of inputs
     N= T+1;
-    
+
     // inputs
     o->x0= x0; //double *
     u_nom= u0;  // double **
     o->n_hor= N-1;
 
     standard_parameters(o);
+	printf("o.alpha=%f", o->alpha[0]);
     // Set model and problem parameters
     init_params(o, xDes, Obs);
 

@@ -17,8 +17,8 @@ extern "C"{
 }
 
 // Note that the inputs to this function can be whatever is convenient for client
-void TrajClient::iLQR_gen_traj(nav_msgs::Odometry x_cur, std::vector<double> u_init, std::vector<double> x_des,
-                               geometry_msgs::Point obstacle_pos, int T, tOptSet *o, ilqr_loco::TrajExecGoal &goal)
+void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u_init, std::vector<double> &x_des,
+                               geometry_msgs::Point &obstacle_pos, int T, tOptSet *o, ilqr_loco::TrajExecGoal &goal)
 {
   //Pre-process inputs - put them in format that C-code wants
   double theta = tf::getYaw(x_cur.pose.pose.orientation);
