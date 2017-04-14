@@ -2,8 +2,8 @@
 
 <launch>
 
-<include file="$(find loco)/launch/odometry.launch" />
-<include file="$(find loco)/launch/teleop.launch" />
+<include file="$(find loco)/launch/core/odometry.launch" />
+<include file="$(find loco)/launch/core/teleop.launch" />
 
 <!--    <include file="$(find teleop_twist_joy)/launch/teensy_teleop.launch" /> -->
 
@@ -15,8 +15,8 @@
       odom_frame: odom
 
       map_update_interval: 1.0
-      linearUpdate: 0.4
-      angularUpdate: 0.06
+      linearUpdate: 0.1
+      angularUpdate: 0.01
       temporalUpdate: -1.0
       particles: 30
       delta: 0.05 # resolution

@@ -42,7 +42,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
 void TrajClient::rampPlan() {
 
-  if(ros::Time::now() - start_time_ > ros::Duration(timeout_))
+  if(ros::Time::now() - start_time_ < ros::Duration(timeout_))
   {
     ilqr_loco::TrajExecGoal goal = rampGenerateTrajectory(prev_state_, cur_state_);
     SendTrajectory(goal);
