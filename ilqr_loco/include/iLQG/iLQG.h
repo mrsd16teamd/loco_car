@@ -76,6 +76,7 @@ typedef struct optSet {
 } tOptSet;
 
 void printParams(double **p, int k);
+void standard_parameters(tOptSet *o);
 int iLQG(tOptSet *o);
 char *setOptParam(tOptSet *o, const char *name, const double *value, const int n);
 int forward_pass(traj_t *c, tOptSet *o, double alpha, double *csum, int cost_only);

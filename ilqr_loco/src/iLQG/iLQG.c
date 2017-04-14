@@ -32,6 +32,7 @@
 
 #define TRACE(x) do { if (DEBUG_ILQG) PRNT x; } while (0)
 
+double default_alpha[]= {1.0, 0.3727594, 0.1389495, 0.0517947, 0.0193070, 0.0071969, 0.0026827, 0.0010000};
 #if MULTI_THREADED
 pthread_mutex_t step_mutex= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  next_step_condition= PTHREAD_COND_INITIALIZER;
@@ -50,6 +51,29 @@ void printParams(double **p, int k) {
         else
             printVec(p[i], paramdesc[i]->size, paramdesc[i]->name);
     }
+}
+
+void standard_parameters(tOptSet *o) {
+    o->alpha= default_alpha;
+    o->n_alpha= 8;
+    o->tolFun= 1e-7;
+    o->tolConstraint= 1e-7;
+    o->tolGrad= 1e-5;
+    o->max_iter= 100;
+    o->lambdaInit= 1;
+    o->dlambdaInit= 1;
+    o->lambdaFactor= 1.6;
+    o->lambdaMax= 1e10;
+    o->lambdaMin= 1e-6;
+    o->regType= 1;
+    o->zMin= 0.0;
+    o->debug_level= 2;
+    o->w_pen_init_l= 1.0;
+    o->w_pen_init_f= 1.0;
+    o->w_pen_max_l= INF;
+    o->w_pen_max_f= INF;
+    o->w_pen_fact1= 4.0; // 4...10 Bertsekas p. 123
+    o->w_pen_fact2= 1.0;
 }
 
 char setOptParamErr_not_scalar[]= "parameter must be scalar";

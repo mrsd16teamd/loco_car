@@ -87,8 +87,8 @@ void TrajClient::SetOptParams(tOptSet *o)
     o->lambdaInit= 1;
     o->dlambdaInit= 1;
     o->lambdaFactor= 1.6;
-    o->lambdaMax= 1e10;
-    o->lambdaMin= 1e-6;
+    o->lambdaMax= 0.0000000001;
+    o->lambdaMin= 0.000001;
     o->zMin= 0.0;
     o->w_pen_init_l= 1.0;
     o->w_pen_init_f= 1.0;
