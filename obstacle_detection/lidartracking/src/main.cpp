@@ -228,8 +228,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
    if( obstaclepresent == 0 )
    {    
-       mapframe.point.x = 9 ;
-       mapframe.point.y  = 0;
+       mapframe.point.x = 999 ;
+       mapframe.point.y  = 999;
        mapframe.point.z  = 0;
 
    }
