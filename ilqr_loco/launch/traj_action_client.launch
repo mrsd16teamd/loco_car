@@ -1,7 +1,7 @@
 <launch>
-<!-- use argument for choosing yaml file -->
-<!-- roslaunch traj_action_client.launch yaml:=ilqr_parms -->
-  <arg name="yaml" default="ilqr_params" />arg
+<!-- use argument for choosing yaml file for initial control-->
+<!-- roslaunch traj_action_client.launch yaml:= ?init_control? -->
+  <arg name="control" default="0mps_T150" />arg
 
 <!--  <include file="$(find loco)/launch/openloop_sve.launch" /> -->
 
@@ -10,7 +10,8 @@
   <node pkg="publishpcl" type="publishpcl" name="publishpcl" output="screen"/>
 
 <!-- Load Planner configs from YAML -->
-  <rosparam command="load" file="$(find ilqr_loco)/config/$(arg yaml).yaml"/>
+  <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params.yaml"/>
+  <rosparam command="load" file="$(find ilqr_loco)/config/$(arg control).yaml"/>
 
 <!-- Start planner client-server nodes-->
   <node pkg="ilqr_loco" type="traj_client" name="traj_client" output="screen"/>
