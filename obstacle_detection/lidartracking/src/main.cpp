@@ -59,8 +59,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
-    float xcoordinate(9.0f);
-    float ycoordinate(0.0f);
+    float xcoordinate(999.0f);
+    float ycoordinate(999.0f);
     float zcoordinate(0.0f);
     static bool obstaclepresent(0);
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
