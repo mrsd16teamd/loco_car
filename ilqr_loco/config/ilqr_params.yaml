@@ -15,9 +15,9 @@ timeout_ramp: 2.5
 timeout_ilqr_mpc: 5
 stop_goal_threshold: 0.3
 
-ilqr_tolFun: 1e-7
-ilqr_tolConstraint: 1e-7
-ilqr_tolGrad: 1e-5
+ilqr_tolFun: 0.0000001
+ilqr_tolConstraint: 0.0000001
+ilqr_tolGrad: 0.00001
 ilqr_max_iter: 20
 ilqr_regType: 1
 ilqr_debug_level: 2
@@ -27,10 +27,10 @@ init_control_seq: [0.159000,-0.095000,0.298000,-0.035000,0.386000,-0.131000,0.45
 Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
                 c_x: 116, c_a: 197, Iz: 0.025, mu: 1.31, mu_s: 0.55,
                 limThr: [0, 2.0], limSteer: [-0.68, 0.76]}
-Opt_cost: {cu: [1e-2, 1e-2], cdu: [10e-1, 15e-1],
+Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
            cf: [10, 10, 5, 10, 0.1, 0.1],
            pf: [0.01, 0.01, 0.1, 0.1, 0.1, 0.1],
-           cx: [5e-2, 5e-2, 4e-2], cdx: [1e-3, 5e-3, 2e-3],
+           cx: [0.05, 0.05, 0.04], cdx: [0.001, 0.005, 0.002],
            px: [0.01, 0.01, 0.1],
            cdrift: -0.001,
            k_pos: 0.5, k_vel: 0, d_thres: 0.3}
