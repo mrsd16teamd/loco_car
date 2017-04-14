@@ -51,6 +51,7 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 
     if (mode_==1){
       SendZeroCommand();
+	    mode_ = 0;
     }
     else if (mode_==2 || mode_==3){
       ilqrPlan();
@@ -148,7 +149,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
 void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 {
-  ROS_INFO("Sending trajectory.");
+  // ROS_INFO("Sending trajectory.");
   ac_.sendGoal(goal);
               //  ,boost::bind(&TrajClient::doneCb, this, _1, _2),
               //  boost::bind(&TrajClient::activeCb, this),

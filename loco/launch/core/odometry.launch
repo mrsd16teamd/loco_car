@@ -35,7 +35,7 @@
         do_compute_covariance: 0
         publish_pose_with_covariance: false
         publish_pose_with_covariance_stamped: false
-        
+
         max_iterations: 10
         epsilon_xy: 0.000001
         epsilon_theta: 0.000001
@@ -51,8 +51,8 @@
         use_vel: false
 
         # Keyframe selection (set either to 0 to disable keyframing)
-        kf_dist_linear: 0.00 #0.02
-        kf_dist_angular: 0.00 #0.05
+        kf_dist_linear: 0.02 #0.02
+        kf_dist_angular: 0.05 #0.05
 
       </rosparam>
 
