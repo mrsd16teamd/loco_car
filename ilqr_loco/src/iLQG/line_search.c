@@ -37,7 +37,7 @@ int line_search(tOptSet *o, int iter) {
     for(i= 0; i < o->n_alpha; i++) {
         alpha= o->alpha[i];
 
-        success= forward_pass(o->candidates[0], o, alpha, &cnew, 0);
+        success = forward_pass(o->candidates[0], o, alpha, &cnew, 0);
         if(success) {
             dcost= o->cost - cnew;
             expected= -alpha*(o->dV[0] + alpha*o->dV[1]);
@@ -64,7 +64,6 @@ int line_search(tOptSet *o, int iter) {
         if(!success) {
             TRACE(("max number of line searches reached\n"));
         } else {
-//             TRACE(("iter: %-3d  alpha: %-9.6g cost: %-9.6g  reduction: %-9.3g  z: %-9.3g\n", iter, alpha, o->cost, dcost, z));
         }
     }
 

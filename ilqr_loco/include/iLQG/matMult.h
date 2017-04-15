@@ -13,5 +13,4 @@ void addSquareTri(double base[], const double b[], const double a[], const int n
 void addMul2Mat(double base[], const double b[], const double a[], const int n_ra, const int n_ca, const double c[], const int n_rc, const int n_cc, double bc[]);
 void addMul2Tri(double base[], const double b[], const double a[], const int n_ra, const int n_ca, const double c[], const int n_rc, const int n_cc, double bc[]);
 
-
 #endif // MATMUL_H

@@ -14,6 +14,7 @@
 extern "C"{
   #include "iLQG.h"
   #include "iLQG_plan.h"
+  #include "matMult.h"
 }
 
 // Note that the inputs to this function can be whatever is convenient for client
@@ -43,6 +44,27 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
 
   // traj[0]: states, traj[1]: controls
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
+
+ // TESTING printing control gains
+ trajEl_t *t= o->nominal->t;
+
+ int i,j,k;
+ for(k= 0; k<50; k++, t++) {
+   printf("step %d\n", k);
+   printf("l: \n");
+   for(j= 0; j<N_U; j++)
+       printf("%f ", t->l[j]);
+   printf("\n");
+
+   printf("L: \n");
+   for(i= 0; i<N_X; i++) {
+       for(j= 0; j<N_U; j++) {
+           printf("%f ", t->L[MAT_IDX(j, i, N_U)]);
+       }
+       printf("\n");
+   }
+
+ }
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+N);

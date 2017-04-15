@@ -240,20 +240,15 @@ int iLQG(tOptSet *o) {
     for(iter= 0; iter < o->max_iter; iter++) {
         // ====== STEP 1: differentiate dynamics and cost along new trajectory: integrated in back_pass
         if(newDeriv) {
-
             if(!calc_derivs(o)) {
                 TRACE(("Calculating derivatives failed.\n"));
                 break;
-            } else {
-//                 TRACE(("\n"));
             }
-
             newDeriv= 0;
         }
 
         // ====== STEP 2: backward pass, compute optimal control law and cost-to-go
         backPassDone= 0;
-//         TRACE(("Back pass:\n"));
         while(!backPassDone) {
             if(back_pass(o)) {
                 if(o->debug_level>=1)
@@ -265,7 +260,6 @@ int iLQG(tOptSet *o) {
                     break;
             } else {
                 backPassDone= 1;
-//                 TRACE(("...done\n"));
             }
         }
 
@@ -337,7 +331,6 @@ int iLQG(tOptSet *o) {
             }
         }
     }
-
 
     o->iterations= iter;
 
