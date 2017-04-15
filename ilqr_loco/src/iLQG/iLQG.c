@@ -229,10 +229,7 @@ int iLQG(tOptSet *o) {
     int iter, diverge, backPassDone, fwdPassDone;
     int newDeriv;
     double dlambda= o->dlambdaInit;
-#if MULTI_THREADED
-    pthread_t derivs_thread;
-    pthread_t bp_thread;
-#endif
+
     o->lambda= o->lambdaInit;
     o->w_pen_l= o->w_pen_init_l;
     o->w_pen_f= o->w_pen_init_f;
@@ -243,10 +240,7 @@ int iLQG(tOptSet *o) {
     for(iter= 0; iter < o->max_iter; iter++) {
         // ====== STEP 1: differentiate dynamics and cost along new trajectory: integrated in back_pass
         if(newDeriv) {
-#if MULTI_THREADED
-            step_calc_done= o->n_hor+1;
-            pthread_create(&derivs_thread, NULL, &derivs_thread_function, o);
-#else
+
             if(!calc_derivs(o)) {
                 TRACE(("Calculating derivatives failed.\n"));
                 break;
@@ -255,20 +249,13 @@ int iLQG(tOptSet *o) {
             }
 
             newDeriv= 0;
-#endif
         }
 
         // ====== STEP 2: backward pass, compute optimal control law and cost-to-go
         backPassDone= 0;
 //         TRACE(("Back pass:\n"));
         while(!backPassDone) {
-#if MULTI_THREADED
-            pthread_create(&bp_thread, NULL, &bp_thread_function, o);
-            pthread_join(bp_thread, NULL);
-            if(bp_result==1) {
-#else
             if(back_pass(o)) {
-#endif
                 if(o->debug_level>=1)
                     TRACE(("Back pass failed.\n"));
 
@@ -276,24 +263,11 @@ int iLQG(tOptSet *o) {
                 o->lambda= max(o->lambda * dlambda, o->lambdaMin);
                 if(o->lambda > o->lambdaMax)
                     break;
-#if MULTI_THREADED
-            } else if(bp_result==2) {
-                TRACE(("Back pass derivatives failed.\n"));
-#endif
             } else {
                 backPassDone= 1;
 //                 TRACE(("...done\n"));
             }
         }
-
-#if MULTI_THREADED
-        pthread_join(derivs_thread, NULL);
-        newDeriv= 0;
-        if(!derivs_result) {
-            TRACE(("Calculating derivatives failed.\n"));
-            break;
-        }
-#endif
 
         // check for termination due to small gradient
         // TODO: add constraint tolerance check
@@ -387,19 +361,3 @@ void makeCandidateNominal(tOptSet *o, int idx) {
     o->nominal= o->candidates[idx];
     o->candidates[idx]= temp;
 }
-
-#if MULTI_THREADED
-void *derivs_thread_function(void *o) {
-    derivs_result= calc_derivs((tOptSet *)o);
-    if(!derivs_result || step_calc_done>0) {
-        pthread_mutex_lock(&step_mutex);
-        step_calc_done= -1;
-        pthread_cond_signal(&next_step_condition);
-        pthread_mutex_unlock(&step_mutex);
-    }
-}
-
-void *bp_thread_function(void *o) {
-    bp_result= back_pass((tOptSet *)o);
-}
-#endif
