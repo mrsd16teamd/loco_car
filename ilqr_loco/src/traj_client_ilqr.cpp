@@ -16,7 +16,6 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
   goal.traj.timestep = timestep_;
 
   double theta = tf::getYaw(cur_state.pose.pose.orientation);
-
   ROS_INFO("Start state: %f, %f, %f, %f, %f, %f",
             cur_state.pose.pose.position.x, cur_state.pose.pose.position.y, theta,
             cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
@@ -40,6 +39,20 @@ void TrajClient::ilqrMPC()
 
   ilqr_loco::TrajExecGoal goal;
 
+  //HACK HERE
+  FillGoalMsgHeader(goal);
+goal.traj.timestep = timestep_;
+  for(int i=0; i<init_control_seq_.size()/2; i++) {
+	geometry_msgs::Twist twist;
+	FillTwistMsg(twist, init_control_seq_[2*i], init_control_seq_[2*i+1]);
+	goal.traj.commands.push_back(twist);
+  }
+for(int i=0; i<init_control_seq_.size()+1; i++) {
+  goal.traj.states.push_back(cur_state_);
+}
+  SendTrajectory(goal);
+  ROS_INFO("Sent first swerve.");
+////
   int iter_count = 0;
   bool goal_achieved = false;
 
@@ -49,7 +62,7 @@ void TrajClient::ilqrMPC()
     {
       ROS_INFO("iLQR timed out.");
       SendZeroCommand();
-      return;
+      break;
     }
 
     ROS_INFO("Receding horizon iteration #%d", iter_count);
@@ -65,7 +78,7 @@ void TrajClient::ilqrMPC()
     if (DistToGoal() < goal_threshold_) {
     	ROS_INFO("Reached goal point.");
 	  	SendZeroCommand();
-      return;
+      break;
     }
 
     ros::spinOnce(); // to pick up new state estimates

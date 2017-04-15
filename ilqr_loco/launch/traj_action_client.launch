@@ -16,16 +16,4 @@
   <node pkg="ilqr_loco" type="traj_client" name="traj_client" output="screen"/>
   <node pkg="ilqr_loco" type="traj_server" name="traj_server" output="screen"/>
 
-<!-- wheel speed and servo command params -->
-  <rosparam>
-    speed_to_erpm_gain: -1680
-    speed_to_erpm_offset: 0
-    steering_angle_to_servo_gain: -1.0
-    steering_angle_to_servo_offset: 0
-    wheelbase: 0.257
-    speed_min: -7200
-    speed_max:  7200
-    max_delta_rpm: 200
-  </rosparam>
-
 </launch>

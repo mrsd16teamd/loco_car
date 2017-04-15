@@ -41,7 +41,7 @@ int line_search(tOptSet *o, int iter) {
         if(success) {
             dcost= o->cost - cnew;
             expected= -alpha*(o->dV[0] + alpha*o->dV[1]);
-			printf("dV: %f %f, expected: %f, alpha: %f\n", o->dV[0], o->dV[1], expected, alpha);
+			// printf("dV: %f %f, expected: %f, alpha: %f\n", o->dV[0], o->dV[1], expected, alpha);
             if(expected > 0)
                 z = dcost/expected;
             else {

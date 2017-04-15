@@ -1,5 +1,5 @@
 # TrajClient params
-X_des: [8.000000,0.300000,0.000000,0.000000,0.000000,0.000000]
+X_des: [5.000000,0.000000,0.000000,0.000000,0.000000,0.000000]
 timestep: 0.02
 
 # Rampup params
@@ -11,7 +11,7 @@ target_vel_ramp: 3
 timeout_ramp: 2.5
 
 # iLQR params
-timeout_ilqr_mpc: 5
+timeout_ilqr_mpc: 4
 stop_goal_threshold: 0.3
 
 # These don't do anything right now
@@ -35,7 +35,7 @@ Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
 
 ######
 # TrajServer params
-old_msg_discard_thres: 0.5
+old_msg_discard_thres: 0.05
 
 # Obstacle detection params
 scan_clip_angle: 0.6 #radians

@@ -50,7 +50,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   // Fill data, transform, send cluster_center_pos here
   if(percent_scans_close > percent_thres)
   {
-    ROS_INFO("filling cluster pos.");
+//    ROS_INFO("filling cluster pos.");
 
     cluster_pos_localframe.point.x = obs_dist;
     cluster_pos_localframe.point.y = 0;
@@ -59,7 +59,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
     cluster_pos_mapframe.header.frame_id = "map";
     try
     {
-      ROS_INFO("Transforming point.");
+//      ROS_INFO("Transforming point.");
       tf::StampedTransform transform;
       tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.01));
       tran->lookupTransform("map", "laser", ros::Time(0), transform);
@@ -75,11 +75,11 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   }
   else
   {
-    // cluster_pos_mapframe.point.x = 999;
-    // cluster_pos_mapframe.point.y = 0;
-    // cluster_pos_mapframe.point.z = 0;
-    // cluster_pos_mapframe.header.frame_id = "map";
-    // cc_pos.publish(cluster_pos_mapframe);
+    cluster_pos_mapframe.point.x = 999;
+    cluster_pos_mapframe.point.y = 0;
+    cluster_pos_mapframe.point.z = 0;
+    cluster_pos_mapframe.header.frame_id = "map";
+    cc_pos.publish(cluster_pos_mapframe);
   }
 }
 

@@ -25,13 +25,6 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   prev_state_ = cur_state_;
   cur_state_ = msg;
 
-  //turn velocities into body frame
-  // TODO make this its own function in msg_utils
-  double theta = tf::getYaw(cur_state_.pose.pose.orientation);
-  double old_vx = cur_state_.twist.twist.linear.x;
-  double old_vy = cur_state_.twist.twist.linear.y;
-  cur_state_.twist.twist.linear.x = cos(theta)*old_vx + sin(theta)*old_vy;
-  cur_state_.twist.twist.linear.y = cos(theta+PI/2)*old_vx + sin(theta+PI/2)*old_vy;
   state_estimate_received_ = true;
 
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
@@ -42,21 +35,23 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 
 void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 {
-  ROS_INFO("Received obstacle message.");
-  obs_pos_.x = msg.point.x;
-  obs_pos_.y = msg.point.y;
-  obs_received_ = true;
+  if (msg.point.x < 100) {
+    ROS_INFO("Received obstacle message.");
+    obs_pos_.x = msg.point.x;
+    obs_pos_.y = msg.point.y;
+    obs_received_ = true;
 
-  if (mode_==1) {
-    SendZeroCommand();
-    mode_ = 0;
-  }
-  else if (mode_==2 || mode_==3){
-    ilqrPlan();
-    mode_ = 0;
-  }
-  else if (mode_==4 || mode_==5){
-    ilqrMPC();
+    if (mode_==1) {
+      SendZeroCommand();
+      mode_ = 0;
+    }
+    else if (mode_==2 || mode_==3){
+      ilqrPlan();
+      mode_ = 0;
+    }
+    else if (mode_==4 || mode_==5){
+      ilqrMPC();
+    }
   }
 }
 
@@ -117,6 +112,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
       mode_ = 4;
       obs_received_ = false;
+      start_time_ = ros::Time::now();
       break;
       //wait for stateCb to ramp
     }

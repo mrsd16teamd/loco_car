@@ -30,6 +30,8 @@ void TrajClient::FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
 
 void TrajClient::SendZeroCommand()
 {
+  mode_ = 0;
+
   ilqr_loco::TrajExecGoal end_goal;
 
   FillGoalMsgHeader(end_goal);
@@ -41,5 +43,4 @@ void TrajClient::SendZeroCommand()
   SendTrajectory(end_goal);
   ROS_INFO("Sent zero command.");
 
-  mode_==0;
 }
