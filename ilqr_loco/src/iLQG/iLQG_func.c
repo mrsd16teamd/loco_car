@@ -9,7 +9,7 @@
 
 
 int n_params= 26;
-    
+
 tParamDesc p_name1= {"G_f", 1, 0}; // -> p[0][0]
 tParamDesc p_name2= {"G_r", 1, 0}; // -> p[1][0]
 tParamDesc p_name3= {"Iz", 1, 0}; // -> p[2][0]
@@ -37,7 +37,7 @@ tParamDesc p_name24= {"pf", 6, 0}; // -> p[23][0]
 tParamDesc p_name25= {"px", 3, 0}; // -> p[24][0]
 tParamDesc p_name26= {"xDes", 6, 0}; // -> p[25][0]
 int n_vars= 0;
-    
+
 tParamDesc *paramdesc[]= {&p_name1, &p_name2, &p_name3, &p_name4, &p_name5, &p_name6, &p_name7, &p_name8, &p_name9, &p_name10, &p_name11, &p_name12, &p_name13, &p_name14, &p_name15, &p_name16, &p_name17, &p_name18, &p_name19, &p_name20, &p_name21, &p_name22, &p_name23, &p_name24, &p_name25, &p_name26};
 
 
@@ -58,7 +58,7 @@ static int ddpL(trajEl_t *t, int k, tOptSet *o) {
     const double *x= t->x;
     const double *u= t->u;
     double **p= o->p;
-    
+
     t->c=(-1.2+sqrt(1.0+pow(x[3],2.0)))*p[8][0]+pow(x[8],2.0)*p[9][0]+pow(x[9],2.0)*p[9][1]+pow(u[0],2.0)*p[12][0]+pow(u[1],2.0)*p[12][1]+p[13][0]*(-p[24][0]+sqrt(pow(p[24][0],2.0)+pow(x[0]-p[25][0],2.0)))+p[13][1]*(-p[24][1]+sqrt(pow(p[24][1],2.0)+pow(x[1]-p[25][1],2.0)))+p[13][2]*(-p[24][2]+sqrt(pow(p[24][2],2.0)+pow(x[2]-p[25][2],2.0)))+p[10][0]*(-p[24][0]+sqrt(pow(p[24][0],2.0)+pow(x[3]-p[25][3],2.0)))+p[10][1]*(-p[24][1]+sqrt(pow(p[24][1],2.0)+pow(x[4]-p[25][4],2.0)))+p[10][2]*(-p[24][2]+sqrt(pow(p[24][2],2.0)+pow(x[5]-p[25][5],2.0)))+p[16][0]*mcond(sqrt(1.e-6+pow(x[0]-p[3][0],2.0)+pow(x[1]-p[3][1],2.0))>p[14][0],0.0,1,pow(1/sqrt(1.e-6+pow(x[0]-p[3][0],2.0)+pow(x[1]-p[3][1],2.0))-1/p[14][0],2.0))+p[17][0]*mcond(x[3]*(x[0]-p[3][0])+(x[1]-p[3][1])*x[4]<0.0,0.0,1,(x[3]*(x[0]-p[3][0])+(x[1]-p[3][1])*x[4])/sqrt(1.e-6+pow(x[0]-p[3][0],2.0)+pow(x[1]-p[3][1],2.0))/sqrt(1.e-6+pow(x[3],2.0)+pow(x[4],2.0)));
     if (isNANorINF(t->c))
         {
@@ -102,7 +102,7 @@ static int ddpL(trajEl_t *t, int k, tOptSet *o) {
             }
             return(0);
         }
-    
+
     return 1;
 }
 
@@ -110,7 +110,7 @@ static int ddpF(trajFin_t *t, tOptSet *o) {
     const double *x= t->x;
     const int k= o->n_hor;
     double **p= o->p;
-    
+
     t->c=p[11][0]*(-p[23][0]+sqrt(pow(p[23][0],2.0)+pow(x[0]-p[25][0],2.0)))+p[11][1]*(-p[23][1]+sqrt(pow(p[23][1],2.0)+pow(x[1]-p[25][1],2.0)))+p[11][2]*(-p[23][2]+sqrt(pow(p[23][2],2.0)+pow(x[2]-p[25][2],2.0)))+p[11][3]*(-p[23][3]+sqrt(pow(p[23][3],2.0)+pow(x[3]-p[25][3],2.0)))+p[11][4]*(-p[23][4]+sqrt(pow(p[23][4],2.0)+pow(x[4]-p[25][4],2.0)))+p[11][5]*(-p[23][5]+sqrt(pow(p[23][5],2.0)+pow(x[5]-p[25][5],2.0)));
     if (isNANorINF(t->c))
         {
@@ -143,14 +143,14 @@ static int ddpF(trajFin_t *t, tOptSet *o) {
             }
             return(0);
         }
-    
+
     return 1;
 }
 
 static int ddpf(double x_next[], trajEl_t *t, int k, double **p, int N) {
     const double *x= t->x;
     const double *u= t->u;
-    
+
 //     printf("@step %d:\n", k);
     double x_ = x[0];
     double y_ = x[1];
@@ -172,60 +172,60 @@ static int ddpf(double x_next[], trajEl_t *t, int k, double **p, int N) {
     double m = p[20][0];
     double mu = p[21][0];
     double mu_s = p[22][0];
-    
+
     double pi = 3.141592653589793;
 
     double alpha_F;
     double alpha_R;
-    
+
     if(Ux >= 0.0) {
-        alpha_F = atan((Uy+a*r)/(abs(Ux)+1e-3))-steer; 
+        alpha_F = atan((Uy+a*r)/(abs(Ux)+1e-3))-steer;
     } else {
         alpha_F = atan((Uy+a*r)/(abs(Ux)+1e-3))+steer;
     }
     alpha_R = atan((Uy-b*r)/(abs(Ux)+1e-3));
-    
+
     double K = (thr-Ux)/(abs(Ux)+1e-3);
     double reverse = 1.0;
-    
+
     if(K<0.0){
-        reverse = -1.0; 
+        reverse = -1.0;
         K = abs(K);
     }
-    
+
     if(abs(alpha_F)>pi/2.0) {
      alpha_F = (pi-abs(alpha_F))*(alpha_F/abs(alpha_F));
     }
-    
+
 //     printf("K: %f, alpha_F: %f, alpha_R: %f\n", K, alpha_F, alpha_R);
 
     double gamma_F = sqrt(pow(c_a,2.0)*pow(tan(alpha_F),2.0));
     double gamma_R = sqrt(pow(c_x,2.0)*pow((K/(1+K)),2.0)+pow(c_a,2.0)*pow((tan(alpha_R)/(1+K)),2.0));
-    
+
 //     printf("gamma_F: %f, gamma_R: %f\n", gamma_F, gamma_R);
-    
-    double Ff; 
+
+    double Ff;
     if(gamma_F <= 3.0*mu*G_f) {
         Ff = 1.0 - (1.0/(3.0*mu*G_f))*(2.0-mu_s/mu)*gamma_F + (1.0/(9.0*pow(mu,2.0)*pow(G_f,2.0)))*(1.0-(2.0/3.0)*(mu_s/mu))*pow(gamma_F,2.0);
     } else {
         Ff = mu_s*G_f/gamma_F;
     }
-    
-    double Fr; 
+
+    double Fr;
     if(gamma_R <= 3.0*mu*G_r) {
         Fr = 1.0 - (1.0/(3.0*mu*G_r))*(2.0-mu_s/mu)*gamma_R + (1.0/(9.0*pow(mu,2.0)*pow(G_r,2.0)))*(1.0-(2.0/3.0)*(mu_s/mu))*pow(gamma_R,2.0);
     } else {
         Fr = mu_s*G_r/gamma_R;
     }
-    
+
     double Fyf = -c_a * tan(alpha_F) * Ff;
     double Fxr = c_x * (K/(1.0+K)) * Fr * reverse;
     double Fyr = -c_a * (tan(alpha_R)/(1.0+K)) * Fr;
-    
+
     double dr = (a*Fyf*cos(steer)-b*Fyr)/Iz;
     double dUx = (Fxr-Fyf*sin(steer))/m+r*Uy;
     double dUy = (Fyf*cos(steer)+Fyr)/m-r*Ux;
-    
+
     x_next[0]=x[0]+sqrt(1.e-6+pow(x[3],2.0)+pow(x[4],2.0))*p[15][0]*cos(x[2]+mcond(x[3]<0.0&&x[4]>0.0,3.141592653589793-atan(x[4]/(0.001+abs(x[3]))),1,mcond(x[3]<0.0&&x[4]<0.0,-3.141592653589793-atan(x[4]/(0.001+abs(x[3]))),1,atan(x[4]/(0.001+abs(x[3]))))));
     if (isNANorINF(x_next[0]))
         {
@@ -420,8 +420,8 @@ static void limitsU(trajEl_t *t, int k, double **p, int N) {
         upper_idx[i]= -1;
         t->lower[i]= -INF;
         t->upper[i]= INF;
-    }        
-    
+    }
+
 // constraint h[1]= limThr[0]-thr
     limit=p[19][0];
     if (t->lower[0]<limit)
@@ -457,7 +457,7 @@ static void limitsU(trajEl_t *t, int k, double **p, int N) {
 
     for(i= 0; i<N_U; i++) {
         t->lower[i]-= t->u[i];
-        t->upper[i]-= t->u[i]; 
+        t->upper[i]-= t->u[i];
     }
 
     for(j= 0; j<2; j++) {
@@ -542,17 +542,17 @@ int forward_pass(traj_t *c, tOptSet *o, double alpha, double *csum, int cost_onl
     double *x0= o->x0;
     int N= o->n_hor;
     double **params= o->p;
-    
+
     trajEl_t *t= o->nominal->t;
     trajFin_t *f= &o->nominal->f;
     trajEl_t *ct= c->t;
     trajFin_t *cf= &c->f;
-    
+
     multipliersEl_t *m= o->multipliers.t;
     multipliersFin_t *mf= &o->multipliers.f;
-    
+
     double *x_next;
-    
+
     csum[0]= 0.0;
 
     if(!cost_only)
@@ -565,7 +565,7 @@ int forward_pass(traj_t *c, tOptSet *o, double alpha, double *csum, int cost_onl
                     ct->u[j]= t->u[j] + t->l[j]*alpha;
                 for(i= 0; i<N_X; i++) {
                     dx= ct->x[i] - t->x[i];
-                    
+
                     for(j= 0; j<N_U; j++) {
                         ct->u[j]+= t->L[MAT_IDX(j, i, N_U)]*dx;
                     }
@@ -574,31 +574,31 @@ int forward_pass(traj_t *c, tOptSet *o, double alpha, double *csum, int cost_onl
                 for(j= 0; j<N_U; j++)
                     ct->u[j]= t->u[j];
             }
-        }        
+        }
         if(!calcXVariableAux(ct, m, k, o)) return 0;
-        
+
         if(!cost_only)
             clampU(ct->u, ct, k, params, N);
         if(!calcXUVariableAux(ct, m, k, o)) return 0;
-        
+
         if(!cost_only) {
             if(k>=N-1)
                 x_next= cf->x;
             else
                 x_next= (ct+1)->x;
-                
+
             if(!ddpf(x_next, ct, k, params, N)) return 0;
         }
-        
+
         if(!ddpL(ct, k, o)) return 0;
-        csum[0]+= ct->c;        
+        csum[0]+= ct->c;
     }
-    
+
     if(!calcFVariableAux(cf, mf, o)) return 0;
-        
+
     if(!ddpF(cf, o))  return 0;
     csum[0]+= cf->c;
-        
+
     return 1;
 }
 
@@ -608,14 +608,14 @@ int calc_derivs(tOptSet *o) {
 
     trajEl_t *t= o->nominal->t + N -1;
     trajFin_t *f= &o->nominal->f;
-    
+
     multipliersEl_t *m= o->multipliers.t + N - 1;
     multipliersFin_t *mf= &o->multipliers.f;
 
     if(!calcFAuxDeriv(f, mf, o)) return 0;
     if(!bp_derivsF(f, N, o->p)) return 0;
-    
-#if MULTI_THREADED   
+
+#if MULTI_THREADED
     pthread_mutex_lock(&step_mutex);
     step_calc_done= N;
     pthread_cond_signal(&next_step_condition);
@@ -625,10 +625,10 @@ int calc_derivs(tOptSet *o) {
     for(k= N-1; k>=0; k--, t--, m--) {
         if(!calcLAuxDeriv(t, m, k, o)) return 0;
         if(!bp_derivsL(t, k, o->p)) return 0;
-        
+
         limitsU(t, k, o->p, N);
 
-#if MULTI_THREADED   
+#if MULTI_THREADED
         pthread_mutex_lock(&step_mutex);
         step_calc_done= k;
         pthread_cond_signal(&next_step_condition);
@@ -642,41 +642,41 @@ static int calcXVariableAux(trajEl_t *t, multipliersEl_t *m, int k, tOptSet *o) 
     const double *x= t->x;
     double **p= o->p;
     const double w_pen= o->w_pen_l;
-    
+
     return 1;
-} 
+}
 
 static int calcXUVariableAux(trajEl_t *t, multipliersEl_t *m, int k, tOptSet *o) {
     const double *x= t->x;
     const double *u= t->u;
     double **p= o->p;
     const double w_pen= o->w_pen_l;
-    
+
     return 1;
-} 
+}
 
 static int calcFVariableAux(trajFin_t *t, multipliersFin_t *m, tOptSet *o) {
     const double *x= t->x;
     double **p= o->p;
     const double w_pen= o->w_pen_f;
     const int k= o->n_hor;
-    
+
     return 1;
-} 
+}
 
 static int calcLAuxDeriv(trajEl_t *t, multipliersEl_t *m, int k, tOptSet *o) {
     const double *x= t->x;
     const double *u= t->u;
     const double w_pen= o->w_pen_l;
     double **p= o->p;
-    
+
     return 1;
 }
 
 static int bp_derivsL(trajEl_t *t, int k, double **p) {
     const double *x= t->x;
     const double *u= t->u;
-    
+
 // derivatives of f
 // df[i]/d x[0]
 // df[i]/d x[1]
@@ -3546,13 +3546,13 @@ static int calcFAuxDeriv(trajFin_t *t, multipliersFin_t *m, tOptSet *o) {
     const double w_pen= o->w_pen_f;
     double **p= o->p;
     const int k= o->n_hor;
-    
+
     return 1;
 }
 
 static int bp_derivsF(trajFin_t *t, int k, double **p) {
     const double *x= t->x;
-    
+
     t->cx[0]=p[11][0]*(x[0]-p[25][0])/sqrt(pow(p[23][0],2.0)+pow(x[0]-p[25][0],2.0));
     if (isNANorINF(t->cx[0]))
         {
@@ -3757,7 +3757,7 @@ static int bp_derivsF(trajFin_t *t, int k, double **p) {
 static int init_running(trajEl_t *t, tOptSet *o) {
     int k;
     double **p= o->p;
-    
+
     for(k= 0; k<o->n_hor; k++, t++) {
 
 
@@ -4882,7 +4882,7 @@ static int init_running(trajEl_t *t, tOptSet *o) {
     t->fxu[199]=0.0;
 #endif
     }
-    
+
     return 1;
 }
 
@@ -4953,7 +4953,7 @@ static int init_final(trajFin_t *t, tOptSet *o) {
 int init_trajectory(traj_t *t, tOptSet *o) {
     if(!init_running(t->t, o)) return 0;
     if(!init_final(&t->f, o)) return 0;
-    
+
     return 1;
 }
 
@@ -4964,7 +4964,7 @@ static int init_multipliers_running(tOptSet *o) {
     for(k= 0; k<o->n_hor; k++, m++) {
 
     }
-    
+
     return 1;
 }
 
@@ -4973,29 +4973,29 @@ static int init_multipliers_final(tOptSet *o) {
     int i;
 
 
-    
+
     return 1;
 }
 
 int init_multipliers(tOptSet *o) {
     if(!init_multipliers_running(o)) return 0;
     if(!init_multipliers_final(o)) return 0;
-    
+
     return 1;
 }
 
 int init_opt(tOptSet *o) {
     int i;
-    
+
     for(i= 0; i<NUMBER_OF_THREADS+1; i++)
         if(!init_trajectory(&o->trajectories[i], o)) return 0;
 
     o->nominal= &o->trajectories[0];
     for(i= 1; i<NUMBER_OF_THREADS+1; i++)
     o->candidates[i-1]= &o->trajectories[i];
-    
+
     if(!init_multipliers(o)) return 0;
-    
+
     return 1;
 }
 
@@ -5008,7 +5008,7 @@ static int update_multipliers_running(tOptSet *o, int init) {
     double **p= o->p;
     int increase_pen= 0;
     int k, i;
-    
+
     for(k= 0; k<o->n_hor; k++, m++, t++) {
 
 // TODO: maybe check test for sufficient complementarity reduction
@@ -5017,10 +5017,10 @@ static int update_multipliers_running(tOptSet *o, int init) {
 
 // inequality constraints according to D. Ruxton: Differential dynamic programming applied to continuous optimal control problems with state variable inequality constraints
     }
-    
+
     if(!init && increase_pen)
         o->w_pen_l= min(o->w_pen_max_l, o->w_pen_l*o->w_pen_fact1);
-        
+
     return 1;
 }
 
@@ -5060,6 +5060,6 @@ int get_g_size() {
 int calcG(double g[], trajEl_t *t, int k, double **p) {
     const double *x= t->x;
     const double *u= t->u;
-    
+
     return(1);
-} 
+}

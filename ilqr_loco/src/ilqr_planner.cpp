@@ -48,6 +48,7 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
  // TESTING printing control gains
  trajEl_t *t= o->nominal->t;
 
+ // TODO why does this fail even though N is 50 during optimization?
  int i,j,k;
  for(k= 0; k<50; k++, t++) {
    printf("step %d\n", k);
