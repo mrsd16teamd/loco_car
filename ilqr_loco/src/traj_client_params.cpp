@@ -82,7 +82,7 @@ void TrajClient::SetOptParams(tOptSet *o)
     o->debug_level= ilqr_debug_level_;
 
     double* pointer;
-    pointer = malloc(8*sizeof(double));
+    pointer = (double *)malloc(8*sizeof(double));
     double default_alpha[]= {1.0, 0.3727594, 0.1389495, 0.0517947, 0.0193070, 0.0071969, 0.0026827, 0.0010000};
     memcpy(pointer, default_alpha, 8*sizeof(double));
 
