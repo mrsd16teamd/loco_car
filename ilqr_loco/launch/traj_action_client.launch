@@ -1,13 +1,12 @@
 <launch>
 <!-- use argument for choosing yaml file for initial control-->
 <!-- roslaunch traj_action_client.launch yaml:= ?init_control? -->
-  <arg name="control" default="0mps_T150" />arg
+  <arg name="control" default="2mps_T50" />arg
 
 <!--  <include file="$(find loco)/launch/openloop_sve.launch" /> -->
 
 <!-- Start perception nodes-->
   <node pkg="kf_tracker" type="naive_detector" name="naive_detector" output="screen"/>
-  <node pkg="publishpcl" type="publishpcl" name="publishpcl" output="screen"/>
 
 <!-- Load Planner configs from YAML -->
   <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params.yaml"/>

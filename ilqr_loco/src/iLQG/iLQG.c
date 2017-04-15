@@ -64,7 +64,7 @@ void standard_parameters(tOptSet *o) {
     o->tolFun= 1e-7;
     o->tolConstraint= 1e-7;
     o->tolGrad= 1e-5;
-    o->max_iter= 30;
+    o->max_iter= 20;
     o->lambdaInit= 1;
     o->dlambdaInit= 1;
     o->lambdaFactor= 1.6;

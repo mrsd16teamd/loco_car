@@ -28,7 +28,7 @@ AckermannToVesc::AckermannToVesc(ros::NodeHandle nh, ros::NodeHandle private_nh)
 
   // create publishers to vesc electric-RPM (speed) and servo commands
   erpm_pub_ = nh.advertise<std_msgs::Float64>("commands/motor/speed", 1);
-  // servo_pub_ = nh.advertise<std_msgs::Float64>("commands/servo/position", 1);
+  servo_pub_ = nh.advertise<std_msgs::Float64>("commands/servo/position", 1);
 
   // subscribe to ackermann topic
   // ackermann_sub_ = nh.subscribe("ackermann_cmd", 10, &AckermannToVesc::ackermannCmdCallback, this);

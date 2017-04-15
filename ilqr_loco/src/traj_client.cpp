@@ -42,24 +42,21 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 
 void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 {
-  if (msg.point.x < 100) //Note: This is just cuz detector pubs 999 when it sees nothing
-  {
-    obs_pos_.x = msg.point.x;
-    obs_pos_.y = msg.point.y;
-    ROS_INFO("Received obstacle message: x = %f, y = %f", obs_pos_.x, obs_pos_.y);
-    obs_received_ = true;
+  ROS_INFO("Received obstacle message.");
+  obs_pos_.x = msg.point.x;
+  obs_pos_.y = msg.point.y;
+  obs_received_ = true;
 
-    if (mode_==1){
-      SendZeroCommand();
-	    mode_ = 0;
-    }
-    else if (mode_==2 || mode_==3){
-      ilqrPlan();
-      mode_ = 0;
-    }
-    else if (mode_==4 || mode_==5){
-      ilqrMPC();
-    }
+  if (mode_==1) {
+    SendZeroCommand();
+    mode_ = 0;
+  }
+  else if (mode_==2 || mode_==3){
+    ilqrPlan();
+    mode_ = 0;
+  }
+  else if (mode_==4 || mode_==5){
+    ilqrMPC();
   }
 }
 
@@ -149,7 +146,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
 void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
 {
-  // ROS_INFO("Sending trajectory.");
+  ROS_INFO("Sending trajectory.");
   ac_.sendGoal(goal);
               //  ,boost::bind(&TrajClient::doneCb, this, _1, _2),
               //  boost::bind(&TrajClient::activeCb, this),

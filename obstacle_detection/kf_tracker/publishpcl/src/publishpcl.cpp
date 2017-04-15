@@ -39,7 +39,7 @@ Scan2Cloud::Scan2Cloud(): front_angle(0.35)
   scan_sub_ = node_.subscribe<sensor_msgs::LaserScan> ("scan", 100, &Scan2Cloud::scanCallback, this);
   point_cloud_publisher_ = node_.advertise<sensor_msgs::PointCloud2> ("scan_cloud", 100, false);
   clipped_scan_publisher_ = node_.advertise<sensor_msgs::LaserScan> ("scan_front", 100, false);
-  tfListener_.setExtrapolationLimit(ros::Duration(0.1));
+//  tfListener_.setExtrapolationLimit(ros::Duration(0.1));
 
   try{
     node_.getParam("scan_clip_angle", front_angle);

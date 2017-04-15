@@ -14,6 +14,7 @@ timeout_ramp: 2.5
 timeout_ilqr_mpc: 5
 stop_goal_threshold: 0.3
 
+# These don't do anything right now
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
 ilqr_tolGrad: 0.00001
