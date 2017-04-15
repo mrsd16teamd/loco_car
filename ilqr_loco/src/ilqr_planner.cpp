@@ -10,6 +10,8 @@
 #include <geometry_msgs/Point.h>
 
 #include "traj_client.h"
+#include <Eigen/Dense>
+#include <iostream>
 
 extern "C"{
   #include "iLQG.h"
@@ -45,26 +47,30 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   // traj[0]: states, traj[1]: controls
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
 
- // TESTING printing control gains
- trajEl_t *t= o->nominal->t;
+  std::vector<Eigen::Matrix<double, 2, 1>> goal_l(T);
+  std::vector<Eigen::Matrix<double, 2, 8>> goal_L(T);
+  
+  // TESTING printing control gains
+  trajEl_t *t= o->nominal->t;
 
- int i,j,k;
- for(k= 0; k<50; k++, t++) {
-   printf("step %d\n", k);
-   printf("l: \n");
-   for(j= 0; j<N_U; j++)
-       printf("%f ", t->l[j]);
-   printf("\n");
+  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 
-   printf("L: \n");
-   for(i= 0; i<N_X; i++) {
-       for(j= 0; j<N_U; j++) {
-           printf("%f ", t->L[MAT_IDX(j, i, N_U)]);
-       }
-       printf("\n");
-   }
+  int i,j,k;
+  for(k= 0; k<T; k++, t++) {
+    for(j= 0; j<N_U; j++) {
+      goal_l[k](j) = t->l[j];
+    }
 
- }
+    for(i= 0; i<N_X-2; i++) {
+      for(j= 0; j<N_U; j++) {
+        goal_L[k](j,i) = t->L[MAT_IDX(j, i, N_U)];
+      }
+    }
+
+   std::cout << "l: \n" << goal_l[k].format(CleanFmt) << "\n";
+   std::cout << "L: \n" << goal_L[k].format(CleanFmt) << "\n";
+   std::cout << "\n----------------------------------------\n";
+  }
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+N);
