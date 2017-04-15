@@ -118,7 +118,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         centroid.y=y/numPts;
         centroid.z=0.0;
  
-        if (centroid.x < 1.5  && centroid.x > -1.5 && centroid.y > -1.5 && centroid.y < 1.5 && centroid.x != 0 && centroid.y != 0 )
+        if (centroid.x < 1.0  && centroid.x > -1.0 && centroid.y > -1.5 && centroid.y < 1.5 && centroid.x != 0 && centroid.y != 0 )
         {
              
             xcoordinate = centroid.x;
