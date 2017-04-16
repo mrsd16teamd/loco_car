@@ -12,6 +12,8 @@
 #include <vector>
 #include <math.h>
 
+#include <iostream>
+
 #include <pluginlib/class_list_macros.h>
 
 namespace publishpcl_nodelet // @(namespace)
@@ -35,7 +37,6 @@ namespace publishpcl_nodelet // @(namespace)
     int min_index;
     int max_index;
 
-    sensor_msgs::PointCloud2 cloud_;
     sensor_msgs::LaserScan scan_front_;
 
 
@@ -49,9 +50,10 @@ namespace publishpcl_nodelet // @(namespace)
 
       try{
         nh.getParam("scan_clip_angle", front_angle);
+        std::cout << "front_angle = " << front_angle << std::endl;
       }
       catch(...){
-        ROS_ERROR("Need param scan_clip_angle!");
+        NODELET_INFO_STREAM("Need param scan_clip_angle!");
         ros::shutdown();
       }
 
@@ -63,6 +65,9 @@ namespace publishpcl_nodelet // @(namespace)
 
       min_index = floor((old_angle-new_angle_max) / increment);
       max_index = 1080 - min_index;
+      std::cout << "min_index = " << min_index << std::endl;
+      std::cout << "max_index = " << max_index << std::endl;
+
     };
 
     void timerCb(const ros::TimerEvent& event){
@@ -77,8 +82,9 @@ namespace publishpcl_nodelet // @(namespace)
       std::vector<float> new_data(&scan->ranges[min_index],&scan->ranges[max_index]);
       scan_front_.ranges = new_data;
 
-      projector_.projectLaser(scan_front_, cloud_);
-      pcl_pub_.publish(cloud_);
+      sensor_msgs::PointCloud2 cloud;
+      projector_.projectLaser(scan_front_, cloud);
+      pcl_pub_.publish(cloud);
     }
   };
 } // namespace publishpcl

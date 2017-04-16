@@ -1,4 +1,6 @@
 <launch>
+  <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params.yaml"/>
+
   <node pkg="nodelet" type="nodelet" name="standalone_nodelet"  args="manager" output="screen"/>
 
   <node pkg="nodelet" type="nodelet" name="Scan2Cloud" args="load publishpcl_nodelet/Scan2Cloud standalone_nodelet" output="screen">
