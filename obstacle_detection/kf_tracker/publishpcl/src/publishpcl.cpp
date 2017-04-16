@@ -21,7 +21,6 @@ private:
   tf::TransformListener tfListener_;
 
   ros::Publisher point_cloud_publisher_;
-  ros::Publisher clipped_scan_publisher_;
   ros::Subscriber scan_sub_;
 
   double front_angle; // currently 90 degrees
@@ -34,11 +33,10 @@ private:
 };
 
 
-Scan2Cloud::Scan2Cloud(): front_angle(0.35)
+Scan2Cloud::Scan2Cloud()
 {
   scan_sub_ = node_.subscribe<sensor_msgs::LaserScan> ("scan", 100, &Scan2Cloud::scanCallback, this);
   point_cloud_publisher_ = node_.advertise<sensor_msgs::PointCloud2> ("scan_cloud", 100, false);
-  clipped_scan_publisher_ = node_.advertise<sensor_msgs::LaserScan> ("scan_front", 100, false);
 //  tfListener_.setExtrapolationLimit(ros::Duration(0.1));
 
   try{
@@ -70,7 +68,6 @@ void Scan2Cloud::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
   sensor_msgs::PointCloud2 cloud;
   projector_.projectLaser(scan_front, cloud);
 
-  clipped_scan_publisher_.publish(scan_front);
   point_cloud_publisher_.publish(cloud);
 }
 
