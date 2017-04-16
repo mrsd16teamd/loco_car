@@ -121,7 +121,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS}
+  include include/Eigen ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -200,7 +200,3 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS} ${Boost
 add_executable(publishpcl src/publishpcl.cpp)
 target_link_libraries(publishpcl ${catkin_LIBRARIES} ${tf_LIBRARIES})
 add_dependencies(publishpcl publishpcl_generate_messages_cpp)
-
-
-
-
