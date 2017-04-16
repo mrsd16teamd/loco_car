@@ -7,27 +7,27 @@ void TrajClient::LoadParams()
     ROS_INFO("Loading parameters.");
 
     // Get parameters from ROS Param server
-    nh_.getParam("timestep", timestep_);
+    TRYGETPARAM("timestep", timestep_)
 
-    nh_.getParam("kp_ramp", kp_);
-    nh_.getParam("ki_ramp", ki_);
-    nh_.getParam("kd_ramp", kd_);
-    nh_.getParam("accel_ramp", accel_);
-    nh_.getParam("target_vel_ramp", target_vel_);
-    nh_.getParam("timeout_ramp", timeout_);
+    TRYGETPARAM("kp_ramp", kp_)
+    TRYGETPARAM("ki_ramp", ki_)
+    TRYGETPARAM("kd_ramp", kd_)
+    TRYGETPARAM("accel_ramp", accel_)
+    TRYGETPARAM("target_vel_ramp", target_vel_)
+    TRYGETPARAM("timeout_ramp", timeout_)
 
-    nh_.getParam("T_horizon", T_horizon_);
-    nh_.getParam("init_control_seq", init_control_seq_);
-    nh_.getParam("X_des", x_des_);
-    nh_.getParam("timeout_ilqr_mpc", mpc_timeout_);
-    nh_.getParam("stop_goal_threshold", goal_threshold_);
+    TRYGETPARAM("T_horizon", T_horizon_)
+    TRYGETPARAM("init_control_seq", init_control_seq_)
+    TRYGETPARAM("X_des", x_des_)
+    TRYGETPARAM("timeout_ilqr_mpc", mpc_timeout_)
+    TRYGETPARAM("stop_goal_threshold", goal_threshold_)
 
-    nh_.getParam("ilqr_tolFun", ilqr_tolFun_);
-    nh_.getParam("ilqr_tolConstraint", ilqr_tolConstraint_);
-    nh_.getParam("ilqr_tolGrad", ilqr_tolGrad_);
-    nh_.getParam("ilqr_max_iter", ilqr_max_iter_);
-    nh_.getParam("ilqr_regType", ilqr_regType_);
-    nh_.getParam("ilqr_debug_level", ilqr_debug_level_);
+    TRYGETPARAM("ilqr_tolFun", ilqr_tolFun_)
+    TRYGETPARAM("ilqr_tolConstraint", ilqr_tolConstraint_)
+    TRYGETPARAM("ilqr_tolGrad", ilqr_tolGrad_)
+    TRYGETPARAM("ilqr_max_iter", ilqr_max_iter_)
+    TRYGETPARAM("ilqr_regType", ilqr_regType_)
+    TRYGETPARAM("ilqr_debug_level", ilqr_debug_level_)
 
 	  u_seq_saved_ = init_control_seq_;
 
@@ -41,17 +41,17 @@ void TrajClient::LoadParams()
 
 void TrajClient::LoadCarParams()
 {
-  nh_.getParam("Opt_car_param/g", g_);
-  nh_.getParam("Opt_car_param/L", L_);
-  nh_.getParam("Opt_car_param/m", m_);
-  nh_.getParam("Opt_car_param/b", b_);
-  nh_.getParam("Opt_car_param/c_x", c_x_);
-  nh_.getParam("Opt_car_param/c_a", c_a_);
-  nh_.getParam("Opt_car_param/Iz", Iz_);
-  nh_.getParam("Opt_car_param/mu", mu_);
-  nh_.getParam("Opt_car_param/mu_s", mu_s_);
-  nh_.getParam("Opt_car_param/limSteer", limSteer_);
-  nh_.getParam("Opt_car_param/limThr", limThr_);
+  TRYGETPARAM("Opt_car_param/g", g_);
+  TRYGETPARAM("Opt_car_param/L", L_);
+  TRYGETPARAM("Opt_car_param/m", m_);
+  TRYGETPARAM("Opt_car_param/b", b_);
+  TRYGETPARAM("Opt_car_param/c_x", c_x_);
+  TRYGETPARAM("Opt_car_param/c_a", c_a_);
+  TRYGETPARAM("Opt_car_param/Iz", Iz_);
+  TRYGETPARAM("Opt_car_param/mu", mu_);
+  TRYGETPARAM("Opt_car_param/mu_s", mu_s_);
+  TRYGETPARAM("Opt_car_param/limSteer", limSteer_);
+  TRYGETPARAM("Opt_car_param/limThr", limThr_);
 
   a_ = L_ - b_;
   G_f_ = m_*g_*b_/L_;
@@ -60,17 +60,17 @@ void TrajClient::LoadCarParams()
 
 void TrajClient::LoadCostParams()
 {
-  nh_.getParam("Opt_cost/cu", cu_);
-  nh_.getParam("Opt_cost/cdu", cdu_);
-  nh_.getParam("Opt_cost/cf", cf_);
-  nh_.getParam("Opt_cost/pf", pf_);
-  nh_.getParam("Opt_cost/cx", cx_);
-  nh_.getParam("Opt_cost/cdx", cdx_);
-  nh_.getParam("Opt_cost/px", px_);
-  nh_.getParam("Opt_cost/cdrift", cdrift_);
-  nh_.getParam("Opt_cost/k_pos", k_pos_);
-  nh_.getParam("Opt_cost/k_vel", k_vel_);
-  nh_.getParam("Opt_cost/d_thres", d_thres_);
+  TRYGETPARAM("Opt_cost/cu", cu_)
+  TRYGETPARAM("Opt_cost/cdu", cdu_)
+  TRYGETPARAM("Opt_cost/cf", cf_)
+  TRYGETPARAM("Opt_cost/pf", pf_)
+  TRYGETPARAM("Opt_cost/cx", cx_)
+  TRYGETPARAM("Opt_cost/cdx", cdx_)
+  TRYGETPARAM("Opt_cost/px", px_)
+  TRYGETPARAM("Opt_cost/cdrift", cdrift_)
+  TRYGETPARAM("Opt_cost/k_pos", k_pos_)
+  TRYGETPARAM("Opt_cost/k_vel", k_vel_)
+  TRYGETPARAM("Opt_cost/d_thres", d_thres_)
 }
 
 // changed to pass by reference to apply and keep edit
@@ -140,7 +140,6 @@ void TrajClient::LoadOpt()
 
   char *err_msg;
   double max_iter = 100;
-
   err_msg = setOptParam(&Opt, "max_iter", &max_iter, 1);
   if(err_msg) {
       printf("Dimagree error, Error setting optimization parameter '%s': %s.\n", "max_iter", err_msg);

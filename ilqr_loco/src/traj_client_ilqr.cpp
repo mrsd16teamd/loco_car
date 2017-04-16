@@ -30,6 +30,8 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
 void TrajClient::ilqrPlan()
 {
   ilqr_loco::TrajExecGoal goal = ilqgGenerateTrajectory(cur_state_);
+  if (mode_==7) // turn on pid heading corrections during server execution
+  	goal.traj.mode = 1;
   SendTrajectory(goal);
 }
 
@@ -121,7 +123,5 @@ void TrajClient::ilqrSparseReplan()
     }
     ros::spinOnce(); // to pick up new state estimates
   }
-
-
 
 }

@@ -5,9 +5,9 @@
 TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
                           cur_integral_(0), prev_error_(0), cur_vel_(0.5)
 {
-  state_sub_  = nh_.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
-  obs_sub_ = nh_.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
-  mode_sub_ = nh_.subscribe("client_command", 1, &TrajClient::modeCb, this);
+  state_sub_  = nh.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
+  obs_sub_ = nh.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
+  mode_sub_ = nh.subscribe("client_command", 1, &TrajClient::modeCb, this);
 
   state_estimate_received_ = false;
   obs_received_ = false;
@@ -45,7 +45,7 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       SendZeroCommand();
       mode_ = 0;
     }
-    else if (mode_==2 || mode_==3){
+    else if (mode_==2 || mode_==3 || mode_==7){
       ilqrPlan();
       mode_ = 0;
     }
@@ -82,6 +82,21 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       // wait for stateCb to ramp
     }
     case 2: {
+
+      #if ILQRDEBUG
+      obs_pos_.x = 2.599635;
+      obs_pos_.y = 0.365210;
+
+      cur_state_.pose.pose.position.x = 1.826;
+      cur_state_.pose.pose.position.y = 0.340;
+      double theta = 0.0032;
+      cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+      cur_state_.twist.twist.linear.x = 0.062;
+      cur_state_.twist.twist.linear.y = -0.009;
+      cur_state_.twist.twist.angular.z = 0.00023;
+      ilqrPlan();
+      #endif
+
       ROS_INFO("Mode 2: iLQR from static initial conditions.");
 
       mode_ = 2;
@@ -131,6 +146,13 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       #endif
 
       mode_ = 6;
+      obs_received_ = false;
+      break;
+    }
+    case 7: {
+      ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
+      mode_ = 7;
+	    u_seq_saved_ = init_control_seq_;
       obs_received_ = false;
       break;
     }
