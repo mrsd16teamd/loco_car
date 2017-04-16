@@ -1,6 +1,7 @@
 #include <ros/ros.h>
+#include <nodelet/nodelet.h>
 #include <laser_assembler/AssembleScans.h>
-#include "laser_geometry/laser_geometry.h"
+#include "laser_geometry.h"
 #include <algorithm>
 #include <ros/assert.h>
 #include <tf2/LinearMath/Transform.h>
