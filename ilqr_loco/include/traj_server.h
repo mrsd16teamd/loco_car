@@ -33,10 +33,16 @@ public:
       state_sub_  = nh.subscribe("odometry/filtered", 1, &TrajServer::stateCb, this);
       LoadParams();
 
-      cur_state.resize(8);
-      L.resize(2,8);
-      x.resize(8);
-      dx.resize(8);
+      cur_state = Eigen::VectorXd::Zero(8);
+      l = Eigen::VectorXd::Zero(2);
+      L = Eigen::MatrixXd::Zero(2,8);
+      x = Eigen::VectorXd::Zero(8);
+      dx = Eigen::VectorXd::Zero(8);
+      u = Eigen::VectorXd::Zero(2);
+      last_u = Eigen::VectorXd::Zero(2);
+
+      throttle_lims << 0, 4.0;
+      steering_lims << -0.68, 0.76;
 
       ROS_INFO("Started iLQR executer node. Send me actions!");
     }
@@ -57,6 +63,8 @@ private:
   Eigen::VectorXd dx;
   Eigen::Vector2d u;
   Eigen::Vector2d last_u;
+  Eigen::Vector2d throttle_lims;
+  Eigen::Vector2d steering_lims;
 
   // create messages that are used to published feedback/result
   ilqr_loco::TrajExecFeedback feedback;
@@ -72,6 +80,7 @@ private:
   void FillVecFromOdom(const nav_msgs::Odometry &odom, Eigen::VectorXd &v);
   void FillVecFromTwist(const geometry_msgs::Twist &twist, Eigen::Vector2d &v);
   void FillTwistFromVec(geometry_msgs::Twist &twist, const Eigen::Vector2d &v);
+  void ClampControls(Eigen::Vector2d &u);
 };
 
 #endif

@@ -17,6 +17,12 @@ void TrajServer::LoadParams()
   }
 }
 
+void TrajServer::ClampControls(Eigen::Vector2d &u)
+{
+  u(0) = std::min(throttle_lims(1), std::max(u(0), throttle_lims(0)));
+  u(1) = std::min(steering_lims(1), std::max(u(1), steering_lims(0)));
+}
+
 void TrajServer::FillVecFromOdom(const nav_msgs::Odometry &odom, Eigen::VectorXd &v)
 {
   v(0) = odom.pose.pose.position.x;
@@ -106,16 +112,27 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
         l(1) = goal->traj.l.data[(2*i)+1];
         for (int j=0; j<2; j++) {
           for (int k=0; k<8; k++) {
-            L(j,k) = goal->traj.L.data[(j*2)+k]; // TODO change this index
+            L(j,k) = goal->traj.L.data[(i*16)+(j*2)+k]; // TODO change this index
           }
         }
 
         // Adjust control with control gains
+        // Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
+        // std::cout << "cur_state: " << cur_state.format(CommaInitFmt) << '\n';
+        // std::cout << "l: " << l.format(CommaInitFmt) << '\n';
+        // std::cout << "L: " << L.format(CommaInitFmt) << '\n';
+        // std::cout << "u: " << u.format(CommaInitFmt) << '\n';
         u = u - l;
+        // std::cout << "u-l: " << u.format(CommaInitFmt) << '\n';
         dx = cur_state - x;
+        // std::cout << "x: " << x.format(CommaInitFmt) << '\n';
+        // std::cout << "dx: " << u.format(CommaInitFmt) << '\n';
         u = u + L*dx;
+        // std::cout << "u: " << u.format(CommaInitFmt) << "\n\n\n";
 
         // Publish command and save the commands as the previous cmds
+        // TODO clamp or boxQP control inputs
+        ClampControls(u);
         geometry_msgs::Twist control;
         FillTwistFromVec(control, u);
         last_u = u;

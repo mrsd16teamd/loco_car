@@ -46,7 +46,7 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
 
   // traj[0]: states, traj[1]: controls
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
-  
+
   // TESTING printing control gains
   trajEl_t *t= o->nominal->t;
 
@@ -82,6 +82,8 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   //Put states and controls into format that action client wants.
   // goal.traj.states.reserve(N);
   // goal.traj.commands.reserve(N);
+
+  goal.traj.mode = 1;
 
   for(int i=0; i<N; i++) {
    	nav_msgs::Odometry odom;
