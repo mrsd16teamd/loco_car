@@ -8,9 +8,9 @@
 #include <tf/transform_datatypes.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Point.h>
+#include <std_msgs/Float64MultiArray.h>
 
 #include "traj_client.h"
-#include <Eigen/Dense>
 #include <iostream>
 
 extern "C"{
@@ -46,31 +46,33 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
 
   // traj[0]: states, traj[1]: controls
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
-
-  std::vector<Eigen::Matrix<double, 2, 1>> goal_l(T);
-  std::vector<Eigen::Matrix<double, 2, 8>> goal_L(T);
   
   // TESTING printing control gains
   trajEl_t *t= o->nominal->t;
 
-  Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
+  // Filling l and L here
+  // l is Float64MultiArray msg with a data size T*2
+  goal.traj.l.data.resize(T*2);
+  // l is Float64MultiArray msg with a data size T*2*8
+  goal.traj.L.data.resize(T*2*8);
 
   int i,j,k;
   for(k= 0; k<T; k++, t++) {
     for(j= 0; j<N_U; j++) {
-      goal_l[k](j) = t->l[j];
+      // l has T 'pages', each page has 2 entries
+      goal.traj.l.data[k*2+j] = t->l[j];
     }
 
     for(i= 0; i<N_X-2; i++) {
       for(j= 0; j<N_U; j++) {
-        goal_L[k](j,i) = t->L[MAT_IDX(j, i, N_U)];
+      	// L has T 'pages', each page has 16 entries, then use MAT_IDX to refer within the 'page'
+        goal.traj.L.data[k*16+MAT_IDX(j, i, N_U)] = t->L[MAT_IDX(j, i, N_U)];
       }
     }
-
-   std::cout << "l: \n" << goal_l[k].format(CleanFmt) << "\n";
-   std::cout << "L: \n" << goal_L[k].format(CleanFmt) << "\n";
-   std::cout << "\n----------------------------------------\n";
   }
+
+  for(i= 0; i<NUMBER_OF_THREADS+1; i++)
+    free(o->trajectories[i].t);
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+N);

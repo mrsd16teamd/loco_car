@@ -85,7 +85,4 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
             new_cost[0]= o->cost;
         }
     }
-
-    for(i= 0; i<NUMBER_OF_THREADS+1; i++)
-        free(o->trajectories[i].t);
 }
