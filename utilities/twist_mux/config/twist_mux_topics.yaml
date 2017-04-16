@@ -14,7 +14,7 @@ topics:
 -
   name    : joystick
   topic   : joy_vel
-  timeout : 3.0
+  timeout : 1.0
   priority: 100
 
 

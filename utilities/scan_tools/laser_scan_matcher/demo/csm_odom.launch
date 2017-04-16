@@ -27,8 +27,8 @@ Example launch file: launches the scan matcher with pre-recorded data
         use_vel: false
 
         # Keyframe selection (set either to 0 to disable keyframing)
-        kf_dist_linear: 0.02
-        kf_dist_angular: 0.05
+        kf_dist_linear: 0.05
+        kf_dist_angular: 0.02
 
     </rosparam>
 
