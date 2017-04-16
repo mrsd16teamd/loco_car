@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include <ilqr_loco/TrajExecAction.h>
+#include "try_get_param.h"
 
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
@@ -30,7 +31,7 @@ public:
 
 protected:
   // ROS Handles
-  ros::NodeHandle nh_;
+  ros::NodeHandle nh;
   ros::Subscriber state_sub_;
   ros::Subscriber obs_sub_;
   ros::Subscriber mode_sub_;
