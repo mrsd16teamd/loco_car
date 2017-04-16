@@ -21,7 +21,7 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
             cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
   ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
 
-  iLQR_gen_traj(cur_state, init_control_seq_, x_des_, obs_pos_, T_horizon_, &Opt, goal);
+  iLQR_gen_traj(cur_state, u_seq_saved_, x_des_, obs_pos_, T_horizon_, &Opt, goal);
   ++T_;
 
   return goal;
@@ -42,12 +42,12 @@ void TrajClient::ilqrMPC()
   //HACK HERE
   FillGoalMsgHeader(goal);
 goal.traj.timestep = timestep_;
-  for(int i=0; i<init_control_seq_.size()/2; i++) {
+  for(int i=0; i<u_seq_saved_.size()/2; i++) {
 	geometry_msgs::Twist twist;
-	FillTwistMsg(twist, init_control_seq_[2*i], init_control_seq_[2*i+1]);
+	FillTwistMsg(twist, u_seq_saved_[2*i], u_seq_saved_[2*i+1]);
 	goal.traj.commands.push_back(twist);
   }
-for(int i=0; i<init_control_seq_.size()+1; i++) {
+for(int i=0; i<u_seq_saved_.size()+1; i++) {
   goal.traj.states.push_back(cur_state_);
 }
   SendTrajectory(goal);
@@ -66,7 +66,7 @@ for(int i=0; i<init_control_seq_.size()+1; i++) {
     }
 
     ROS_INFO("Receding horizon iteration #%d", iter_count);
-    ROS_INFO("u0[0]: %f", init_control_seq_[0]);
+    ROS_INFO("u0[0]: %f", u_seq_saved_[0]);
 
     goal = ilqgGenerateTrajectory(cur_state_);
 

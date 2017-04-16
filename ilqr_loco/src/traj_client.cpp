@@ -96,6 +96,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       #endif
 
       mode_ = 2;
+	    u_seq_saved_ = init_control_seq_;
       obs_received_ = false;
       break;
 		  // wait for obsCb to plan

@@ -29,6 +29,8 @@ void TrajClient::LoadParams()
     nh_.getParam("ilqr_regType", ilqr_regType_);
     nh_.getParam("ilqr_debug_level", ilqr_debug_level_);
 
+	  u_seq_saved_ = init_control_seq_;
+
     LoadOpt();
   }
   catch(...)
