@@ -19,7 +19,7 @@ namespace publishpcl_nodelet // @(namespace)
   class Scan2Cloud : public nodelet::Nodelet // @(NodeletClass)
   {
   public:
-    Scan2Cloud();
+    Scan2Cloud() = default;
 
   private:
     laser_geometry::LaserProjection projector_;
