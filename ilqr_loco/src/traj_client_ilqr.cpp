@@ -89,7 +89,7 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
 void TrajClient::ilqrSparseReplan()
 {
   start_time_ = ros::Time::now();
-  std::vector<double> replan_times = {0.0, 0.5, 1.5};
+  std::vector<double> replan_times = {0.0, 0.75, 1.5};
   bool plan_next_ = true;
 
   ilqr_loco::TrajExecGoal goal;
