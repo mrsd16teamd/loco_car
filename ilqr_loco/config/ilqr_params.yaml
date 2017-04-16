@@ -4,8 +4,8 @@ timestep: 0.02
 
 # Rampup params
 kp_ramp: 0.45
-kd_ramp: 0.05
-ki_ramp: 0.1
+kd_ramp: 0.1
+ki_ramp: 0.05
 accel_ramp: 3
 target_vel_ramp: 3
 timeout_ramp: 2.5
