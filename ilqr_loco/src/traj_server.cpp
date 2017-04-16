@@ -31,8 +31,8 @@ void TrajServer::FillVecFromOdom(const nav_msgs::Odometry &odom, Eigen::VectorXd
   v(3) = odom.twist.twist.linear.x;
   v(4) = odom.twist.twist.linear.y;
   v(5) = odom.twist.twist.angular.z;
-  v(6) = last_u(0); // TODO figure out what to do here
-  v(7) = last_u(1);
+  // v(6) = last_u(0); // TODO figure out what to do here
+  // v(7) = last_u(1);
 }
 
 void TrajServer::FillVecFromTwist(const geometry_msgs::Twist &twist, Eigen::Vector2d &v)
@@ -77,11 +77,11 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       break;
     }
     // check that commands in plan are not too old
-    else if ((ros::Time::now().toSec() - (traj_start_time + (i*timestep))) > old_msg_thres)
-    {
-     ROS_INFO("Ignoring old command.");
-     continue;
-    }
+    // else if ((ros::Time::now().toSec() - (traj_start_time + (i*timestep))) > old_msg_thres)
+    // {
+    //  ROS_INFO("Ignoring old command.");
+    //  continue;
+    // }
     else
     {
       if (goal->traj.mode == 0) // old behavior - executing control sequence
@@ -99,36 +99,38 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       {
         // Get x, u, l, L into eigen matrices from messages
         FillVecFromOdom(goal->traj.states[i], x);
-        if (i==0){
-          x(6) = x(7) = 0;
-        }
-        else{
-          x(6) = goal->traj.commands[i-1].linear.x;
-          x(7) = goal->traj.commands[i-1].angular.z;
-        }
+        // if (i==0){
+        //   x(6) = x(7) = 0;
+        // }
+        // else{
+        //   x(6) = goal->traj.commands[i-1].linear.x;
+        //   x(7) = goal->traj.commands[i-1].angular.z;
+        // }
         FillVecFromTwist(goal->traj.commands[i], u);
 
         l(0) = goal->traj.l.data[(2*i)];
         l(1) = goal->traj.l.data[(2*i)+1];
         for (int j=0; j<2; j++) {
-          for (int k=0; k<8; k++) {
-            L(j,k) = goal->traj.L.data[(i*16)+(j*2)+k]; // TODO change this index
+          for (int k=0; k<6; k++) {
+            L(j,k) = goal->traj.L.data[(i*12)+(j*2)+k]; // TODO change this index
           }
         }
 
         // Adjust control with control gains
-        // Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
-        // std::cout << "cur_state: " << cur_state.format(CommaInitFmt) << '\n';
+        Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", " << ", ";");
+
         // std::cout << "l: " << l.format(CommaInitFmt) << '\n';
-        // std::cout << "L: " << L.format(CommaInitFmt) << '\n';
-        // std::cout << "u: " << u.format(CommaInitFmt) << '\n';
-        u = u - l;
+        std::cout << "L: " << L << '\n';
+        std::cout << "u: " << u.format(CommaInitFmt) << '\n';
+        // u = u - l;
         // std::cout << "u-l: " << u.format(CommaInitFmt) << '\n';
-        dx = cur_state - x;
-        // std::cout << "x: " << x.format(CommaInitFmt) << '\n';
-        // std::cout << "dx: " << u.format(CommaInitFmt) << '\n';
+        dx =  cur_state - x;
+        std::cout << "c: " << cur_state.format(CommaInitFmt) << '\n';
+        std::cout << "x: " << x.format(CommaInitFmt) << '\n';
+        // dx(5) = 0;
+        std::cout << "dx: " << dx.format(CommaInitFmt) << '\n';
         u = u + L*dx;
-        // std::cout << "u: " << u.format(CommaInitFmt) << "\n\n\n";
+        std::cout << "u+L*dx: " << u.format(CommaInitFmt) << "\n\n\n";
 
         // Publish command and save the commands as the previous cmds
         // TODO clamp or boxQP control inputs
@@ -145,6 +147,13 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       }
     }
   }
+
+   if (goal->traj.mode == 1){
+	   geometry_msgs::Twist control;
+	   control.linear.x = 0.0;
+	   control.angular.z = 0.0;
+	   cmd_pub.publish(control);
+   }
 
   // For visualization
   nav_msgs::Path path_msg;

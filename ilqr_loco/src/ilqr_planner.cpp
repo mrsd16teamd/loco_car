@@ -54,7 +54,7 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   // l is Float64MultiArray msg with a data size T*2
   goal.traj.l.data.resize(T*2);
   // l is Float64MultiArray msg with a data size T*2*8
-  goal.traj.L.data.resize(T*2*8);
+  goal.traj.L.data.resize(T*2*6);
 
   int i,j,k;
   for(k= 0; k<T; k++, t++) {
@@ -63,10 +63,10 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
       goal.traj.l.data[k*2+j] = t->l[j];
     }
 
-    for(i= 0; i<N_X-2; i++) {
+    for(i= 0; i<N_X-4; i++) {
       for(j= 0; j<N_U; j++) {
       	// L has T 'pages', each page has 16 entries, then use MAT_IDX to refer within the 'page'
-        goal.traj.L.data[k*16+MAT_IDX(j, i, N_U)] = t->L[MAT_IDX(j, i, N_U)];
+        goal.traj.L.data[k*(N_U*(N_X-4))+MAT_IDX(j, i, N_U)] = t->L[MAT_IDX(j, i, N_U)];
       }
     }
   }

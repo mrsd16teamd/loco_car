@@ -33,11 +33,11 @@ public:
       state_sub_  = nh.subscribe("odometry/filtered", 1, &TrajServer::stateCb, this);
       LoadParams();
 
-      cur_state = Eigen::VectorXd::Zero(8);
+      cur_state = Eigen::VectorXd::Zero(6);
       l = Eigen::VectorXd::Zero(2);
-      L = Eigen::MatrixXd::Zero(2,8);
-      x = Eigen::VectorXd::Zero(8);
-      dx = Eigen::VectorXd::Zero(8);
+      L = Eigen::MatrixXd::Zero(2,6);
+      x = Eigen::VectorXd::Zero(6);
+      dx = Eigen::VectorXd::Zero(6);
       u = Eigen::VectorXd::Zero(2);
       last_u = Eigen::VectorXd::Zero(2);
 
