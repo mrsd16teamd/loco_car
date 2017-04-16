@@ -85,3 +85,43 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
     iter_count++;
   }
 }
+
+void TrajClient::ilqrSparseReplan()
+{
+  start_time_ = ros::Time::now();
+  std::vector<double> replan_times = {0.0, 0.5, 1.5};
+  bool plan_next_ = true;
+
+  ilqr_loco::TrajExecGoal goal;
+
+  int iter_count = 0;
+
+  while (ros::ok())
+  {
+    if(plan_next_)
+    {
+      ROS_INFO("Replan #%d", iter_count);
+      ilqrPlan();
+      plan_next_ = false;
+      if (++iter_count >= replan_times.size())
+      {
+        ROS_INFO("Done planning.");
+      }
+    }
+    if(ros::Time::now() - start_time_ > ros::Duration(replan_times[iter_count]) && iter_count < replan_times.size())
+    {
+      plan_next_ = true;
+      ROS_INFO("Next plan.");
+    }
+    if(ros::Time::now() - start_time_ > ros::Duration(mpc_timeout_))
+    {
+      ROS_INFO("iLQR timed out.");
+      SendZeroCommand();
+      break;
+    }
+    ros::spinOnce(); // to pick up new state estimates
+  }
+
+
+
+}

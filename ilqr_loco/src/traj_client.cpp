@@ -52,6 +52,9 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     else if (mode_==4 || mode_==5){
       ilqrMPC();
     }
+    else if (mode_==6){
+      ilqrSparseReplan();
+    }
   }
 }
 
@@ -81,20 +84,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 2: {
       ROS_INFO("Mode 2: iLQR from static initial conditions.");
 
-      #if ILQRDEBUG
-      obs_pos_.x = 2.599635;
-      obs_pos_.y = 0.365210;
-
-      cur_state_.pose.pose.position.x = 1.826;
-      cur_state_.pose.pose.position.y = 0.340;
-      double theta = 0.0032;
-      cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
-      cur_state_.twist.twist.linear.x = 0.062;
-      cur_state_.twist.twist.linear.y = -0.009;
-      cur_state_.twist.twist.angular.z = 0.00023;
-      ilqrPlan();
-      #endif
-
       mode_ = 2;
 	    u_seq_saved_ = init_control_seq_;
       obs_received_ = false;
@@ -119,10 +108,31 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     }
     case 5: {
       ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
-      mode_= 5;
+      mode_ = 5;
       obs_received_ = false;
       break;
       //wait for obsCb to plan
+    }
+    case 6: {
+      ROS_INFO("Mode 6: iLQR with sparse replanning from static.");
+
+      #if ILQRDEBUG
+      obs_pos_.x = 2.599635;
+      obs_pos_.y = 0.365210;
+
+      cur_state_.pose.pose.position.x = 1.826;
+      cur_state_.pose.pose.position.y = 0.340;
+      double theta = 0.0032;
+      cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+      cur_state_.twist.twist.linear.x = 0.062;
+      cur_state_.twist.twist.linear.y = -0.009;
+      cur_state_.twist.twist.angular.z = 0.00023;
+      ilqrSparseReplan();
+      #endif
+
+      mode_ = 6;
+      obs_received_ = false;
+      break;
     }
     case 8: {
       ROS_INFO("Resetting obs_received_ to false.");

@@ -124,6 +124,7 @@ protected:
                      geometry_msgs::Point &obstacle_pos, int T, tOptSet* o, ilqr_loco::TrajExecGoal &goal);
   void ilqrMPC();
   double DistToGoal();
+  void ilqrSparseReplan();
 
   void RampAndiLQR();
 	void SendZeroCommand();
