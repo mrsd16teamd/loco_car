@@ -108,9 +108,9 @@ protected:
   int ilqr_debug_level_;
 
   void LoadParams();
-	void LoadCarParams();
+  void LoadCarParams();
   void LoadCostParams();
-	void SetOptParams(tOptSet *o);
+  void SetOptParams(tOptSet *o);
   void LoadOpt();
 
   void rampPlan();

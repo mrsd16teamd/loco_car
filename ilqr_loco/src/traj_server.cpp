@@ -17,6 +17,35 @@ void TrajServer::LoadParams()
   }
 }
 
+void TrajServer::FillVecFromOdom(const nav_msgs::Odometry &odom, Eigen::VectorXd &v)
+{
+  v(0) = odom.pose.pose.position.x;
+  v(1) = odom.pose.pose.position.y;
+  v(2) = tf::getYaw(odom.pose.pose.orientation);
+  v(3) = odom.twist.twist.linear.x;
+  v(4) = odom.twist.twist.linear.y;
+  v(5) = odom.twist.twist.angular.z;
+  v(6) = last_u(0); // TODO figure out what to do here
+  v(7) = last_u(1);
+}
+
+void TrajServer::FillVecFromTwist(const geometry_msgs::Twist &twist, Eigen::Vector2d &v)
+{
+  v(0) = twist.linear.x;
+  v(1) = twist.angular.z;
+}
+
+void TrajServer::FillTwistFromVec(geometry_msgs::Twist &twist, const Eigen::Vector2d &v)
+{
+  twist.linear.x = v(0);
+  twist.angular.z = v(1);
+}
+
+void TrajServer::stateCb(const nav_msgs::Odometry &odom)
+{
+  FillVecFromOdom(odom, cur_state);
+}
+
 // provides action to execute plans
 void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
   // TODO? check that states and commands are right length
@@ -49,14 +78,54 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     }
     else
     {
-      cmd_pub.publish(goal->traj.commands[i]);
-      ros::spinOnce();
+      if (goal->traj.mode == 0) // old behavior - executing control sequence
+      {
+        cmd_pub.publish(goal->traj.commands[i]);
+        ros::spinOnce();
 
-      int steps_left = goal->traj.commands.size() - i;
-      if (steps_left>1)
-        loop_rate.sleep();
-      // feedback.steps_left =  steps_left;
-      // as.publishFeedback(feedback);
+        int steps_left = goal->traj.commands.size() - i;
+        if (steps_left>1)
+          loop_rate.sleep();
+        // feedback.steps_left =  steps_left;
+        // as.publishFeedback(feedback);
+      }
+      else if (goal->traj.mode == 1) // new behavior - execute control policy
+      {
+        // Get x, u, l, L into eigen matrices from messages
+        FillVecFromOdom(goal->traj.states[i], x);
+        if (i==0){
+          x(6) = x(7) = 0;
+        }
+        else{
+          x(6) = goal->traj.commands[i-1].linear.x;
+          x(7) = goal->traj.commands[i-1].angular.z;
+        }
+        FillVecFromTwist(goal->traj.commands[i], u);
+
+        l(0) = goal->traj.l.data[(2*i)];
+        l(1) = goal->traj.l.data[(2*i)+1];
+        for (int j=0; j<2; j++) {
+          for (int k=0; k<8; k++) {
+            L(j,k) = goal->traj.L.data[(j*2)+k]; // TODO change this index
+          }
+        }
+
+        // Adjust control with control gains
+        u = u - l;
+        dx = cur_state - x;
+        u = u + L*dx;
+
+        // Publish command and save the commands as the previous cmds
+        geometry_msgs::Twist control;
+        FillTwistFromVec(control, u);
+        last_u = u;
+        cmd_pub.publish(control);
+        ros::spinOnce();
+
+        int steps_left = goal->traj.commands.size() - i;
+        if (steps_left>1)
+          loop_rate.sleep();
+      }
     }
   }
 

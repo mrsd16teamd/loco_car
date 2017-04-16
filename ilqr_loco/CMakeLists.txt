@@ -28,6 +28,7 @@ generate_messages(
    loco_msgs
 )
 
+
 catkin_package(
   CATKIN_DEPENDS roscpp std_msgs message_runtime actionlib_msgs loco_msgs
   INCLUDE_DIRS include include/iLQG
@@ -35,7 +36,7 @@ catkin_package(
 )
 
 include_directories(
-  include include/iLQG ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
+  include include/iLQG ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} 
 )
 
 file(GLOB_RECURSE C_SOURCES "src/iLQG/*.c")

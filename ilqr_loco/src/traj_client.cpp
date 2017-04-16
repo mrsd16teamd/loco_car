@@ -13,7 +13,7 @@ TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
   obs_received_ = false;
   ramp_goal_flag_ = false;
 
-	LoadParams();
+  LoadParams();
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
