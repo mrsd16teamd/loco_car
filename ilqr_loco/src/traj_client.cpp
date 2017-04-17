@@ -28,7 +28,9 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   state_estimate_received_ = true;
 
   if (T_ == 0) {
-    start_state_ = cur_state_;      
+    cur_integral_ = 0;
+    prev_error_ = 0;
+    start_state_ = cur_state_;
   }
 
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
@@ -81,8 +83,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 1: {
       ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
       T_ = 0;
-      cur_integral_ = 0;
-      prev_error_ = 0;
       mode_ = 1;
       start_time_ = ros::Time::now();
       break;
