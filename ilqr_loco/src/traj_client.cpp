@@ -13,11 +13,11 @@ TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
   obs_received_ = false;
   ramp_goal_flag_ = false;
 
-	LoadParams();
+  LoadParams();
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
-	ROS_INFO("Action client started. Send me commands from keyboard_command!");
+  ROS_INFO("Action client started. Send me commands from keyboard_command!");
 }
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
@@ -26,6 +26,10 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   cur_state_ = msg;
 
   state_estimate_received_ = true;
+
+  if (T_ == 0) {
+    start_state_ = cur_state_;      
+  }
 
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
   {
@@ -76,6 +80,9 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     //DONT CHANGE THESE! TOO MUCH WORK
     case 1: {
       ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
+      T_ = 0;
+      cur_integral_ = 0;
+      prev_error_ = 0;
       mode_ = 1;
       start_time_ = ros::Time::now();
       break;
@@ -99,14 +106,16 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
       ROS_INFO("Mode 2: iLQR from static initial conditions.");
 
+      T_ = 0;
       mode_ = 2;
-	    u_seq_saved_ = init_control_seq_;
+	  u_seq_saved_ = init_control_seq_;
       obs_received_ = false;
       break;
 		  // wait for obsCb to plan
     }
     case 3: {
       ROS_INFO("Mode 3: ramp -> iLQR open loop.");
+      T_ = 0;
       mode_ = 3;
       obs_received_ = false;
       start_time_ = ros::Time::now();
@@ -115,6 +124,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     }
     case 4: {
       ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
+      T_ = 0;
       mode_ = 4;
       obs_received_ = false;
       start_time_ = ros::Time::now();
@@ -123,6 +133,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     }
     case 5: {
       ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
+      T_ = 0;
       mode_ = 5;
       obs_received_ = false;
       break;
@@ -145,6 +156,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ilqrSparseReplan();
       #endif
 
+      T_ = 0;
       mode_ = 6;
       obs_received_ = false;
       break;

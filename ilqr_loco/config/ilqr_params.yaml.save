@@ -3,12 +3,12 @@ X_des: [5.000000,0.000000,0.000000,0.000000,0.000000,0.000000]
 timestep: 0.02
 
 # Rampup params
-kp_ramp: 1.5 #1.0
-kd_ramp: 0.30 #0.1
-ki_ramp: 0.35 #0.05
-accel_ramp: 1.5
+kp_ramp: 0.45
+kd_ramp: 0.1
+ki_ramp: 0.05
+accel_ramp: 3
 target_vel_ramp: 3
-timeout_ramp: 3.0
+timeout_ramp: 2.5
 
 # iLQR params
 timeout_ilqr_mpc: 4
@@ -22,16 +22,9 @@ ilqr_max_iter: 20
 ilqr_regType: 1
 ilqr_debug_level: 2
 
-# Original params:
 Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
                 c_x: 116, c_a: 197, Iz: 0.025, mu: 1.31, mu_s: 0.55,
                 limThr: [0, 4.0], limSteer: [-0.68, 0.76]}
-
-# Test param tests: 1-fail, 2-bad fail, 3-fail
-# Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
-#                 c_x: 250, c_a: 297, Iz: 0.025, mu: 1.60, mu_s: 0.5,
-#                 limThr: [0, 4.0], limSteer: [-0.68, 0.76]}
-
 Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
            cf: [10, 10, 5, 10, 0.1, 0.1],
            pf: [0.01, 0.01, 0.1, 0.1, 0.1, 0.1],
@@ -52,4 +45,4 @@ naive_obstacle_percent_thres: 0.2
 # PID heading correction params
 kp_heading: 0.45
 ki_heading: 0.1
-kd_heading: 0.05
+kd_heading: 0.00

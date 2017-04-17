@@ -34,7 +34,7 @@ commands = {
 	'd': 'ramp and iLQR rh',
 	'e': 'iLQR rh from static',
 	'f': 'iLQR sparse replanning from static',
-	'g': 'iLQR open-loop with PID corrections from static'
+	'g': 'iLQR open-loop with PID corrections from static',
 	'r': 'reset obs',
 	'k': 'kill client'
 }

@@ -43,7 +43,7 @@ protected:
   std::vector<double> u_seq_saved_;
   std::vector<double> x_des_;
   tOptSet Opt;
-  double dt;
+  // double dt;
 
   // iLQR Opt.p: Car Params
   double g_;
