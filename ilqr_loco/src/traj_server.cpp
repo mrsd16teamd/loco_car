@@ -63,8 +63,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   double timestep = goal->traj.timestep;
   double traj_start_time = (goal->traj.header.stamp).toSec();
 
-  // ros::Rate loop_rate(1/timestep);
-  ros::Rate loop_rate(50); //TODO make this work without hard-coding?
+  ros::Rate loop_rate(1.0/timestep);
+  // ros::Rate loop_rate(50); //TODO make this work without hard-coding?
 
   ROS_INFO("Executing trajectory in mode %d", goal->traj.mode); // TODO print client name
 

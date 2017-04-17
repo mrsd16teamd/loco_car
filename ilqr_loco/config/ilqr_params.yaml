@@ -1,12 +1,12 @@
 # TrajClient params
 X_des: [5.000000,0.000000,0.000000,0.000000,0.000000,0.000000]
-timestep: 0.02
+timestep: 0.05 #0.02
 
 # Rampup params
-kp_ramp: 1.5 #1.0
+kp_ramp: 1.0 #1.0
 kd_ramp: 0.30 #0.1
 ki_ramp: 0.35 #0.05
-accel_ramp: 1.5
+accel_ramp: 3.0
 target_vel_ramp: 3
 timeout_ramp: 3.0
 
@@ -18,14 +18,14 @@ stop_goal_threshold: 0.3
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
 ilqr_tolGrad: 0.00001
-ilqr_max_iter: 20
+ilqr_max_iter: 10
 ilqr_regType: 1
 ilqr_debug_level: 2
 
 # Original params:
 Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
-                c_x: 116, c_a: 197, Iz: 0.025, mu: 1.31, mu_s: 0.55,
-                limThr: [0, 4.0], limSteer: [-0.68, 0.76]}
+                c_x: 116, c_a: 197, Iz: 0.045, mu: 1.31, mu_s: 0.55, #Iz: 0.025
+                limThr: [0, 4.0], limSteer: [-0.77, 0.77]} #limSteer: [-0.68, 0.76]
 
 # Test param tests: 1-fail, 2-bad fail, 3-fail
 # Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,

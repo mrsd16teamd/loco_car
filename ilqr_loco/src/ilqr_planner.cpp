@@ -23,10 +23,17 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   //Pre-process inputs - put them in format that C-code wants
   double theta = tf::getYaw(x_cur.pose.pose.orientation);
 
-  double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
+  // double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
+  //                  x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
+  //                  x_cur.twist.twist.angular.z,
+  //                  x_cur.twist.twist.linear.x, 0, 0, 0};
+
+  //trying 
+  double x0[10] = {x_cur.pose.pose.position.x + (0.2*x_cur.twist.twist.linear.x) , x_cur.pose.pose.position.y, theta + (0.2*x_cur.twist.twist.angular.z), 
                    x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
                    x_cur.twist.twist.angular.z,
                    x_cur.twist.twist.linear.x, 0, 0, 0};
+  ROS_INFO("Expected X: %f, TH: %f", x_cur.pose.pose.position.x + (0.2*x_cur.twist.twist.linear.x) , theta + (0.2)*x_cur.twist.twist.angular.z);
 
   double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array
   double* u0 = &u_init[0];
