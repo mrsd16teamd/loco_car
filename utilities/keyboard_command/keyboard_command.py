@@ -24,7 +24,8 @@ commandBindings = {
 		'f': 6,
 		'g': 7,
 		'r': 8,
-		'k': 9
+		'k': 9,
+        'h': 11
 	     }
 
 commands = {
@@ -34,7 +35,8 @@ commands = {
 	'd': 'ramp and iLQR rh',
 	'e': 'iLQR rh from static',
 	'f': 'iLQR sparse replanning from static',
-	'g': 'iLQR open-loop with PID corrections from static'
+	'g': 'iLQR open-loop with PID corrections from static',
+    'h': 'ramp and iLQR sparse replanning',
 	'r': 'reset obs',
 	'k': 'kill client'
 }

@@ -84,6 +84,19 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
 
 void TrajClient::ilqrPlan()
 {
+  if (mode_==2) {
+    double theta = tf::getYaw(cur_state_.pose.pose.orientation);
+    ROS_INFO("Start state (before prediction): %f, %f, %f, %f, %f, %f",
+            cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta,
+            cur_state_.twist.twist.linear.x, cur_state_.twist.twist.linear.y, cur_state_.twist.twist.angular.z);
+
+    cur_state_.pose.pose.position.x += (0.2*cur_state_.twist.twist.linear.x);
+    // this is extra work, maybe use if statements in iLQR_gen_traj would be better
+    
+    theta += 0.2*cur_state_.twist.twist.angular.z;
+    cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+  }
+
   ilqr_loco::TrajExecGoal goal = ilqgGenerateTrajectory(cur_state_);
   if (mode_==7) // turn on pid heading corrections during server execution
   	goal.traj.mode = 1;
@@ -146,7 +159,14 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
 void TrajClient::ilqrSparseReplan()
 {
   start_time_ = ros::Time::now();
-  std::vector<double> replan_times = {0.0, 0.75, 1.5};
+  std::vector<double> replan_times;
+  if (target_vel_ <= 1)
+    replan_times = {0.0, 0.5, 1.0, 1.5}; // for static: {0.0, 0.75, 1.5};
+  else if (target_vel_ <= 2)
+    replan_times = {0.0, 0.75, 1.5}; // for static: {0.0, 0.75, 1.5};
+  else if (target_vel_ <= 4)
+    replan_times = {0.0, 0.75, 1.5}; // for static: {0.0, 0.75, 1.5};
+
   bool plan_next_ = true;
 
   ilqr_loco::TrajExecGoal goal;
