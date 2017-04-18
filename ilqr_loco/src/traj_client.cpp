@@ -31,6 +31,8 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     cur_integral_ = 0;
     prev_error_ = 0;
     start_state_ = cur_state_;
+	  u_seq_saved_ = init_control_seq_;
+    obs_received_ = false;
   }
 
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
@@ -108,8 +110,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
       T_ = 0;
       mode_ = 2;
-	  u_seq_saved_ = init_control_seq_;
-      obs_received_ = false;
       break;
 		  // wait for obsCb to plan
     }
@@ -117,7 +117,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 3: ramp -> iLQR open loop.");
       T_ = 0;
       mode_ = 3;
-      obs_received_ = false;
       start_time_ = ros::Time::now();
       break;
       //wait for stateCb to ramp
@@ -126,7 +125,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
       T_ = 0;
       mode_ = 4;
-      obs_received_ = false;
       start_time_ = ros::Time::now();
       break;
       //wait for stateCb to ramp
@@ -135,7 +133,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
       T_ = 0;
       mode_ = 5;
-      obs_received_ = false;
       break;
       //wait for obsCb to plan
     }
@@ -158,13 +155,11 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
       T_ = 0;
       mode_ = 6;
-      obs_received_ = false;
       break;
     }
     case 7: {
       ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
       mode_ = 7;
-	    u_seq_saved_ = init_control_seq_;
       obs_received_ = false;
       break;
     }

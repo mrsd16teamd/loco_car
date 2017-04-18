@@ -35,13 +35,17 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
 
   // TODO find better way that doesn't copy twice
-  std::vector<double> u_sol(Traj.u, Traj.u+N);
+  std::vector<double> u_sol(Traj.u, Traj.u+N); // TODO this should be 2*T instead of N
   u_init = u_sol;
+
+  // TODO save trajectory here
+  // std::vector<double> x_sol(Traj.x, Traj.x+(n*N));
+  // x_traj_saved_ = x_sol;
 
   //TODO bring this back!
   //Put states and controls into format that action client wants.
-  // goal.traj.states.reserve(N);
-  // goal.traj.commands.reserve(N);
+  goal.traj.states.reserve(N);
+  goal.traj.commands.reserve(N);
 
   for(int i=0; i<N; i++) {
    	nav_msgs::Odometry odom;
@@ -92,7 +96,7 @@ void TrajClient::ilqrPlan()
 
     cur_state_.pose.pose.position.x += (0.2*cur_state_.twist.twist.linear.x);
     // this is extra work, maybe use if statements in iLQR_gen_traj would be better
-    
+
     theta += 0.2*cur_state_.twist.twist.angular.z;
     cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
   }
