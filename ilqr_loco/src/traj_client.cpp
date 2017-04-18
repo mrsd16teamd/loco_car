@@ -1,6 +1,6 @@
 #include "traj_client.h"
 
-#define ILQRDEBUG 0
+#define ILQRDEBUG 1
 
 TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
                           cur_integral_(0), prev_error_(0), cur_vel_(0.5)
