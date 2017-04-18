@@ -42,7 +42,6 @@ file(GLOB_RECURSE C_SOURCES "src/iLQG/*.c")
 add_definitions(-DPRNT=printf -DDEBUG_ILQG=1 -DDEBUG_BACKPASS=0 -DDEBUG_FORWARDPASS=0 -DFULL_DDP=0 -DMULTI_THREADED=0 -O3)
 
 add_executable(traj_client src/traj_client.cpp
-													 src/ilqr_planner.cpp
 													 src/traj_client_ramp.cpp
 													 src/traj_client_ilqr.cpp
 													 src/traj_client_params.cpp

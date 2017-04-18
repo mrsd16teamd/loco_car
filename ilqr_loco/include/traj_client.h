@@ -5,6 +5,8 @@
 #include <math.h>
 
 #include <ilqr_loco/TrajExecAction.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Point.h>
 #include "try_get_param.h"
 
 #include <ros/ros.h>
