@@ -31,6 +31,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     cur_integral_ = 0;
     prev_error_ = 0;
     start_state_ = cur_state_;
+	  ramp_start_y_ = start_state_.pose.pose.position.y;
   }
 
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )

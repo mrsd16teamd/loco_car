@@ -93,6 +93,7 @@ protected:
   double cur_integral_;
   double prev_error_;
   double cur_vel_;
+  double ramp_start_y_;
 
   //Constants for rampup planner
   float kp_, ki_, kd_;

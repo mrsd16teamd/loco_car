@@ -1,28 +1,34 @@
 #include "traj_client.h"
 
+double clamp(double val, double min_val, double max_val)
+{
+  return std::max(min_val, std::min(val, max_val));
+}
+
 ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry prev_state,
                                                            nav_msgs::Odometry cur_state) {
-
-  // std::cout << timeout_ << '\n';
 
   double dt = (cur_state.header.stamp).toSec() - (prev_state.header.stamp).toSec();
   double yaw = tf::getYaw(cur_state.pose.pose.orientation);
   ROS_INFO("Yaw = %f", yaw);
+  ROS_INFO("y = %f", cur_state_.pose.pose.position.y);
 
   // PID control for vehicle heading
-  double error = 0 - yaw;
+  // double error = 0 - yaw;
+  double error = ramp_start_y_ - cur_state_.pose.pose.position.y;
   cur_integral_ += error*dt;
-  double output = kp_*error + std::max(-0.25,std::min(ki_*cur_integral_,0.25)) + std::max(-0.1,std::min(kd_*(error-prev_error_)/dt,0.1));
-  ROS_INFO("P = %f,  |  I = %f,  |  D = %f", kp_*error, std::max(-0.25,std::min(ki_*cur_integral_,0.25)), std::max(-0.1,std::min(kd_*(error-prev_error_)/dt,0.1)));
+  // double output = kp_*error + std::max(-0.25,std::min(ki_*cur_integral_,0.25)) + std::max(-0.1,std::min(kd_*(error-prev_error_)/dt,0.1));
+  double output = kp_*error + clamp(ki_*cur_integral_, -0.25, 0.25) + clamp(kd_*(error-prev_error_), -0.1, 0.1);
+  ROS_INFO("P = %f,  |  I = %f,  |  D = %f", kp_*error, clamp(ki_*cur_integral_, -0.25, 0.25), clamp(kd_*(error-prev_error_), -0.1, 0.1));
   ROS_INFO("Output = %f", output);
   prev_error_ = error;
 
 
   // Generate goal
   cur_vel_ += accel_*dt;
-  ROS_INFO("cur_v = %f", output);
+  ROS_INFO("cur_v = %f", cur_vel);
   double v = cur_state.twist.twist.linear.x + accel_*dt + 0.5;
-  v = v<target_vel_ ? v : target_vel_;
+  v = (v < target_vel_) ? v : target_vel_;
   ROS_INFO("v = %f", v);
 
   ilqr_loco::TrajExecGoal goal;
