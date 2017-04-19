@@ -191,20 +191,29 @@ void TrajClient::ilqrSparseReplan()
 
       	int step_offset = int(execution_delay_/timestep_);
 	  	int n = 10; //state size
+
+	  	// get state offset from previous plan
       	std::vector<double> state_offset(3,0);
       	for(int i=0; i<3; i++) {
       		state_offset[i] = x_seq_saved_[step_offset*n+i] - x_seq_saved_[i];
       	}
 
-      	ROS_INFO("Predicted offset: %f, %f, %f",
-        state_offset[0], state_offset[1], state_offset[2]);
-      	
-      	cur_state_.pose.pose.position.x += state_offset[0];
-      	cur_state_.pose.pose.position.y += state_offset[1];
+      	// get rotational offset between actual positon and plan
+      	double rotation = theta - x_seq_saved_[2];
 
-      	
+      	ROS_INFO("Predicted offset: %f, %f, %f, rotation: %f",
+        state_offset[0], state_offset[1], state_offset[2], rotation);
+
+      	// simply adding yaw offset
       	theta += state_offset[2];
     	cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+
+    	// rotate positional offset and shift to actual position
+      	double sn = std::sin(rotation);
+      	double cs = std::cos(rotation);
+      	cur_state_.pose.pose.position.x += state_offset[0] * cs - state_offset[1] * sn;
+      	cur_state_.pose.pose.position.y += state_offset[0] * sn + state_offset[1] * cs;
+
       }
 
       ilqrPlan();
