@@ -26,7 +26,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
   // Generate goal
   cur_vel_ += accel_*dt;
-  ROS_INFO("cur_v = %f", cur_vel);
+  ROS_INFO("cur_v = %f", cur_vel_);
   double v = cur_state.twist.twist.linear.x + accel_*dt + 0.5;
   v = (v < target_vel_) ? v : target_vel_;
   ROS_INFO("v = %f", v);

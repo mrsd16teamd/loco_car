@@ -7,6 +7,8 @@ double TrajClient::DistToGoal()
                pow((x_des_[1]- cur_state_.pose.pose.position.y), 2) );
 }
 
+// change this to take x_cur in vector form
+// need a helper to translate odometry to vector, and revisit all the callers <--- good amount of work
 void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u_init, std::vector<double> &x_des,
                                geometry_msgs::Point &obstacle_pos, int T, tOptSet *o, ilqr_loco::TrajExecGoal &goal)
 {
@@ -35,8 +37,12 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   plan_trajectory(x0,u0,xDes,Obs,T,o,&Traj);
 
   // TODO find better way that doesn't copy twice
-  std::vector<double> u_sol(Traj.u, Traj.u+N);
-  u_init = u_sol;
+  std::copy(Traj.u, Traj.u+m*(N-1), u_init.begin());
+  ROS_INFO("T: %d, size of u_init: %d", T, int(u_init.size()));
+
+  x_seq_saved_.resize(n*N,0);
+  std::copy(Traj.x, Traj.x+n*N, x_seq_saved_.begin());
+  ROS_INFO("T: %d, size of x_seq_saved: %d", T, int(x_seq_saved_.size()));
 
   //TODO bring this back!
   //Put states and controls into format that action client wants.
@@ -62,7 +68,7 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   goal.traj.commands.push_back(twist);
 }
 
-// Calls iLQG_plan.c to generate new trajectory
+// merge this with ilqr_gen_traj
 ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cur_state)
 {
   ROS_INFO("Generating iLQG trajectory.");
@@ -90,10 +96,10 @@ void TrajClient::ilqrPlan()
             cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta,
             cur_state_.twist.twist.linear.x, cur_state_.twist.twist.linear.y, cur_state_.twist.twist.angular.z);
 
-    cur_state_.pose.pose.position.x += (0.2*cur_state_.twist.twist.linear.x);
+    cur_state_.pose.pose.position.x += (execution_delay_*cur_state_.twist.twist.linear.x);
     // this is extra work, maybe use if statements in iLQR_gen_traj would be better
 
-    theta += 0.2*cur_state_.twist.twist.angular.z;
+    theta += execution_delay_*cur_state_.twist.twist.angular.z;
     cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
   }
 
@@ -176,14 +182,39 @@ void TrajClient::ilqrSparseReplan()
     if(plan_next_)
     {
       ROS_INFO("Replan #%d", T_);
+      
+      if(T_>0) {	
+      	double theta = tf::getYaw(cur_state_.pose.pose.orientation);
+
+      	ROS_INFO("Start state (before prediction): %f, %f, %f",
+        cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta);
+
+      	int step_offset = int(execution_delay_/timestep_);
+	  	int n = 10; //state size
+      	std::vector<double> state_offset(3,0);
+      	for(int i=0; i<3; i++) {
+      		state_offset[i] = x_seq_saved_[step_offset*n+i] - x_seq_saved_[i];
+      	}
+
+      	ROS_INFO("Predicted offset: %f, %f, %f",
+        state_offset[0], state_offset[1], state_offset[2]);
+      	
+      	cur_state_.pose.pose.position.x += state_offset[0];
+      	cur_state_.pose.pose.position.y += state_offset[1];
+
+      	
+      	theta += state_offset[2];
+    	cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+      }
+
       ilqrPlan();
       plan_next_ = false;
-      if (++T_ >= replan_times.size())
+      if (T_ >= replan_times.size())
       {
         ROS_INFO("Done planning.");
       }
     }
-    if(ros::Time::now() - start_time_ > ros::Duration(replan_times[iter_count]) && iter_count < replan_times.size())
+    if(ros::Time::now() - start_time_ > ros::Duration(replan_times[T_]) && T_ < replan_times.size())
     {
       plan_next_ = true;
       ROS_INFO("Next plan.");
