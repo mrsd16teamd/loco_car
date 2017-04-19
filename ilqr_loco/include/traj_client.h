@@ -99,6 +99,8 @@ protected:
   float kp_, ki_, kd_, kp_y_;
   float accel_;
   float target_vel_;
+  float pre_ramp_vel_;
+  float pre_ramp_time_;
   float timeout_;
   double timestep_;
 

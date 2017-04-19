@@ -12,6 +12,8 @@ kp_ramp_y: 0.0
 
 accel_ramp: 3.0
 target_vel_ramp: 2.0
+pre_ramp_vel: 0.5
+pre_ramp_time: 0.5
 timeout_ramp: 3.5
 
 # iLQR params

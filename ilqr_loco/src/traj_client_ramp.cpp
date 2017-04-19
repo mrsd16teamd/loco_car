@@ -28,11 +28,14 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   prev_error_ = error;
 
   // Generate goal
-  cur_vel_ += accel_*dt;
-  // ROS_INFO("cur_v = %f", cur_vel_);
-  double v = cur_state.twist.twist.linear.x + accel_*dt + 0.5;
-  v = (v < target_vel_) ? v : target_vel_;
-  // ROS_INFO("v = %f", v);
+  if (cur_state.header.stamp).toSec() - start_time_.toSec() < pre_ramp_time_) {
+    double v = cur_state.twist.twist.linear.x + accel_*dt +0.25;
+    v = (v < target_vel_) ? v : target_vel_;
+    // ROS_INFO("v = %f", v);
+  }
+  else {
+      double v = pre_ramp_vel_;
+  }
 
   ilqr_loco::TrajExecGoal goal;
 
@@ -41,7 +44,9 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   goal.traj.commands.push_back(control_msg);
 
   nav_msgs::Odometry state_msg;
-  double expected_x = start_state_.pose.pose.position.x + 0.5*accel_*start_time_.toSec()*start_time_.toSec();
+  double expected_x = start_state_.pose.pose.position.x
+                      + pre_ramp_vel_*pre_ramp_time_
+                      + 0.5*accel_*start_time_.toSec()*start_time_.toSec();
   double expected_y = start_state_.pose.pose.position.y;
 
   FillOdomMsg(state_msg, expected_x, expected_y, 0, v, 0, 0); //0s: yaw, vy, w
@@ -57,13 +62,11 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
 void TrajClient::rampPlan() {
 
-  if(ros::Time::now() - start_time_ < ros::Duration(timeout_))
-  {
+  if(ros::Time::now() - start_time_ < ros::Duration(timeout_)) {
     ilqr_loco::TrajExecGoal goal = rampGenerateTrajectory(prev_state_, cur_state_);
     SendTrajectory(goal);
   }
-  else
-  {
+  else {
     // Stop car after ramp timeout
     ROS_INFO("Timeout exceeded, stopping car");
     SendZeroCommand();
