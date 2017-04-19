@@ -40,8 +40,8 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
 
   //TODO bring this back!
   //Put states and controls into format that action client wants.
-  // goal.traj.states.reserve(N);
-  // goal.traj.commands.reserve(N);
+  goal.traj.states.reserve(N);
+  goal.traj.commands.reserve(N);
 
   for(int i=0; i<N; i++) {
    	nav_msgs::Odometry odom;
@@ -123,7 +123,6 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
   SendTrajectory(goal);
   ROS_INFO("Sent first swerve.");
 ////
-  int iter_count = 0;
   bool goal_achieved = false;
 
   while(!goal_achieved)
@@ -135,7 +134,7 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
       break;
     }
 
-    ROS_INFO("Receding horizon iteration #%d", iter_count);
+    ROS_INFO("Receding horizon iteration #%d", T_);
     ROS_INFO("u0[0]: %f", u_seq_saved_[0]);
 
     goal = ilqgGenerateTrajectory(cur_state_);
@@ -152,7 +151,7 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
     }
 
     ros::spinOnce(); // to pick up new state estimates
-    iter_count++;
+    T_++;
   }
 }
 
@@ -183,7 +182,7 @@ void TrajClient::ilqrSparseReplan()
         ROS_INFO("Done planning.");
       }
     }
-    if(ros::Time::now() - start_time_ > ros::Duration(replan_times[iter_count]) && iter_count < replan_times.size())
+    if(ros::Time::now() - start_time_ > ros::Duration(replan_times[T_]) && T_ < replan_times.size())
     {
       plan_next_ = true;
       ROS_INFO("Next plan.");

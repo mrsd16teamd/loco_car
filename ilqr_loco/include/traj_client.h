@@ -96,7 +96,7 @@ protected:
   double ramp_start_y_;
 
   //Constants for rampup planner
-  float kp_, ki_, kd_;
+  float kp_, ki_, kd_, kp_y_;
   float accel_;
   float target_vel_;
   float timeout_;
