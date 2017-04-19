@@ -43,7 +43,6 @@ protected:
   int T_horizon_;
   std::vector<double> init_control_seq_;
   std::vector<double> u_seq_saved_;
-  std::vector<double> x_seq_saved_;
   std::vector<double> x_des_;
   tOptSet Opt;
   // double dt;
@@ -83,7 +82,6 @@ protected:
   ros::Time start_time_;          // Operation start time
   bool state_estimate_received_;  // Initial estimate flag
   bool obs_received_;
-  double execution_delay_;        // Use for predictive starting states;
 
   // State variables
   nav_msgs::Odometry start_state_;

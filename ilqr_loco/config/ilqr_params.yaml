@@ -1,7 +1,6 @@
 # TrajClient params
 X_des: [5.000000,0.000000,0.000000,0.000000,0.000000,0.000000]
 timestep: 0.05 #0.02
-execution_delay: 0.2
 
 # Rampup params
 
