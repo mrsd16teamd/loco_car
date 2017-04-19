@@ -5,16 +5,16 @@ timestep: 0.05 #0.02
 # Rampup params
 
 ## GAINS FOR PID TO REGULATE YAW
-kp_ramp: 0.9 #0.6
-ki_ramp: 0.0 #0.2
-kd_ramp: 1.2 #0.3
-kp_ramp_y: 0.0
+kp_ramp: 0.75 #0.6
+ki_ramp: 0.05 #0.2
+kd_ramp: 1.5 #0.3
+kp_ramp_y: 0.50
 
-accel_ramp: 3.0
+accel_ramp: 1.5
 target_vel_ramp: 2.0
 pre_ramp_vel: 0.5
-pre_ramp_time: 0.5
-timeout_ramp: 3.5
+pre_ramp_time: 2
+timeout_ramp: 5
 
 # iLQR params
 timeout_ilqr_mpc: 4
