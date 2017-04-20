@@ -46,7 +46,7 @@ Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
            cx: [0.05, 0.05, 0.04], cdx: [0.001, 0.005, 0.002],
            px: [0.01, 0.01, 0.1],
            cdrift: -0.001,
-           k_pos: 1.0, k_vel: 0, d_thres: 0.3}
+           k_pos: 1.0, k_vel: 0, d_thres: 0.5}
 
 ######
 # TrajServer params
