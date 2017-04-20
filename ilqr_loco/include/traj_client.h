@@ -103,11 +103,12 @@ protected:
   int ilqr_regType_;
   int ilqr_debug_level_;
   std::vector<double> replan_times_;
+  float last_steer_cmd_;
 
   void LoadParams();
-	void LoadCarParams();
+  void LoadCarParams();
   void LoadCostParams();
-	void SetOptParams(tOptSet *o);
+  void SetOptParams(tOptSet *o);
   void LoadOpt();
 
   void rampPlan();
@@ -135,12 +136,13 @@ protected:
   void FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
                    double yaw, double Ux, double Uy, double w);
 
-   void activeCb();
+  //  void activeCb();
    void feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback);
-   void doneCb(const actionlib::SimpleClientGoalState& state,
-               const ilqr_loco::TrajExecResultConstPtr& result);
+  //  void doneCb(const actionlib::SimpleClientGoalState& state,
+              //  const ilqr_loco::TrajExecResultConstPtr& result);
 
-  double clamp(double val, double min_val, double max_val) {
+  double clamp(double val, double min_val, double max_val)
+  {
     return std::max(min_val, std::min(val, max_val));
   }
 };

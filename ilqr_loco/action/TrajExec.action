@@ -5,4 +5,4 @@ loco_msgs/Trajectory traj
 bool done
 ---
 #feedback
-int16 steps_left
+float32 last_steer

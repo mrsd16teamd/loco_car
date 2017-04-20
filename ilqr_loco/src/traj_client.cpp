@@ -176,6 +176,12 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   }
 }
 
+void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback)
+{
+  // ROS_INFO("Last steer: %f", last_steer_cmd_);
+  last_steer_cmd_ = feedback->last_steer;
+}
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "traj_client");

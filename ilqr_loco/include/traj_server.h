@@ -48,8 +48,8 @@ private:
   double old_msg_thres;
 
   // create messages that are used to publish feedback/result
-  ilqr_loco::TrajExecFeedback feedback;
-  ilqr_loco::TrajExecResult result;
+  ilqr_loco::TrajExecFeedback feedback_;
+  ilqr_loco::TrajExecResult result_;
 
   //PID control
   double cur_yaw_;

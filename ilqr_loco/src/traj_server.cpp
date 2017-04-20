@@ -93,6 +93,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       }
       else {
         cmd_pub.publish(goal->traj.commands[i]);
+        feedback_.last_steer = goal->traj.commands[i].angular.z;
+        as.publishFeedback(feedback_);
       }
       ros::spinOnce();
 
@@ -104,12 +106,9 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   PublishPath(goal);   // For visualization
 
-  if(success)
-  {
-    // ROS_INFO("%s: Finished publishing trajectory", traj_action.c_str());
-    result.done = 1;
-    as.setSucceeded(result);
-  }
+  // ROS_INFO("%s: Finished publishing trajectory", traj_action.c_str());
+  result_.done = success;
+  as.setSucceeded(result_);
 }
 
 
