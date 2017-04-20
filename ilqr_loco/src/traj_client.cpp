@@ -54,23 +54,15 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     obs_received_ = true;
 
     if (mode_ == 1)
-    {
       SendZeroCommand(); //brake
-    }
     else if (mode_ == 2)
-    {
       PlanFromExtrapolatedILQR();
-    }
     else if (mode_==3 || mode_==7)
-    {
       PlanFromCurrentStateILQR();
-    }
-    else if (mode_==4 || mode_==5){
+    else if (mode_==4 || mode_==5)
       MpcILQR();
-    }
-    else if (mode_==6 || mode_==11){
+    else if (mode_==6 || mode_==11)
       SparseReplanILQR();
-    }
   }
 }
 
@@ -91,88 +83,51 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
   switch (command)
   {
-    case 1:
-    {
-      ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
-      mode_ = 1;
-      break;
-      // wait for stateCb to ramp
-    }
-    case 2:
-    {
-      ROS_INFO("Mode 2: iLQR from static initial conditions.");
-
-      #if ILQRDEBUG
-      DUMMYOBSSTATE
-      PlanFromCurrentStateILQR();
-      #endif
-
-      mode_ = 2;
-      break;
-      // wait for obsCb to plan
-    }
-    case 3:
-    {
-      ROS_INFO("Mode 3: ramp -> iLQR open loop.");
-      mode_ = 3;
-      break;
-      //wait for stateCb to ramp
-    }
-    case 4:
-    {
-      ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
-      mode_ = 4;
-      break;
-      //wait for stateCb to ramp
-    }
-    case 5:
-    {
-      ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
-      mode_ = 5;
-      break;
-      //wait for obsCb to plan
-    }
-    case 6:
-    {
-      ROS_INFO("Mode 6: iLQR with sparse replanning from static.");
-
-      #if ILQRDEBUG
-      DUMMYOBSSTATE
-      SparseReplanILQR();
-      #endif
-
-      mode_ = 6;
-      break;
-    }
-    case 7:
-    {
-      ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
-      mode_ = 7;
-      break;
-    }
-    case 8:
-    {
-      ROS_INFO("Resetting obs_received_ to false.");
-      obs_received_ = false;
-      break;
-    }
-    case 9:
-     {
-      ROS_INFO("Killing node.");
-      mode_ = 0;
-      ros::shutdown();
-      break;
-    }
-    case 11:
-    {
-      ROS_INFO("Mode 6: ramp -> iLQR with sparse replanning.");
-      mode_ = 11;
-      break;
-    }
-    default:
-    {
-      ROS_INFO("Please enter valid command.");
-    }
+    case 1: ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
+            mode_ = 1;
+            break;
+            // wait for stateCb to ramp
+    case 2: ROS_INFO("Mode 2: iLQR from static initial conditions.");
+            #if ILQRDEBUG
+            DUMMYOBSSTATE
+            PlanFromCurrentStateILQR();
+            #endif
+            mode_ = 2;
+            break;
+            // wait for obsCb to plan
+    case 3: ROS_INFO("Mode 3: ramp -> iLQR open loop.");
+            mode_ = 3;
+            break;
+            //wait for stateCb to ramp
+    case 4: ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
+            mode_ = 4;
+            break;
+            //wait for stateCb to ramp
+    case 5: ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
+            mode_ = 5;
+            break;
+            //wait for obsCb to plan
+    case 6: ROS_INFO("Mode 6: iLQR with sparse replanning from static.");
+            #if ILQRDEBUG
+            DUMMYOBSSTATE
+            SparseReplanILQR();
+            #endif
+            mode_ = 6;
+            break;
+    case 7: ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
+            mode_ = 7;
+            break;
+    case 8: ROS_INFO("Resetting obs_received_ to false.");
+            obs_received_ = false;
+            break;
+    case 9: ROS_INFO("Sending zero and killing node.");
+            SendZeroCommand();
+            ros::shutdown();
+            break;
+    case 11: ROS_INFO("Mode 8: ramp -> iLQR with sparse replanning.");
+             mode_ = 11;
+             break;
+    default: ROS_INFO("Please enter valid command.");
   }
 }
 
