@@ -45,22 +45,10 @@ protected:
   std::vector<double> u_seq_saved_;
   std::vector<double> x_traj_saved_;
   std::vector<double> x_des_;
-  std::vector<double> replan_times_;
   tOptSet Opt;
 
   // iLQR Opt.p: Car Params
-  double g_;
-  double L_;
-  double m_;
-  double b_;
-  double a_;
-  double G_f_;
-  double G_r_;
-  double c_x_;
-  double c_a_;
-  double Iz_;
-  double mu_;
-  double mu_s_;
+  double g_, L_, m_, b_, a_, G_f_, G_r_, c_x_, c_a_, Iz_, mu_, mu_s_;
   std::vector<double> limThr_;
   std::vector<double> limSteer_;
 

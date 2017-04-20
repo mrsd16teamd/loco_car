@@ -19,7 +19,6 @@ timeout_ramp: 4
 # iLQR params
 timeout_ilqr_mpc: 4
 stop_goal_threshold: 0.5
-replan_times: [0.0, 0.5, 1.0, 1.5]
 
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
