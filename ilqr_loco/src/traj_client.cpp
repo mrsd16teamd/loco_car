@@ -34,12 +34,12 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     cur_integral_ = 0;
     prev_error_ = 0;
     start_state_ = cur_state_;
-      ramp_start_y_ = start_state_.pose.pose.position.y;
+    ramp_start_y_ = start_state_.pose.pose.position.y;
     u_seq_saved_ = init_control_seq_;
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
+  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) || (mode_==11 && !obs_received_))
   {
     rampPlan();
   }
@@ -68,7 +68,7 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     else if (mode_==4 || mode_==5){
       MpcILQR();
     }
-    else if (mode_==6){
+    else if (mode_==6 || mode_==11){
       SparseReplanILQR();
     }
   }
@@ -161,6 +161,12 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Killing node.");
       mode_ = 0;
       ros::shutdown();
+      break;
+    }
+    case 11:
+    {
+      ROS_INFO("Mode 6: ramp -> iLQR with sparse replanning.");
+      mode_ = 11;
       break;
     }
     default:

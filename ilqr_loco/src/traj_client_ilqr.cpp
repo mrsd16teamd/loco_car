@@ -3,7 +3,7 @@
 ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
                                   std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos)
 {
-  ROS_INFO("Generating iLQG trajectory.");
+  // ROS_INFO("Generating iLQG trajectory.");
   ilqr_loco::TrajExecGoal goal;
   FillGoalMsgHeader(goal);
   goal.traj.timestep = timestep_;
@@ -84,22 +84,23 @@ void TrajClient::PlanFromExtrapolatedILQR()
 
 void TrajClient::MpcILQR()
 {
+  T_ = 0;
+  ROS_INFO("Starting mpc.");
   start_time_ = ros::Time::now();
 
   ilqr_loco::TrajExecGoal goal;
 
-  while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ > ros::Duration(mpc_timeout_)) )
+  while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
   {
     ROS_INFO("Receding horizon iteration #%d", T_);
 
-    goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
     // TODO do some quick checks on trajectory?
-
-    SendTrajectory(goal);
+    PlanFromExtrapolatedILQR();
+    // PlanFromCurrentStateILQR();
 
     ros::spinOnce(); // to pick up new state estimates
     T_++;
-    ROS_INFO("DistToGoal: %f", DistToGoal());
+    // ROS_INFO("DistToGoal: %f", DistToGoal());
   }
   SendZeroCommand();
 }
@@ -108,29 +109,21 @@ void TrajClient::SparseReplanILQR()
 {
   start_time_ = ros::Time::now();
 
-  bool plan_next_ = true;
-  while (ros::ok())
+  for (int i=0; i<replan_times_.size()-1; i++)
   {
-    if(plan_next_)
-    {
-      ROS_INFO("Replan #%d", T_);
-      PlanFromCurrentStateILQR();
-      plan_next_ = false;
-      if (++T_ >= replan_times_.size())
-        ROS_INFO("Done planning.");
-    }
+    ROS_INFO("Replan #%d", i);
+    // PlanFromExtrapolatedILQR();
+    PlanFromCurrentStateILQR();
 
-    if(ros::Time::now() - start_time_ > ros::Duration(replan_times_[T_]) && T_ < replan_times_.size())
-      plan_next_ = true;
-
-    if(ros::Time::now() - start_time_ > ros::Duration(mpc_timeout_))
+    T_++;
+    while (ros::Time::now() - start_time_ < ros::Duration(replan_times_[i+1]))
     {
-      ROS_INFO("iLQR sparse replan timed out.");
-      SendZeroCommand();
-      break;
+      ros::spinOnce(); // to pick up new state estimates
     }
-    ros::spinOnce(); // to pick up new state estimates
   }
+
+  ROS_INFO("iLQR sparse replan timed out.");
+  SendZeroCommand();
 }
 
 nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
@@ -142,9 +135,9 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
   extrapolated.pose.pose.position.x += (dt*extrapolated.twist.twist.linear.x);
   extrapolated.pose.pose.position.y += (dt*extrapolated.twist.twist.linear.y);
 
-  double theta = tf::getYaw(extrapolated.pose.pose.orientation);
-  theta += dt*extrapolated.twist.twist.angular.z;
-  extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+  // double theta = tf::getYaw(extrapolated.pose.pose.orientation);
+  // theta += dt*extrapolated.twist.twist.angular.z;
+  // extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
   return extrapolated;
 }

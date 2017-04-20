@@ -7,6 +7,7 @@ Sends feedback to action client (planner) in terms of "almost done", "done".
 
 void TrajServer::LoadParams()
 {
+	ROS_INFO("Loading traj server params.");
     TRYGETPARAM("old_msg_discard_thres", old_msg_thres)
     TRYGETPARAM("kp_heading", kp_)
     TRYGETPARAM("ki_heading", ki_)
@@ -57,7 +58,7 @@ geometry_msgs::Twist TrajServer::pid_correct_yaw(geometry_msgs::Twist orig_twist
 // provides action to execute plans
 void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
   // TODO? check that states and commands are right length
-  ROS_INFO("%s: Received trajectory.", traj_action.c_str());
+  // ROS_INFO("%s: Received trajectory.", traj_action.c_str());
 
   bool success = true;
 
@@ -105,7 +106,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   if(success)
   {
-    ROS_INFO("%s: Finished publishing trajectory", traj_action.c_str());
+    // ROS_INFO("%s: Finished publishing trajectory", traj_action.c_str());
     result.done = 1;
     as.setSucceeded(result);
   }

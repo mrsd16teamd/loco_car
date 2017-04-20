@@ -5,13 +5,13 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
   double dt = (cur_state.header.stamp).toSec() - (prev_state.header.stamp).toSec();
   double yaw = tf::getYaw(cur_state.pose.pose.orientation);
-  ROS_INFO("Yaw = %f", yaw);
+  // ROS_INFO("Yaw = %f", yaw);
 
   // PID control for vehicle heading
   double y_error = (ramp_start_y_ - cur_state_.pose.pose.position.y);
   double yaw_des = kp_y_*y_error;
-  ROS_INFO("y_error = %f", y_error);
-  ROS_INFO("output_y: %f, kp_y_: %f", kp_y_*y_error, kp_y_);
+  // ROS_INFO("y_error = %f", y_error);
+  // ROS_INFO("output_y: %f, kp_y_: %f", kp_y_*y_error, kp_y_);
 
   double error = yaw_des - yaw;
   cur_integral_ += error*dt;
@@ -19,8 +19,8 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   double i = clamp(ki_*cur_integral_, -0.25, 0.25);
   double d = clamp(kd_*(error-prev_error_), -0.1, 0.1);
   double output =  p + i + d;
-  ROS_INFO("P = %f,  |  I = %f,  |  D = %f", p, i, d);
-  ROS_INFO("Output = %f", output);
+  // ROS_INFO("P = %f,  |  I = %f,  |  D = %f", p, i, d);
+  // ROS_INFO("Output = %f", output);
 
   prev_error_ = error;
 

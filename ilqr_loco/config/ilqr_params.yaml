@@ -6,7 +6,7 @@ timestep: 0.05 #0.02
 
 ## GAINS FOR PID TO REGULATE YAW
 kp_ramp: 0.9 #0.6
-ki_ramp: 0.2 #0.2
+ki_ramp: 0.3 #0.2
 kd_ramp: 1.2 #0.3
 kp_ramp_y: 0.01
 
@@ -14,7 +14,7 @@ accel_ramp: 1.5
 target_vel_ramp: 1.0
 pre_ramp_vel: 0.5
 pre_ramp_time: 1
-timeout_ramp: 4
+timeout_ramp: 5.5
 
 # iLQR params
 timeout_ilqr_mpc: 4
@@ -23,7 +23,7 @@ stop_goal_threshold: 0.5
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
 ilqr_tolGrad: 0.00001
-ilqr_max_iter: 50
+ilqr_max_iter: 30
 ilqr_regType: 1
 ilqr_debug_level: 2
 

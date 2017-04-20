@@ -34,6 +34,7 @@ void TrajClient::LoadParams()
     TRYGETPARAM("ilqr_debug_level", ilqr_debug_level_)
 
     TRYGETPARAM("replan_times", replan_times_);
+    replan_times_.push_back(mpc_timeout_);
 
     TRYGETPARAM("init_control_seq", init_control_seq_)
 	  u_seq_saved_ = init_control_seq_;
