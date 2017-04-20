@@ -13,9 +13,8 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
   //         cur_state_.twist.twist.linear.x, cur_state_.twist.twist.linear.y, cur_state_.twist.twist.angular.z);
 
   //Pre-process inputs - put them in format that C-code wants
-  double theta = tf::getYaw(x_cur.pose.pose.orientation);
-
   // TODO figure out good way to initialize previous steering
+  double theta = tf::getYaw(x_cur.pose.pose.orientation);
   double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
                    x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
                    x_cur.twist.twist.angular.z,
@@ -34,16 +33,13 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
   Traj.x = (double *) malloc(n*N*sizeof(double));
   Traj.u = (double *) malloc(m*(N-1)*sizeof(double));
 
-  // traj[0]: states, traj[1]: controls
   plan_trajectory(x0, u0, xDes, Obs, T_horizon_, &Opt, &Traj);
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+(2*T_horizon_));
   u_init = u_sol;
-
-  // TODO save trajectory here
-  // std::vector<double> x_sol(Traj.x, Traj.x+(n*N));
-  // x_traj_saved_ = x_sol;
+  std::vector<double> x_sol(Traj.x, Traj.x+(n*N));
+  x_traj_saved_ = x_sol;
 
   //Put states and controls into format that action client wants.
   goal.traj.states.reserve(N);
@@ -74,8 +70,15 @@ void TrajClient::PlanFromCurrentStateILQR()
 {
   ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
 
-  if (mode_==7) // turn on pid heading corrections during server execution
+  if (mode_ == 7) // turn on pid heading corrections during server execution
   	goal.traj.mode = 1;
+  SendTrajectory(goal);
+}
+
+void TrajClient::PlanFromExtrapolatedILQR()
+{
+  nav_msgs::Odometry extrapolated = ExtrapolateState(cur_state_);
+  ilqr_loco::TrajExecGoal goal  = GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
   SendTrajectory(goal);
 }
 
@@ -89,7 +92,7 @@ void TrajClient::MpcILQR()
   {
     ROS_INFO("Receding horizon iteration #%d", T_);
 
-    ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
+    goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
     // TODO do some quick checks on trajectory?
 
     SendTrajectory(goal);

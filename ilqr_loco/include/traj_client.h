@@ -126,6 +126,7 @@ protected:
                                                  nav_msgs::Odometry cur_state_);
 
   void PlanFromCurrentStateILQR();
+  void PlanFromExtrapolatedILQR();
   ilqr_loco::TrajExecGoal GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
           std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos);
   void MpcILQR();
