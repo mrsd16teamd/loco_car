@@ -1,6 +1,8 @@
 #include "traj_client.h"
 
 #define ILQRDEBUG 0
+#define DUMMYOBSSTATE {obs_pos_.x = 2.599635; obs_pos_.y = 0.365210; cur_state_.pose.pose.position.x = 1.826; cur_state_.pose.pose.position.y = 0.340; double theta = 0.0032; cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta); cur_state_.twist.twist.linear.x = 0.062; cur_state_.twist.twist.linear.y = -0.009; cur_state_.twist.twist.angular.z = 0.00023;}
+
 
 TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
                           cur_integral_(0), prev_error_(0)
@@ -22,16 +24,16 @@ TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
 
 void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 {
+  state_estimate_received_ = true;
+
   prev_state_ = cur_state_;
   cur_state_ = msg;
-
-  state_estimate_received_ = true;
 
   if (T_ == 0) {
     cur_integral_ = 0;
     prev_error_ = 0;
     start_state_ = cur_state_;
-	  ramp_start_y_ = start_state_.pose.pose.position.y;
+      ramp_start_y_ = start_state_.pose.pose.position.y;
     u_seq_saved_ = init_control_seq_;
     start_time_ = ros::Time::now();
   }
@@ -50,19 +52,24 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     obs_pos_.y = msg.point.y;
     obs_received_ = true;
 
-    if (mode_==1) {
-      SendZeroCommand();
-      mode_ = 0;
+    if (mode_==1)
+    {
+      SendZeroCommand(); //brake
     }
-    else if (mode_==2 || mode_==3 || mode_==7){
-      ilqrPlan();
-      mode_ = 0;
+    else if (mode_==2)
+    {
+      nav_msgs::Odometry extrapolated = ExtrapolateState(cur_state_);
+      GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
+    }
+    else if (mode_==2 || mode_==3 || mode_==7)
+    {
+      PlanFromCurrentStateILQR();
     }
     else if (mode_==4 || mode_==5){
-      ilqrMPC();
+      MpcILQR();
     }
     else if (mode_==6){
-      ilqrSparseReplan();
+      SparseReplanILQR();
     }
   }
 }
@@ -93,17 +100,8 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 2: {
 
       #if ILQRDEBUG
-      obs_pos_.x = 2.599635;
-      obs_pos_.y = 0.365210;
-
-      cur_state_.pose.pose.position.x = 1.826;
-      cur_state_.pose.pose.position.y = 0.340;
-      double theta = 0.0032;
-      cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
-      cur_state_.twist.twist.linear.x = 0.062;
-      cur_state_.twist.twist.linear.y = -0.009;
-      cur_state_.twist.twist.angular.z = 0.00023;
-      ilqrPlan();
+      DUMMYOBSSTATE
+      PlanFromCurrentStateILQR();
       #endif
 
       ROS_INFO("Mode 2: iLQR from static initial conditions.");
@@ -111,7 +109,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       T_ = 0;
       mode_ = 2;
       break;
-		  // wait for obsCb to plan
+      // wait for obsCb to plan
     }
     case 3: {
       ROS_INFO("Mode 3: ramp -> iLQR open loop.");
@@ -138,17 +136,8 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 6: iLQR with sparse replanning from static.");
 
       #if ILQRDEBUG
-      obs_pos_.x = 2.599635;
-      obs_pos_.y = 0.365210;
-
-      cur_state_.pose.pose.position.x = 1.826;
-      cur_state_.pose.pose.position.y = 0.340;
-      double theta = 0.0032;
-      cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
-      cur_state_.twist.twist.linear.x = 0.062;
-      cur_state_.twist.twist.linear.y = -0.009;
-      cur_state_.twist.twist.angular.z = 0.00023;
-      ilqrSparseReplan();
+      DUMMYOBSSTATE
+      SparseReplanILQR();
       #endif
 
       T_ = 0;
@@ -175,15 +164,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Please enter valid command.");
     }
   }
-}
-
-void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
-{
-  ROS_INFO("Sending trajectory.");
-  ac_.sendGoal(goal);
-              //  ,boost::bind(&TrajClient::doneCb, this, _1, _2),
-              //  boost::bind(&TrajClient::activeCb, this),
-              //  boost::bind(&TrajClient::feedbackCb, this, _1));
 }
 
 int main(int argc, char** argv)

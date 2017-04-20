@@ -113,6 +113,7 @@ protected:
   int ilqr_max_iter_;
   int ilqr_regType_;
   int ilqr_debug_level_;
+  std::vector<double> replan_times_;
 
   void LoadParams();
 	void LoadCarParams();
@@ -124,15 +125,14 @@ protected:
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
                                                  nav_msgs::Odometry cur_state_);
 
-  void ilqrPlan();
-  ilqr_loco::TrajExecGoal ilqgGenerateTrajectory(nav_msgs::Odometry cur_state);
-  void iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u_init, std::vector<double> &x_des,
-                     geometry_msgs::Point &obstacle_pos, int T, tOptSet* o, ilqr_loco::TrajExecGoal &goal);
-  void ilqrMPC();
+  void PlanFromCurrentStateILQR();
+  ilqr_loco::TrajExecGoal GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
+          std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos);
+  void MpcILQR();
+  void SparseReplanILQR();
   double DistToGoal();
-  void ilqrSparseReplan();
+  nav_msgs::Odometry ExtrapolateState(const nav_msgs::Odometry &state);
 
-  void RampAndiLQR();
 	void SendZeroCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
 

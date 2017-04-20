@@ -42,5 +42,13 @@ void TrajClient::SendZeroCommand()
   end_goal.traj.states.push_back(cur_state_);
   SendTrajectory(end_goal);
   ROS_INFO("Sent zero command.");
+}
 
+void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)
+{
+  ROS_INFO("Sending trajectory.");
+  ac_.sendGoal(goal);
+              //  ,boost::bind(&TrajClient::doneCb, this, _1, _2),
+              //  boost::bind(&TrajClient::activeCb, this),
+              //  boost::bind(&TrajClient::feedbackCb, this, _1));
 }

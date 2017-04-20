@@ -20,13 +20,15 @@ timeout_ramp: 4
 timeout_ilqr_mpc: 4
 stop_goal_threshold: 0.5
 
-# These don't do anything right now
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
 ilqr_tolGrad: 0.00001
 ilqr_max_iter: 50
 ilqr_regType: 1
 ilqr_debug_level: 2
+
+replan_times: [0.0, 1.0, 2.0, 3.0]
+
 
 # Original params:
 Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,

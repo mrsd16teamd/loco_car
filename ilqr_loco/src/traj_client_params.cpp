@@ -20,7 +20,6 @@ void TrajClient::LoadParams()
     TRYGETPARAM("timeout_ramp", timeout_)
 
     TRYGETPARAM("T_horizon", T_horizon_)
-    TRYGETPARAM("init_control_seq", init_control_seq_)
     TRYGETPARAM("X_des", x_des_)
     TRYGETPARAM("timeout_ilqr_mpc", mpc_timeout_)
     TRYGETPARAM("stop_goal_threshold", goal_threshold_)
@@ -32,6 +31,9 @@ void TrajClient::LoadParams()
     TRYGETPARAM("ilqr_regType", ilqr_regType_)
     TRYGETPARAM("ilqr_debug_level", ilqr_debug_level_)
 
+    TRYGETPARAM("replan_times", replan_times_);
+
+    TRYGETPARAM("init_control_seq", init_control_seq_)
 	  u_seq_saved_ = init_control_seq_;
 
     LoadOpt();
