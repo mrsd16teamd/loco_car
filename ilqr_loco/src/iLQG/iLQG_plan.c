@@ -1,5 +1,6 @@
 // MATLAB Mex function wrapper for iLQG algorithm
 // Copyright (c) 2016 Jens Geisler
+
 #include "iLQG_plan.h"
 
 double* assignPtrVal(double* values, int numVal) {
@@ -12,7 +13,7 @@ double* assignPtrVal(double* values, int numVal) {
 void init_params(tOptSet *o, double* xDes, double* Obs)
 {
     o->p[3] = assignPtrVal(Obs,2);
-    o->p[25] = assignPtrVal(xDes,6);
+    o->p[29] = assignPtrVal(xDes,6);
 }
 
 void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, tOptSet *o, struct trajectory* Traj)
