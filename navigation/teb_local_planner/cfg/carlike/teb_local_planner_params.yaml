@@ -14,12 +14,12 @@ TebLocalPlannerROS:
 
  # Robot
 
- max_vel_x: 1.5
+ max_vel_x: 2.5
  max_vel_x_backwards: 0.5
  max_vel_y: 0.0
  max_vel_theta: 3.0 # the angular velocity is also bounded by min_turning_radius in case of a carlike robot (r = v / omega)
- acc_lim_x: 1.0
- acc_lim_theta: 1.0
+ acc_lim_x: 3.0
+ acc_lim_theta: 2.0
 
  # ********************** Carlike robot parameters ********************
  min_turning_radius: 0.283 #0.283 #0.255 for 45deg       # Min turning radius of the carlike robot (compute value using a model or adjust with rqt_reconfigure manually)
