@@ -3,7 +3,7 @@
 #define ILQRDEBUG 0
 
 TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
-                          cur_integral_(0), prev_error_(0), cur_vel_(0.5)
+                          cur_integral_(0), prev_error_(0)
 {
   state_sub_  = nh.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
   obs_sub_ = nh.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
@@ -33,6 +33,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_state_ = cur_state_;
 	  u_seq_saved_ = init_control_seq_;
     obs_received_ = false;
+	  ramp_start_y_ = start_state_.pose.pose.position.y;
   }
 
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )

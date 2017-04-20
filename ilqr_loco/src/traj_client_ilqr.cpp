@@ -127,7 +127,6 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
   SendTrajectory(goal);
   ROS_INFO("Sent first swerve.");
 ////
-  int iter_count = 0;
   bool goal_achieved = false;
 
   while(!goal_achieved)
@@ -139,7 +138,7 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
       break;
     }
 
-    ROS_INFO("Receding horizon iteration #%d", iter_count);
+    ROS_INFO("Receding horizon iteration #%d", T_);
     ROS_INFO("u0[0]: %f", u_seq_saved_[0]);
 
     goal = ilqgGenerateTrajectory(cur_state_);
@@ -156,7 +155,7 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
     }
 
     ros::spinOnce(); // to pick up new state estimates
-    iter_count++;
+    T_++;
   }
 }
 
@@ -175,21 +174,19 @@ void TrajClient::ilqrSparseReplan()
 
   ilqr_loco::TrajExecGoal goal;
 
-  int iter_count = 0;
-
   while (ros::ok())
   {
     if(plan_next_)
     {
-      ROS_INFO("Replan #%d", iter_count);
+      ROS_INFO("Replan #%d", T_);
       ilqrPlan();
       plan_next_ = false;
-      if (++iter_count >= replan_times.size())
+      if (++T_ >= replan_times.size())
       {
         ROS_INFO("Done planning.");
       }
     }
-    if(ros::Time::now() - start_time_ > ros::Duration(replan_times[iter_count]) && iter_count < replan_times.size())
+    if(ros::Time::now() - start_time_ > ros::Duration(replan_times[T_]) && T_ < replan_times.size())
     {
       plan_next_ = true;
       ROS_INFO("Next plan.");

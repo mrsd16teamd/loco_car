@@ -93,11 +93,14 @@ protected:
   double cur_integral_;
   double prev_error_;
   double cur_vel_;
+  double ramp_start_y_;
 
   //Constants for rampup planner
-  float kp_, ki_, kd_;
+  float kp_, ki_, kd_, kp_y_;
   float accel_;
   float target_vel_;
+  float pre_ramp_vel_;
+  float pre_ramp_time_;
   float timeout_;
   double timestep_;
 
