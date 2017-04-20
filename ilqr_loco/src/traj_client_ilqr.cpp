@@ -18,14 +18,14 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
   double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
                    x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
                    x_cur.twist.twist.angular.z,
-                   x_cur.twist.twist.linear.x, last_steer_cmd_, 0, 0};
+                   x_cur.twist.twist.linear.x, last_steer_cmd_};
 
   double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array
   double* u0 = &u_init[0];
   double Obs[2] = {(double)obstacle_pos.x, (double)obstacle_pos.y};
 
   int N = T_horizon_+1;
-  int n = 10; //state size
+  int n = 8; //state size
   int m = 2;  //control size
 
   //Run iLQR trajectory generation

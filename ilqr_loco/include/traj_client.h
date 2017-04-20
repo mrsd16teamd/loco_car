@@ -64,6 +64,9 @@ protected:
   double k_pos_;                  // Obstacle pos cost
   double k_vel_;                  // Obstacle vel cost
   double d_thres_;                // Obstacle threshold
+  double croad_;                  // lane cost coefficient
+  double lane_center_;            // center of lane
+  double lane_thres_;             // allowed divergence
 
   // Helper variables
   int T_;                         // Sequence ID number (starts from 0, in lifetime of client)
