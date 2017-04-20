@@ -72,10 +72,10 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 
     pcl::fromROSMsg (*input, *input_cloud);
-  //  clock_t start = clock();
+    clock_t start = clock();
     cluster_extraction (input, cluster_indices);
-  //  clock_t end = clock();
-  //  float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+    clock_t end = clock();
+    float seconds = (float)(end - start) / CLOCKS_PER_SEC;
   //  std::cout<<"clustering time"<<std::endl;
   //  std::cout<<seconds<<std::endl;
 
