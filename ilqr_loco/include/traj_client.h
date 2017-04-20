@@ -45,6 +45,7 @@ protected:
   std::vector<double> u_seq_saved_;
   std::vector<double> x_traj_saved_;
   std::vector<double> x_des_;
+  std::vector<double> replan_times_;
   tOptSet Opt;
 
   // iLQR Opt.p: Car Params
