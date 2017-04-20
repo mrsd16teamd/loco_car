@@ -11,7 +11,7 @@
 
 <!-- Load Planner configs from YAML -->
   <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params.yaml"/>
-  <rosparam command="load" file="$(find ilqr_loco)/config/$(arg control).yaml"/>
+  <rosparam command="load" file="$(find ilqr_loco)/control_seq/$(arg control).yaml"/>
 
 <!-- Start planner client-server nodes-->
   <node pkg="ilqr_loco" type="traj_client" name="traj_client" output="screen"/>
