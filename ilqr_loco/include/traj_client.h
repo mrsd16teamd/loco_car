@@ -39,13 +39,13 @@ protected:
   ros::Subscriber mode_sub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
 
-  // ROS Parameters
+  // ilqr parameters and saved data
   int T_horizon_;
   std::vector<double> init_control_seq_;
   std::vector<double> u_seq_saved_;
+  std::vector<double> x_traj_saved_;
   std::vector<double> x_des_;
   tOptSet Opt;
-  // double dt;
 
   // iLQR Opt.p: Car Params
   double g_;
