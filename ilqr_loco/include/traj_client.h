@@ -124,8 +124,10 @@ protected:
   double DistToGoal();
   nav_msgs::Odometry ExtrapolateState(const nav_msgs::Odometry &state);
 
-	void SendZeroCommand();
+  void SendZeroCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
+  void SendInitControlSeq();
+
 
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const geometry_msgs::PointStamped &msg);

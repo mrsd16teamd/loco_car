@@ -1,6 +1,7 @@
 #include "traj_client.h"
 
-#define ILQRDEBUG 0
+#define ILQRDEBUG 1
+#define DUMMYOBS obs_pos_.x = 999; obs_pos_.y = 0.365210;
 #define DUMMYOBSSTATE {obs_pos_.x = 2.599635; obs_pos_.y = 0.365210; cur_state_.pose.pose.position.x = 1.826; cur_state_.pose.pose.position.y = 0.340; double theta = 0.0032; cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta); cur_state_.twist.twist.linear.x = 0.062; cur_state_.twist.twist.linear.y = -0.009; cur_state_.twist.twist.angular.z = 0.00023;}
 
 
@@ -88,11 +89,14 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             break;
             // wait for stateCb to ramp
     case 2: ROS_INFO("Mode 2: iLQR from static initial conditions.");
-            #if ILQRDEBUG
-            DUMMYOBSSTATE
-            PlanFromCurrentStateILQR();
-            #endif
             mode_ = 2;
+
+            #if ILQRDEBUG
+            DUMMYOBS
+            u_seq_saved_ = init_control_seq_;
+            PlanFromCurrentStateILQR();
+            mode_ = 0;
+            #endif
             break;
             // wait for obsCb to plan
     case 3: ROS_INFO("Mode 3: ramp -> iLQR open loop.");
@@ -105,14 +109,22 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             //wait for stateCb to ramp
     case 5: ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
             mode_ = 5;
+
+            #if ILQRDEBUG
+            DUMMYOBS
+            MpcILQR();
+            mode_ = 0;
+            #endif
             break;
             //wait for obsCb to plan
     case 6: ROS_INFO("Mode 6: iLQR with sparse replanning from static.");
+            mode_ = 6;
+
             #if ILQRDEBUG
             DUMMYOBSSTATE
             SparseReplanILQR();
+            mode_=0;
             #endif
-            mode_ = 6;
             break;
     case 7: ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
             mode_ = 7;
@@ -124,9 +136,13 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             SendZeroCommand();
             ros::shutdown();
             break;
+    case 10: ROS_INFO("Play back initial control sequence.");
+             SendInitControlSeq();
+             break;
     case 11: ROS_INFO("Mode 8: ramp -> iLQR with sparse replanning.");
              mode_ = 11;
              break;
+
     default: ROS_INFO("Please enter valid command.");
   }
 }

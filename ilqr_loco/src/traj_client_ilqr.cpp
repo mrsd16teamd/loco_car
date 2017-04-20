@@ -6,7 +6,6 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
   // ROS_INFO("Generating iLQG trajectory.");
   ilqr_loco::TrajExecGoal goal;
   FillGoalMsgHeader(goal);
-  goal.traj.timestep = timestep_;
 
   // ROS_INFO("Start state (before prediction): %f, %f, %f, %f, %f, %f",
   //         cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta,
