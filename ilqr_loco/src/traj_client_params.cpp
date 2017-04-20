@@ -12,11 +12,11 @@ void TrajClient::LoadParams()
     TRYGETPARAM("kp_ramp", kp_)
     TRYGETPARAM("ki_ramp", ki_)
     TRYGETPARAM("kd_ramp", kd_)
-	TRYGETPARAM("kp_ramp_y", kp_y_)
+	  TRYGETPARAM("kp_ramp_y", kp_y_)
     TRYGETPARAM("accel_ramp", accel_)
     TRYGETPARAM("target_vel_ramp", target_vel_)
     TRYGETPARAM("pre_ramp_vel", pre_ramp_vel_)
-    TRYGETPARAM("pre_ramp_time", pre_ramp_time_)    
+    TRYGETPARAM("pre_ramp_time", pre_ramp_time_)
     TRYGETPARAM("timeout_ramp", timeout_)
 
     TRYGETPARAM("T_horizon", T_horizon_)
@@ -86,8 +86,6 @@ void TrajClient::SetOptParams(tOptSet *o)
     o->regType= ilqr_regType_;
     o->debug_level= ilqr_debug_level_;
 
-    // double default_alpha[]= {1.0, 0.3727594, 0.1389495, 0.0517947, 0.0193070, 0.0071969, 0.0026827, 0.0010000};
-    // o->alpha= default_alpha;
     o->n_alpha= 8;
     o->lambdaInit= 1;
     o->dlambdaInit= 1;

@@ -61,18 +61,18 @@ void standard_parameters(tOptSet *o) {
 
     o->alpha= pointer;
     o->n_alpha= 8;
-    o->tolFun= 1e-7;
-    o->tolConstraint= 1e-7;
-    o->tolGrad= 1e-5;
-    o->max_iter= 20;
+    // o->tolFun= 1e-7;
+    // o->tolConstraint= 1e-7;
+    // o->tolGrad= 1e-5;
+    // o->max_iter= 20;
     o->lambdaInit= 1;
     o->dlambdaInit= 1;
     o->lambdaFactor= 1.6;
     o->lambdaMax= 1e10;
     o->lambdaMin= 1e-6;
-    o->regType= 1;
+    // o->regType= 1;
     o->zMin= 0.0;
-    o->debug_level= 2;
+    // o->debug_level= 2;
     o->w_pen_init_l= 1.0;
     o->w_pen_init_f= 1.0;
     o->w_pen_max_l= INF;

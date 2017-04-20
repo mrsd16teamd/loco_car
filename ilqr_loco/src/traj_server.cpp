@@ -57,6 +57,7 @@ geometry_msgs::Twist TrajServer::pid_correct_yaw(geometry_msgs::Twist orig_twist
 // provides action to execute plans
 void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal){
   // TODO? check that states and commands are right length
+  ROS_INFO("%s: Received trajectory.", traj_action.c_str());
 
   bool success = true;
 
@@ -64,16 +65,15 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   double traj_start_time = (goal->traj.header.stamp).toSec();
 
   ros::Rate loop_rate(1.0/timestep);
-  // ros::Rate loop_rate(50); //TODO make this work without hard-coding?
 
-  ROS_INFO("Executing trajectory in mode %d", goal->traj.mode); // TODO print client name
+  // ROS_INFO("Executing trajectory in mode %d", goal->traj.mode); // TODO print client name
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
     // check that preempt has not been requested by the client
     if (as.isPreemptRequested() || !ros::ok())
     {
-      ROS_INFO("%s: Preempted", traj_action.c_str());
+      ROS_INFO("%s: Preempted at %dth command.", traj_action.c_str(), i);
       as.setPreempted();
       success = false;
       break;
@@ -81,7 +81,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     // check that commands in plan are not too old
     else if ((ros::Time::now().toSec() - (traj_start_time + (i*timestep))) > old_msg_thres)
     {
-     ROS_INFO("Ignoring old command.");
+     ROS_INFO("%s: Ignoring old command.", traj_action.c_str());
      continue;
     }
     else
@@ -98,8 +98,6 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       int steps_left = goal->traj.commands.size() - i;
       if (steps_left>1)
         loop_rate.sleep();
-      // feedback.steps_left =  steps_left;
-      // as.publishFeedback(feedback);
     }
   }
 
@@ -107,7 +105,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   if(success)
   {
-    ROS_INFO("Finished publishing trajectory");
+    ROS_INFO("%s: Finished publishing trajectory", traj_action.c_str());
     result.done = 1;
     as.setSucceeded(result);
   }

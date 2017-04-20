@@ -2,7 +2,7 @@
 
 double TrajClient::DistToGoal()
 {
-  ROS_INFO("x_des: %f, %f. x_cur: %f, %f", x_des_[0], x_des_[1], cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y);
+  // ROS_INFO("x_des: %f, %f. x_cur: %f, %f", x_des_[0], x_des_[1], cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y);
   return sqrt( pow((x_des_[0]- cur_state_.pose.pose.position.x), 2) +
                pow((x_des_[1]- cur_state_.pose.pose.position.y), 2) );
 }
@@ -38,7 +38,6 @@ void TrajClient::iLQR_gen_traj(nav_msgs::Odometry &x_cur, std::vector<double> &u
   std::vector<double> u_sol(Traj.u, Traj.u+N);
   u_init = u_sol;
 
-  //TODO bring this back!
   //Put states and controls into format that action client wants.
   goal.traj.states.reserve(N);
   goal.traj.commands.reserve(N);
@@ -71,24 +70,24 @@ ilqr_loco::TrajExecGoal TrajClient::ilqgGenerateTrajectory(nav_msgs::Odometry cu
   goal.traj.timestep = timestep_;
 
   double theta = tf::getYaw(cur_state.pose.pose.orientation);
-  ROS_INFO("Start state: %f, %f, %f, %f, %f, %f",
-            cur_state.pose.pose.position.x, cur_state.pose.pose.position.y, theta,
-            cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
-  ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
+  // ROS_INFO("Start state: %f, %f, %f, %f, %f, %f",
+  //           cur_state.pose.pose.position.x, cur_state.pose.pose.position.y, theta,
+  //           cur_state.twist.twist.linear.x, cur_state.twist.twist.linear.y, cur_state.twist.twist.angular.z);
+  // ROS_INFO("Obs pos: %f, %f", obs_pos_.x, obs_pos_.y);
 
   iLQR_gen_traj(cur_state, u_seq_saved_, x_des_, obs_pos_, T_horizon_, &Opt, goal);
-  ++T_;
 
   return goal;
 }
 
 void TrajClient::ilqrPlan()
 {
+  ROS_INFO("max_iter: %d", Opt.max_iter);
   if (mode_==2) {
     double theta = tf::getYaw(cur_state_.pose.pose.orientation);
-    ROS_INFO("Start state (before prediction): %f, %f, %f, %f, %f, %f",
-            cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta,
-            cur_state_.twist.twist.linear.x, cur_state_.twist.twist.linear.y, cur_state_.twist.twist.angular.z);
+    // ROS_INFO("Start state (before prediction): %f, %f, %f, %f, %f, %f",
+    //         cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta,
+    //         cur_state_.twist.twist.linear.x, cur_state_.twist.twist.linear.y, cur_state_.twist.twist.angular.z);
 
     cur_state_.pose.pose.position.x += (0.2*cur_state_.twist.twist.linear.x);
     // this is extra work, maybe use if statements in iLQR_gen_traj would be better
@@ -109,33 +108,33 @@ void TrajClient::ilqrMPC()
 
   ilqr_loco::TrajExecGoal goal;
 
-  //HACK HERE
-  FillGoalMsgHeader(goal);
-goal.traj.timestep = timestep_;
-  for(int i=0; i<u_seq_saved_.size()/2; i++) {
-	geometry_msgs::Twist twist;
-	FillTwistMsg(twist, u_seq_saved_[2*i], u_seq_saved_[2*i+1]);
-	goal.traj.commands.push_back(twist);
-  }
-for(int i=0; i<u_seq_saved_.size()+1; i++) {
-  goal.traj.states.push_back(cur_state_);
-}
-  SendTrajectory(goal);
-  ROS_INFO("Sent first swerve.");
-////
-  bool goal_achieved = false;
+//   //HACK HERE
+//   FillGoalMsgHeader(goal);
+// goal.traj.timestep = timestep_;
+//   for(int i=0; i<u_seq_saved_.size()/2; i++) {
+// 	geometry_msgs::Twist twist;
+// 	FillTwistMsg(twist, u_seq_saved_[2*i], u_seq_saved_[2*i+1]);
+// 	goal.traj.commands.push_back(twist);
+//   }
+// for(int i=0; i<u_seq_saved_.size()+1; i++) {
+//   goal.traj.states.push_back(cur_state_);
+// }
+//   SendTrajectory(goal);
+//   ROS_INFO("Sent first swerve.");
+// ////
 
-  while(!goal_achieved)
+  while(DistToGoal() > goal_threshold_)
   {
+    // ROS_INFO("DistToGoal: %f", DistToGoal());
+
     if(ros::Time::now() - start_time_ > ros::Duration(mpc_timeout_))
     {
-      ROS_INFO("iLQR timed out.");
-      SendZeroCommand();
+      ROS_INFO("MPC timed out.");
       break;
     }
 
     ROS_INFO("Receding horizon iteration #%d", T_);
-    ROS_INFO("u0[0]: %f", u_seq_saved_[0]);
+    // ROS_INFO("u0[0]: %f", u_seq_saved_[0]);
 
     goal = ilqgGenerateTrajectory(cur_state_);
 
@@ -143,16 +142,10 @@ for(int i=0; i<u_seq_saved_.size()+1; i++) {
 
     SendTrajectory(goal);
 
-    ROS_INFO("DistToGoal: %f", DistToGoal());
-    if (DistToGoal() < goal_threshold_) {
-    	ROS_INFO("Reached goal point.");
-	  	SendZeroCommand();
-      break;
-    }
-
     ros::spinOnce(); // to pick up new state estimates
     T_++;
   }
+  SendZeroCommand();
 }
 
 void TrajClient::ilqrSparseReplan()
@@ -185,11 +178,10 @@ void TrajClient::ilqrSparseReplan()
     if(ros::Time::now() - start_time_ > ros::Duration(replan_times[T_]) && T_ < replan_times.size())
     {
       plan_next_ = true;
-      ROS_INFO("Next plan.");
     }
     if(ros::Time::now() - start_time_ > ros::Duration(mpc_timeout_))
     {
-      ROS_INFO("iLQR timed out.");
+      ROS_INFO("iLQR sparse replan timed out.");
       SendZeroCommand();
       break;
     }
