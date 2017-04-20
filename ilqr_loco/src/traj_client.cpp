@@ -31,9 +31,9 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     cur_integral_ = 0;
     prev_error_ = 0;
     start_state_ = cur_state_;
-	  u_seq_saved_ = init_control_seq_;
-    obs_received_ = false;
 	  ramp_start_y_ = start_state_.pose.pose.position.y;
+    u_seq_saved_ = init_control_seq_;
+    start_time_ = ros::Time::now();
   }
 
   if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) )
@@ -87,7 +87,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
       T_ = 0;
       mode_ = 1;
-      start_time_ = ros::Time::now();
       break;
       // wait for stateCb to ramp
     }
@@ -118,7 +117,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 3: ramp -> iLQR open loop.");
       T_ = 0;
       mode_ = 3;
-      start_time_ = ros::Time::now();
       break;
       //wait for stateCb to ramp
     }
@@ -126,7 +124,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
       ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
       T_ = 0;
       mode_ = 4;
-      start_time_ = ros::Time::now();
       break;
       //wait for stateCb to ramp
     }
@@ -161,7 +158,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 7: {
       ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
       mode_ = 7;
-      obs_received_ = false;
       break;
     }
     case 8: {

@@ -6,19 +6,19 @@ timestep: 0.05 #0.02
 
 ## GAINS FOR PID TO REGULATE YAW
 kp_ramp: 0.9 #0.6
-ki_ramp: 0.0 #0.2
+ki_ramp: 0.2 #0.2
 kd_ramp: 1.2 #0.3
 kp_ramp_y: 0.01
 
 accel_ramp: 1.5
-target_vel_ramp: 3.0
-pre_ramp_vel: 1
+target_vel_ramp: 1.0
+pre_ramp_vel: 0.5
 pre_ramp_time: 1
 timeout_ramp: 4
 
 # iLQR params
 timeout_ilqr_mpc: 4
-stop_goal_threshold: 0.3
+stop_goal_threshold: 0.5
 
 # These don't do anything right now
 ilqr_tolFun: 0.0000001
@@ -44,7 +44,7 @@ Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
            cx: [0.05, 0.05, 0.04], cdx: [0.001, 0.005, 0.002],
            px: [0.01, 0.01, 0.1],
            cdrift: -0.001,
-           k_pos: 0.5, k_vel: 0, d_thres: 0.3}
+           k_pos: 1.0, k_vel: 0, d_thres: 0.3}
 
 ######
 # TrajServer params

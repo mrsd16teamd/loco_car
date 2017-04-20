@@ -1,0 +1,16 @@
+{
+  "transport": "scp",
+  "uploadOnSave": false,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "192.168.1.118",
+  "port": "22",
+  "target": "~/catkin_ws/src/",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "username": "ubuntu",
+  "password": "ubuntu",
+  "watch": []
+}
