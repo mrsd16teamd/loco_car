@@ -1,10 +1,5 @@
 #include "traj_client.h"
 
-double clamp(double val, double min_val, double max_val)
-{
-  return std::max(min_val, std::min(val, max_val));
-}
-
 ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry prev_state,
                                                            nav_msgs::Odometry cur_state) {
 
@@ -18,25 +13,26 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   ROS_INFO("y_error = %f", y_error);
   ROS_INFO("output_y: %f, kp_y_: %f", kp_y_*y_error, kp_y_);
 
-  // double yaw_des = 0;
   double error = yaw_des - yaw;
   cur_integral_ += error*dt;
-  // double output = kp_*error + std::max(-0.25,std::min(ki_*cur_integral_,0.25)) + std::max(-0.1,std::min(kd_*(error-prev_error_)/dt,0.1));
-  double output = kp_*error + clamp(ki_*cur_integral_, -0.25, 0.25) + clamp(kd_*(error-prev_error_), -0.1, 0.1);
-  ROS_INFO("P = %f,  |  I = %f,  |  D = %f", kp_*error, clamp(ki_*cur_integral_, -0.25, 0.25), clamp(kd_*(error-prev_error_), -0.1, 0.1));
+  double p = kp_*error;
+  double i = clamp(ki_*cur_integral_, -0.25, 0.25);
+  double d = clamp(kd_*(error-prev_error_), -0.1, 0.1);
+  double output =  p + i + d;
+  ROS_INFO("P = %f,  |  I = %f,  |  D = %f", p, i, d);
   ROS_INFO("Output = %f", output);
 
   prev_error_ = error;
 
   // Generate goal
   double v;
-  if ((cur_state.header.stamp).toSec() - start_time_.toSec() > pre_ramp_time_) {
+  if (cur_state.header.stamp - start_time_ < ros::Duration(pre_ramp_time_)) {
+    v = pre_ramp_vel_;
+  }
+  else {
     v = cur_state.twist.twist.linear.x + accel_*dt +0.25;
     v = (v < target_vel_) ? v : target_vel_;
     // ROS_INFO("v = %f", v);
-  }
-  else {
-    v = pre_ramp_vel_;
   }
 
   ilqr_loco::TrajExecGoal goal;

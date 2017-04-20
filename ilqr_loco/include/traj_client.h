@@ -149,6 +149,10 @@ protected:
    void feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback);
    void doneCb(const actionlib::SimpleClientGoalState& state,
                const ilqr_loco::TrajExecResultConstPtr& result);
+
+  double clamp(double val, double min_val, double max_val) {
+    return std::max(min_val, std::min(val, max_val));
+  }
 };
 
 #endif
