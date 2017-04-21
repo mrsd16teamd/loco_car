@@ -41,7 +41,7 @@
 #include <utility>
 #include <ctime>
 
-
+bool found_obs = false;
 ros::Publisher objID_pub;
 ros::Publisher cc_pos;
 ros::Publisher markerPub1;
@@ -57,6 +57,8 @@ int DEBUGMODE = 0;
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 {
+   if(found_obs) return;
+
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
     float xcoordinate(9.0f);
@@ -233,7 +235,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
   if( obstaclepresent == 1 )
    {    
-
+        found_obs = true;
 	clusterMarkers1.markers.push_back(m1);  
 	cc_pos.publish(mapframe);
 	markerPub1.publish(clusterMarkers1);
@@ -250,13 +252,20 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
     std::cout<<"clustering time"<<std::endl;
     std::cout<<seconds<<std::endl;
-
+    
 
 
 
 };
 
 
+void mode_cb(const geometry_msgs::Point &msg)
+{
+  if(msg.x == 8){
+    ROS_INFO("Looking for obstacle again.");
+    found_obs = false;
+  }
+}
 
 
 int main(int argc, char** argv)
@@ -268,6 +277,7 @@ int main(int argc, char** argv)
     tf::TransformListener lr(ros::Duration(10));
     tran=&lr;
     ros::Subscriber sub = nh.subscribe ("scan_cloud", 1, cloud_cb);
+  ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
     cc_pos=nh.advertise<geometry_msgs::PointStamped>("cluster_center",100);//clusterCenter1
 
     markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);

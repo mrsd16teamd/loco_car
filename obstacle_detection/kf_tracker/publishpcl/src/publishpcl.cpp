@@ -37,6 +37,7 @@ private:
 
 Scan2Cloud::Scan2Cloud()
 {
+   clock_t start = clock();
   scan_sub_ = node_.subscribe<sensor_msgs::LaserScan> ("scan", 1, &Scan2Cloud::scanCallback, this);
   point_cloud_publisher_ = node_.advertise<sensor_msgs::PointCloud2> ("scan_cloud", 1, false);
 
@@ -64,7 +65,7 @@ Scan2Cloud::Scan2Cloud()
 
 void Scan2Cloud::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
 
-  clock_t start = clock();
+  
   //pre-process scans, chopping to front sub-section
   scan_front = *scan;
   scan_front.angle_min = new_angle_min;
@@ -82,6 +83,7 @@ float seconds = (float)(end - start) / CLOCKS_PER_SEC;
 
 int main(int argc, char** argv)
 {
+
   ros::init(argc, argv, "scan2cloud_publisher");
 
   Scan2Cloud scan2cloud_publisher;
