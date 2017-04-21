@@ -231,7 +231,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        mapframe.point.x = 999 ;
        mapframe.point.y  = 999 ;
        mapframe.point.z  = 0;
-       cc_pos.publish(mapframe);
+      // cc_pos.publish(mapframe);
 
    } 
 
@@ -252,8 +252,8 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     clock_t end = clock();
     float seconds = (float)(end - start) / CLOCKS_PER_SEC;
 
-    std::cout<<"clustering time"<<std::endl;
-    std::cout<<seconds<<std::endl;
+ //   std::cout<<"clustering time"<<std::endl;
+ //   std::cout<<seconds<<std::endl;
     
 
 
