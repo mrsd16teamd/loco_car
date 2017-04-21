@@ -10,6 +10,7 @@
 #include <message_filters/subscriber.h>
 #include <vector>
 #include <math.h>
+#include <ctime>
 
 class Scan2Cloud {
 public:
