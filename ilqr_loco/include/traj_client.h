@@ -104,7 +104,8 @@ protected:
   int ilqr_debug_level_;
   std::vector<double> replan_times_;
   double replan_rate_;
-  float last_steer_cmd_;
+  int step_on_last_traj_;
+  int use_extrapolate_;
 
   void LoadParams();
   void LoadCarParams();
@@ -122,7 +123,6 @@ protected:
           std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos);
   void MpcILQR();
   void FixedRateReplanILQR();
-  void SparseReplanILQR();
   double DistToGoal();
   nav_msgs::Odometry ExtrapolateState(const nav_msgs::Odometry &state);
 

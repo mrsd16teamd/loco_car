@@ -23,7 +23,7 @@ void TrajClient::LoadParams()
     TRYGETPARAM("X_des", x_des_)
     TRYGETPARAM("timeout_ilqr_mpc", mpc_timeout_)
     TRYGETPARAM("stop_goal_threshold", goal_threshold_)
-    TRYGETPARAM("replan_times", replan_times_)
+    TRYGETPARAM("use_extrapolate", use_extrapolate_)
 	  TRYGETPARAM("replan_rate", replan_rate_)
 
     TRYGETPARAM("ilqr_tolFun", ilqr_tolFun_)

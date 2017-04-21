@@ -19,18 +19,19 @@ pre_ramp_time: 1
 timeout_ramp: 5.5
 
 # iLQR params
-timeout_ilqr_mpc: 4
-stop_goal_threshold: 0.5
+timeout_ilqr_mpc: 5
+stop_goal_threshold: 0.3
 
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
 ilqr_tolGrad: 0.00001
-ilqr_max_iter: 30
+ilqr_max_iter: 100
 ilqr_regType: 1
 ilqr_debug_level: 2
 
 replan_times: [0.0, 1.0, 2.0, 3.0]
-replan_rate: 5
+replan_rate: 3
+use_extrapolate: 0
 
 
 # Original params:

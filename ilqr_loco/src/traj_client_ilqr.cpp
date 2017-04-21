@@ -17,7 +17,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
   double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
                    x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
                    x_cur.twist.twist.angular.z,
-                   x_cur.twist.twist.linear.x, last_steer_cmd_, 0, 0};
+                   u_init[0], u_init[1], 0, 0};
 
   double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array
   double* u0 = &u_init[0];
@@ -71,6 +71,8 @@ void TrajClient::PlanFromCurrentStateILQR()
 
   if (mode_ == 7) // turn on pid heading corrections during server execution
   	goal.traj.mode = 1;
+
+  // TODO do some quick checks on trajectory?
   SendTrajectory(goal);
 }
 
@@ -78,6 +80,7 @@ void TrajClient::PlanFromExtrapolatedILQR()
 {
   nav_msgs::Odometry extrapolated = ExtrapolateState(cur_state_);
   ilqr_loco::TrajExecGoal goal  = GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
+  // TODO do some quick checks on trajectory?
   SendTrajectory(goal);
 }
 
@@ -91,9 +94,18 @@ void TrajClient::MpcILQR()
   {
     ROS_INFO("Receding horizon iteration #%d", T_);
 
-    // TODO do some quick checks on trajectory?
-    PlanFromExtrapolatedILQR();
-    // PlanFromCurrentStateILQR();
+    // Change u_seq_saved_ using step_on_last_traj_
+    ROS_INFO("step_on_last_traj_: %d", step_on_last_traj_);
+    std::vector<double> u_seq_temp_ = u_seq_saved_;
+    std::copy(u_seq_saved_.begin() + (2*step_on_last_traj_), u_seq_saved_.end(), u_seq_temp_.begin());
+    u_seq_saved_ = u_seq_temp_;
+
+    if (use_extrapolate_) {
+      PlanFromExtrapolatedILQR();
+    }
+    else{
+      PlanFromCurrentStateILQR();
+    }
 
     ros::spinOnce(); // to pick up new state estimates
     T_++;
@@ -112,35 +124,24 @@ void TrajClient::FixedRateReplanILQR()
   while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
   {
     ROS_INFO("Receding horizon iteration #%d", T_);
-    // TODO do some quick checks on trajectory?
-    // PlanFromExtrapolatedILQR();
-    PlanFromCurrentStateILQR();
+
+    // Change u_seq_saved_ using step_on_last_traj_
+    ROS_INFO("step_on_last_traj_: %d", step_on_last_traj_);
+    std::vector<double> u_seq_temp_(2*T_horizon_);
+    std::copy(u_seq_saved_.begin() + (2*step_on_last_traj_), u_seq_saved_.end(), u_seq_temp_.begin());
+    u_seq_saved_ = u_seq_temp_;
+
+    if (use_extrapolate_){
+      PlanFromExtrapolatedILQR();
+    }
+    else{
+      PlanFromCurrentStateILQR();
+    }
 
     ros::spinOnce(); // to pick up new state estimates
     T_++;
     rate.sleep();
   }
-  SendZeroCommand();
-}
-
-void TrajClient::SparseReplanILQR()
-{
-  start_time_ = ros::Time::now();
-
-  for (int i=0; i<replan_times_.size()-1; i++)
-  {
-    ROS_INFO("Replan #%d", i);
-    // PlanFromExtrapolatedILQR();
-    PlanFromCurrentStateILQR();
-
-    T_++;
-    while (ros::Time::now() - start_time_ < ros::Duration(replan_times_[i+1]))
-    {
-      ros::spinOnce(); // to pick up new state estimates
-    }
-  }
-
-  ROS_INFO("iLQR sparse replan timed out.");
   SendZeroCommand();
 }
 
