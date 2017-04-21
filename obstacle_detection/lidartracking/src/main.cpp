@@ -57,7 +57,7 @@ int DEBUGMODE = 0;
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 {
-   if(found_obs) return;
+  // if(found_obs) return;
 
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
@@ -258,7 +258,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 };
 
-
+/*
 void mode_cb(const geometry_msgs::Point &msg)
 {
   if(msg.x == 8){
@@ -266,7 +266,7 @@ void mode_cb(const geometry_msgs::Point &msg)
     found_obs = false;
   }
 }
-
+*/
 
 int main(int argc, char** argv)
 {
@@ -277,7 +277,7 @@ int main(int argc, char** argv)
     tf::TransformListener lr(ros::Duration(10));
     tran=&lr;
     ros::Subscriber sub = nh.subscribe ("scan_cloud", 1, cloud_cb);
-  ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
+ // ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
     cc_pos=nh.advertise<geometry_msgs::PointStamped>("cluster_center",100);//clusterCenter1
 
     markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
