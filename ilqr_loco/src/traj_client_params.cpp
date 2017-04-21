@@ -68,17 +68,20 @@ void TrajClient::LoadCarParams()
 
 void TrajClient::LoadCostParams()
 {
-  TRYGETPARAM("Opt_cost/cu", cu_)
-  TRYGETPARAM("Opt_cost/cdu", cdu_)
-  TRYGETPARAM("Opt_cost/cf", cf_)
-  TRYGETPARAM("Opt_cost/pf", pf_)
-  TRYGETPARAM("Opt_cost/cx", cx_)
-  TRYGETPARAM("Opt_cost/cdx", cdx_)
-  TRYGETPARAM("Opt_cost/px", px_)
-  TRYGETPARAM("Opt_cost/cdrift", cdrift_)
-  TRYGETPARAM("Opt_cost/k_pos", k_pos_)
-  TRYGETPARAM("Opt_cost/k_vel", k_vel_)
-  TRYGETPARAM("Opt_cost/d_thres", d_thres_)
+  TRYGETPARAM("Opt_cost/cu", cu_);
+  TRYGETPARAM("Opt_cost/cdu", cdu_);
+  TRYGETPARAM("Opt_cost/cf", cf_);
+  TRYGETPARAM("Opt_cost/pf", pf_);
+  TRYGETPARAM("Opt_cost/cx", cx_);
+  TRYGETPARAM("Opt_cost/cdx", cdx_);
+  TRYGETPARAM("Opt_cost/px", px_);
+  TRYGETPARAM("Opt_cost/cdrift", cdrift_);
+  TRYGETPARAM("Opt_cost/k_pos", k_pos_);
+  TRYGETPARAM("Opt_cost/k_vel", k_vel_);
+  TRYGETPARAM("Opt_cost/d_thres", d_thres_);
+  TRYGETPARAM("Opt_cost/croad", croad_);
+  TRYGETPARAM("Opt_cost/lane_center", lane_center_);
+  TRYGETPARAM("Opt_cost/lane_thres", lane_thres_);
 }
 
 // changed to pass by reference to apply and keep edit

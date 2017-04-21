@@ -13,11 +13,12 @@ double* assignPtrVal(double* values, int numVal) {
 void init_params(tOptSet *o, double* xDes, double* Obs)
 {
     o->p[3] = assignPtrVal(Obs,2);
-    o->p[29] = assignPtrVal(xDes,6);
+    o->p[28] = assignPtrVal(xDes,6);
 }
 
 void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, tOptSet *o, struct trajectory* Traj)
 {
+	printf("entered c code\n");
     // dims
     int N, n, m, m_, n_, si, i, k;
 
@@ -39,19 +40,23 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
     u_nom= u0;  // double **
     o->n_hor= N-1;
 
+	printf("set stardard params\n");
     standard_parameters(o);
     // Set model and problem parameters
+    printf("set obs and xDes\n");
     init_params(o, xDes, Obs);
 
     // outputs
     double success[1];
     double new_cost[1];
 
+    printf("malloc\n");
     // aux
     for(i= 0; i<NUMBER_OF_THREADS+1; i++)
         o->trajectories[i].t= (trajEl_t *) malloc(sizeof(trajEl_t)*(N-1));
     o->multipliers.t= (multipliersEl_t *) malloc(sizeof(multipliersEl_t)*N);
 
+    printf("entering working loop\n");
     // printf("Set const vars\n");
     if(!init_opt(o)) {
         success[0]= 0;
@@ -61,6 +66,7 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
         for(k= 0; k<N-1; k++)
             for(i= 0; i<N_U; i++)
                 o->nominal->t[k].u[i]= u_nom[MAT_IDX(i, k, N_U)];
+        printf("control initialized\n");
         if(!forward_pass(o->candidates[0], o, 0.0, &o->cost, 0)) {
             printf("forward_pass failed\n");
             success[0]= 0;
@@ -86,7 +92,4 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, t
             new_cost[0]= o->cost;
         }
     }
-
-    for(i= 0; i<NUMBER_OF_THREADS+1; i++)
-        free(o->trajectories[i].t);
 }

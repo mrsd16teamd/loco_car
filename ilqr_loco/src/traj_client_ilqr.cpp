@@ -33,6 +33,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
   Traj.x = (double *) malloc(n*N*sizeof(double));
   Traj.u = (double *) malloc(m*(N-1)*sizeof(double));
 
+  ROS_INFO("GenTrajILQR");
   plan_trajectory(x0, u0, xDes, Obs, T_horizon_, &Opt, &Traj);
 
   // TODO find better way that doesn't copy twice
