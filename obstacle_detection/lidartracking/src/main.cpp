@@ -44,7 +44,7 @@
 static bool found_obs = false;
 ros::Publisher objID_pub;
 ros::Publisher cc_pos;
-ros::Publisher markerPub1;
+//ros::Publisher markerPub1;
 
 tf::TransformListener* tran;
 
@@ -178,6 +178,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     }
 
     //setting up the marker 
+/*
     visualization_msgs::MarkerArray clusterMarkers1;
 
 
@@ -192,7 +193,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         m1.color.r=1;
         m1.color.g=0;
         m1.color.b=0;
-
+*/
      
 // checking if the cluster was found near the give radious of robot 
 
@@ -230,15 +231,16 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        mapframe.point.x = 999 ;
        mapframe.point.y  = 999 ;
        mapframe.point.z  = 0;
+       cc_pos.publish(mapframe);
 
    } 
 
   if( obstaclepresent == 1 )
    {    
         found_obs = true;
-	clusterMarkers1.markers.push_back(m1);  
+//	clusterMarkers1.markers.push_back(m1);  
 	cc_pos.publish(mapframe);
-	markerPub1.publish(clusterMarkers1);
+//	markerPub1.publish(clusterMarkers1);
 
 
    } 
@@ -280,7 +282,7 @@ int main(int argc, char** argv)
   ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
     cc_pos=nh.advertise<geometry_msgs::PointStamped>("cluster_center",100);//clusterCenter1
 
-    markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
+   // markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
 
 
     ros::spin();
