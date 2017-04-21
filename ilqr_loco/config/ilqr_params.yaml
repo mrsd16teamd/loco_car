@@ -30,6 +30,7 @@ ilqr_regType: 1
 ilqr_debug_level: 2
 
 replan_times: [0.0, 1.0, 2.0, 3.0]
+replan_rate: 5
 
 
 # Original params:

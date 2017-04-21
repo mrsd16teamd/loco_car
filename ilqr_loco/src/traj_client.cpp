@@ -1,6 +1,6 @@
 #include "traj_client.h"
 
-#define ILQRDEBUG 1
+#define ILQRDEBUG 0
 #define DUMMYOBS obs_pos_.x = 999; obs_pos_.y = 0.365210;
 #define DUMMYOBSSTATE {obs_pos_.x = 2.599635; obs_pos_.y = 0.365210; cur_state_.pose.pose.position.x = 1.826; cur_state_.pose.pose.position.y = 0.340; double theta = 0.0032; cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta); cur_state_.twist.twist.linear.x = 0.062; cur_state_.twist.twist.linear.y = -0.009; cur_state_.twist.twist.angular.z = 0.00023;}
 
@@ -63,7 +63,7 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
     else if (mode_==4 || mode_==5)
       MpcILQR();
     else if (mode_==6 || mode_==11)
-      SparseReplanILQR();
+      FixedRateReplanILQR();
   }
 }
 
@@ -117,12 +117,12 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             #endif
             break;
             //wait for obsCb to plan
-    case 6: ROS_INFO("Mode 6: iLQR with sparse replanning from static.");
+    case 6: ROS_INFO("Mode 6: iLQR with fixed rate replanning from static.");
             mode_ = 6;
 
             #if ILQRDEBUG
             DUMMYOBSSTATE
-            SparseReplanILQR();
+            FixedRateReplanILQR();
             mode_=0;
             #endif
             break;
@@ -139,7 +139,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 10: ROS_INFO("Play back initial control sequence.");
              SendInitControlSeq();
              break;
-    case 11: ROS_INFO("Mode 8: ramp -> iLQR with sparse replanning.");
+    case 11: ROS_INFO("Mode 8: ramp -> iLQR with fixed rate replanning.");
              mode_ = 11;
              break;
 

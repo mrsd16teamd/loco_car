@@ -87,8 +87,6 @@ void TrajClient::MpcILQR()
   ROS_INFO("Starting mpc.");
   start_time_ = ros::Time::now();
 
-  ilqr_loco::TrajExecGoal goal;
-
   while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
   {
     ROS_INFO("Receding horizon iteration #%d", T_);
@@ -100,6 +98,27 @@ void TrajClient::MpcILQR()
     ros::spinOnce(); // to pick up new state estimates
     T_++;
     // ROS_INFO("DistToGoal: %f", DistToGoal());
+  }
+  SendZeroCommand();
+}
+
+void TrajClient::FixedRateReplanILQR()
+{
+  T_ = 0;
+  ROS_INFO("Starting mpc.");
+  start_time_ = ros::Time::now();
+  ros::Rate rate(replan_rate_);
+
+  while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
+  {
+    ROS_INFO("Receding horizon iteration #%d", T_);
+    // TODO do some quick checks on trajectory?
+    // PlanFromExtrapolatedILQR();
+    PlanFromCurrentStateILQR();
+
+    ros::spinOnce(); // to pick up new state estimates
+    T_++;
+    rate.sleep();
   }
   SendZeroCommand();
 }

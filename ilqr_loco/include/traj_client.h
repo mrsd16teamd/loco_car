@@ -103,6 +103,7 @@ protected:
   int ilqr_regType_;
   int ilqr_debug_level_;
   std::vector<double> replan_times_;
+  double replan_rate_;
   float last_steer_cmd_;
 
   void LoadParams();
@@ -120,6 +121,7 @@ protected:
   ilqr_loco::TrajExecGoal GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
           std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos);
   void MpcILQR();
+  void FixedRateReplanILQR();
   void SparseReplanILQR();
   double DistToGoal();
   nav_msgs::Odometry ExtrapolateState(const nav_msgs::Odometry &state);
