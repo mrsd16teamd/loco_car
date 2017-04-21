@@ -55,9 +55,15 @@ Scan2Cloud::Scan2Cloud()
 
   min_index = floor((old_angle-new_angle_max) / increment);
   max_index = 1080 - min_index;
+
+
 }
 
+
+
 void Scan2Cloud::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
+
+  clock_t start = clock();
   //pre-process scans, chopping to front sub-section
   scan_front = *scan;
   scan_front.angle_min = new_angle_min;
@@ -67,6 +73,10 @@ void Scan2Cloud::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
 
   projector_.projectLaser(scan_front, cloud_);
   point_cloud_publisher_.publish(cloud_);
+
+
+    std::cout<<"publishing time"<<std::endl;
+    std::cout<<seconds<<std::endl;
 }
 
 int main(int argc, char** argv)
