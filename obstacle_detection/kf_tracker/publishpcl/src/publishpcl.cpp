@@ -74,8 +74,8 @@ void Scan2Cloud::scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan){
 
   projector_.projectLaser(scan_front, cloud_);
   point_cloud_publisher_.publish(cloud_);
-
-
+    clock_t end = clock();
+float seconds = (float)(end - start) / CLOCKS_PER_SEC;
     std::cout<<"publishing time"<<std::endl;
     std::cout<<seconds<<std::endl;
 }
