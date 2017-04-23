@@ -79,9 +79,7 @@ void TrajClient::LoadCostParams()
   TRYGETPARAM("Opt_cost/k_pos", k_pos_);
   TRYGETPARAM("Opt_cost/k_vel", k_vel_);
   TRYGETPARAM("Opt_cost/d_thres", d_thres_);
-  TRYGETPARAM("Opt_cost/croad", croad_);
-  TRYGETPARAM("Opt_cost/lane_center", lane_center_);
-  TRYGETPARAM("Opt_cost/lane_thres", lane_thres_);
+  TRYGETPARAM("Opt_cost/k_steer", k_steer_);
 }
 
 // changed to pass by reference to apply and keep edit
@@ -132,23 +130,21 @@ void TrajClient::LoadOpt()
   Opt.p[9] = assignPtrVal(&cdu_[0],2);
   Opt.p[10] = assignPtrVal(&cdx_[0],3);
   Opt.p[11] = assignPtrVal(&cf_[0],6);
-  Opt.p[12] = assignPtrVal(&croad_,1);
-  Opt.p[13] = assignPtrVal(&cu_[0],2);
-  Opt.p[14] = assignPtrVal(&cx_[0],3);
-  Opt.p[15] = assignPtrVal(&d_thres_,1);
-  Opt.p[16] = assignPtrVal(&timestep_,1);
-  Opt.p[17] = assignPtrVal(&k_pos_,1);
+  Opt.p[12] = assignPtrVal(&cu_[0],2);
+  Opt.p[13] = assignPtrVal(&cx_[0],3);
+  Opt.p[14] = assignPtrVal(&d_thres_,1);
+  Opt.p[15] = assignPtrVal(&timestep_,1);
+  Opt.p[16] = assignPtrVal(&k_pos_,1);
+  Opt.p[17] = assignPtrVal(&k_steer_,1);
   Opt.p[18] = assignPtrVal(&k_vel_,1);
-  Opt.p[19] = assignPtrVal(&lane_center_,1);
-  Opt.p[20] = assignPtrVal(&lane_thres_,1);
-  Opt.p[21] = assignPtrVal(&limSteer_[0],2);
-  Opt.p[22] = assignPtrVal(&limThr_[0],2);
-  Opt.p[23] = assignPtrVal(&m_,1);
-  Opt.p[24] = assignPtrVal(&mu_,1);
-  Opt.p[25] = assignPtrVal(&mu_s_,1);
-  Opt.p[26] = assignPtrVal(&pf_[0],6);
-  Opt.p[27] = assignPtrVal(&px_[0],3);
-  // [25] xDes
+  Opt.p[19] = assignPtrVal(&limSteer_[0],2);
+  Opt.p[20] = assignPtrVal(&limThr_[0],2);
+  Opt.p[21] = assignPtrVal(&m_,1);
+  Opt.p[22] = assignPtrVal(&mu_,1);
+  Opt.p[23] = assignPtrVal(&mu_s_,1);
+  Opt.p[24] = assignPtrVal(&pf_[0],6);
+  Opt.p[25] = assignPtrVal(&px_[0],3);
+  // [26] xDes
 
   char *err_msg;
 }

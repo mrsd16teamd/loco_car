@@ -1,4 +1,4 @@
-/* File generated form template iLQG_problem.tem on 2017-04-20 16:41:36-04:00. Do not edit! */
+/* File generated form template iLQG_problem.tem on 2017-04-23 17:10:08-04:00. Do not edit! */
 
 #ifndef ILQG_PROBLEM_H
 #define ILQG_PROBLEM_H
@@ -14,12 +14,12 @@
 #define isNANorINF(v) (isnan(v) || isinf(v))
 #define INF INFINITY
 
-#define N_X 8 
+#define N_X 9 
 #define N_U 2 
 
-#define sizeofQxx 36 
+#define sizeofQxx 45 
 #define sizeofQuu 3 
-#define sizeofQxu 16 
+#define sizeofQxu 18 
 
 typedef struct {
     double x[N_X];
