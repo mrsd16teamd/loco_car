@@ -32,7 +32,7 @@ namespace publishpcl_nodelet // @(namespace)
     ros::Timer timer_;
 
     double front_angle_; // currently 90 degrees
-    double new_angle_min__;
+    double new_angle_min_;
     double new_angle_max_;
     int min_index_;
     int max_index_;
@@ -78,7 +78,7 @@ namespace publishpcl_nodelet // @(namespace)
       scan_front_.scan_time = scan->scan_time;
       scan_front_.range_min = scan->range_min;
       scan_front_.range_max = scan->range_max;
-      scan_front_.ranges.assign(scan.begin()+min_index_, scan.begin()+max_index_);
+      scan_front_.ranges.assign(&scan->ranges[min_index_],&scan->ranges[max_index_]);
 
       projector_.projectLaser(scan_front_, cloud_);
       pcl_pub_.publish(cloud_);
