@@ -1,0 +1,15 @@
+<!-- Launch file for testing obstacle tracking algorithm with bag. --> 
+
+<launch>
+
+<node pkg="rviz" name="rviz" type="rviz" args="-d $(find kf_tracker)/config/rviz_default.rviz" /> 
+
+<arg name="bag_path" default="/home/kazu/Downloads/sudden_obs.bag" />
+
+<node pkg="rosbag" type="play" name="rosbag_play" args="$(arg bag_path)" output="screen"/>
+
+<!-- <node pkg="kf_tracker" type="tracker" name="tracker" output="screen"/> -->
+<node pkg="publishpcl" type="publishpcl" name="publishpcl" output="screen"/>
+
+
+</launch> 

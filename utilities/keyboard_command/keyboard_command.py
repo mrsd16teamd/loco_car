@@ -26,7 +26,8 @@ commandBindings = {
 		'r': 8,
 		'k': 9,
 		'z': 10,
-        'h': 11
+        'h': 11,
+		'o': 12
 	     }
 
 commands = {
@@ -36,11 +37,12 @@ commands = {
 	'd': 'ramp and iLQR mpc',
 	'e': 'iLQR mpc from static',
 	'f': 'iLQR fixed rate replanning from static',
-	'g': 'iLQR mpc with PID corrections from static',
+	'g': 'iLQR o-l with PID corrections from static',
     'h': 'ramp and iLQR fixed rate replanning',
 	'z': 'execute initial control sequence',
 	'r': 'reset obs',
 	'k': 'kill client'
+	'o': 'insert fake obstacle 1m in front of robot'
 }
 instructions = OrderedDict(sorted(commands.items(), key=lambda t: t[0]))
 

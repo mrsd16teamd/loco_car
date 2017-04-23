@@ -58,9 +58,9 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       SendZeroCommand(); //brake
     else if (mode_ == 2)
       PlanFromExtrapolatedILQR();
-    else if (mode_==3)
+    else if (mode_==3 || mode_==7)
       PlanFromCurrentStateILQR();
-    else if (mode_==4 || mode_==5 || mode_==7)
+    else if (mode_==4 || mode_==5)
       MpcILQR();
     else if (mode_==6 || mode_==11)
       FixedRateReplanILQR();
@@ -129,7 +129,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             #endif
 
             break;
-    case 7: ROS_INFO("Mode 7: MPC iLQR w/ pid corrections from static initial conditions.");
+    case 7: ROS_INFO("Mode 7: o-l iLQR w/ pid corrections from static initial conditions.");
             mode_ = 7;
             break;
     case 8: ROS_INFO("Resetting obs_received_ to false.");

@@ -54,7 +54,7 @@ Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
 
 ######
 # TrajServer params
-old_msg_discard_thres: 0.5
+old_msg_discard_thres: 0.5 #[seconds]
 
 # Obstacle detection params
 scan_clip_angle: 0.6 #radians

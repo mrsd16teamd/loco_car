@@ -71,7 +71,7 @@ void TrajClient::PlanFromCurrentStateILQR()
   // TODO do some quick checks on trajectory?
 
   if (mode_ == 7) // turn on pid heading corrections during server execution
-  	goal.traj.mode = 1;
+  	goal.traj.execution_mode = 1;
 
   SendTrajectory(goal);
 }
@@ -83,7 +83,7 @@ void TrajClient::PlanFromExtrapolatedILQR()
   // TODO do some quick checks on trajectory?
 
   if (mode_ == 7) // turn on pid heading corrections during server execution
-  	goal.traj.mode = 1;
+  	goal.traj.execution_mode = 1;
 
   SendTrajectory(goal);
 }

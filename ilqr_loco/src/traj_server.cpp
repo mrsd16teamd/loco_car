@@ -96,13 +96,16 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
      ROS_INFO("%s: Ignoring old command.", traj_action.c_str());
      continue;
     }
+    // else, execute command! 
     else
     {
-      if (goal->traj.mode == 1) {
+      if (goal->traj.execution_mode == 1)
+      {
         geometry_msgs::Twist pid_twist = pid_correct_yaw(goal->traj.commands[i], goal->traj.states[i]);
         cmd_pub.publish(pid_twist);
       }
-      else {
+      else
+      {
 		    ROS_INFO("Command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
         cmd_pub.publish(goal->traj.commands[i]);
         feedback_.step = i;
