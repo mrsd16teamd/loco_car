@@ -40,7 +40,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) || (mode_==11 && !obs_received_))
+  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_))
   {
     rampPlan();
   }
@@ -60,9 +60,9 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       PlanFromExtrapolatedILQR();
     else if (mode_==3 || mode_==7)
       PlanFromCurrentStateILQR();
-    else if (mode_==4 || mode_==5)
+    else if (mode_==4 || mode_==5 || mode_==11)
       MpcILQR();
-    else if (mode_==6 || mode_==11)
+    else if (mode_==6)
       FixedRateReplanILQR();
   }
 }
@@ -131,6 +131,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             break;
     case 7: ROS_INFO("Mode 7: o-l iLQR w/ pid corrections from static initial conditions.");
             mode_ = 7;
+            u_seq_saved_ = init_control_seq_;
             break;
     case 8: ROS_INFO("Resetting obs_received_ to false.");
             obs_received_ = false;
@@ -142,7 +143,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 10: ROS_INFO("Play back initial control sequence.");
              SendInitControlSeq();
              break;
-    case 11: ROS_INFO("Mode 8: ramp -> iLQR with fixed rate replanning.");
+    case 11: ROS_INFO("Mode 8: MPC iLQR w/ pid corrections from static initial conditions.");
              mode_ = 11;
              break;
 
