@@ -21,7 +21,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
                    x_cur.twist.twist.angular.z, last_steer_cmd_,
                    x_cur.twist.twist.linear.x, last_steer_cmd_};
 
-  double xDes[6] = {x0[0]+x_des[0], x0[1]+x_des[1], x0[2]+x_des[2], x0[3]+x_des[3], x0[4]+x_des[4], x0[5]+x_des[5]}; //std::vector trick to convert vector to C-style array
+  double xDes[6] = &x_des[0]; //std::vector trick to convert vector to C-style array
   double* u0 = &u_init[0];
   double Obs[2] = {(double)obstacle_pos.x, (double)obstacle_pos.y};
 
@@ -42,14 +42,6 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
   u_init = u_sol;
   std::vector<double> x_sol(Traj.x, Traj.x+(n*N));
   x_traj_saved_ = x_sol;
-
-  for(int i=0; i<T_horizon_; i++) {
-    std::cout << u_sol[i*2] << "," << u_sol[i*2+1] << "\n";
-  }
-
-  for(int i=0; i<T_horizon_; i++) {
-    std::cout << x_sol[i*9+6] << "," << "\n";
-  }
 
   //Put states and controls into format that action client wants.
   goal.traj.states.reserve(N);
