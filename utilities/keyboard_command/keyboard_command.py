@@ -38,10 +38,10 @@ commands = {
 	'e': 'iLQR mpc from static',
 	'f': 'iLQR fixed rate replanning from static',
 	'g': 'iLQR o-l with PID corrections from static',
-    'h': 'ramp and iLQR fixed rate replanning',
+    'h': 'iLQR mpc w/ pid corrections from static initial conditions',
 	'z': 'execute initial control sequence',
 	'r': 'reset obs',
-	'k': 'kill client'
+	'k': 'kill client',
 	'o': 'insert fake obstacle 1m in front of robot'
 }
 instructions = OrderedDict(sorted(commands.items(), key=lambda t: t[0]))
@@ -69,7 +69,7 @@ if __name__=="__main__":
 
 			if key in commandBindings.keys():
 				command = commandBindings[key]
-				print "Key: ", key, " - ", instructions[key]
+				print "Key: ", key, " - ", instructions[key], " (", commandBindings[key] , ")"
 			else:
 				command = 0
 				print "Key: ", key, " NO COMMAND"

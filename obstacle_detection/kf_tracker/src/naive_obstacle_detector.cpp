@@ -29,7 +29,6 @@ bool transform_laser_to_map(geometry_msgs::PointStamped &pos_laser_frame, geomet
 {
   try
   {
-    ROS_INFO("Trying to transform.");
     tf::StampedTransform transform;
     tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.01));
     tran->lookupTransform("map", "laser", ros::Time(0), transform);
@@ -69,7 +68,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
   // Fill data, transform, send cluster_center_pos here
   if(percent_scans_close > percent_thres)
   {
-    ROS_INFO("Naive_obstacle_detector: Found obstacle.");
+    // ROS_INFO("Naive_obstacle_detector: Found obstacle.");
     found_obs = true;
 
     cluster_pos_localframe.point.x = obs_dist;
@@ -104,19 +103,19 @@ void insert_fake_obs()
   cluster_pos_localframe.point.z = 0;
   transform_laser_to_map(cluster_pos_localframe, cluster_pos_mapframe);
   cc_pos.publish(cluster_pos_mapframe);
-  ROS_INFO("Naive_obstacle_detector: Published fake obstacle at %f, %f", cluster_pos_mapframe.point.x, cluster_pos_mapframe.point.y);
+  // ROS_INFO("Naive_obstacle_detector: Published fake obstacle at %f, %f", cluster_pos_mapframe.point.x, cluster_pos_mapframe.point.y);
 }
 
 void mode_cb(const geometry_msgs::Point &msg)
 {
   if(msg.x == 8)
   {
-    ROS_INFO("Naive_obstacle_detector: Looking for obstacle again.");
+    // ROS_INFO("Naive_obstacle_detector: Looking for obstacle again.");
     found_obs = false;
   }
   else if(msg.x == 12)
   {
-    ROS_INFO("Naive_obstacle_detector: Inserting fake obstacle.");
+    // ROS_INFO("Naive_obstacle_detector: Inserting fake obstacle.");
     insert_fake_obs();
   }
 }
