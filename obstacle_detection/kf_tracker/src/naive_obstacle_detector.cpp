@@ -25,22 +25,22 @@ float percent_thres;
 float front_angle;
 float min_index, max_index;
 
-geometry_msgs::PointStamped transform_laser_to_map(geometry_msgs::PointStamped &pos_laser_frame)
+bool transform_laser_to_map(geometry_msgs::PointStamped &pos_laser_frame, geometry_msgs::PointStamped &pos_map_frame)
 {
-  geometry_msgs::PointStamped pos_map_frame;
-  pos_map_frame.header.frame_id = "map";
   try
   {
+    ROS_INFO("Trying to transform.");
     tf::StampedTransform transform;
     tran->waitForTransform("map", "laser", ros::Time::now(), ros::Duration(0.01));
     tran->lookupTransform("map", "laser", ros::Time(0), transform);
     tran->transformPoint("map", pos_laser_frame, pos_map_frame);
+    return true;
   }
   catch (...)
   {
     ROS_INFO("Naive_obstacle_detector: Map to laser transform not available.");
+    return false;
   }
-  return pos_map_frame;
 }
 
 void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
@@ -49,7 +49,6 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
 
   // Look for obstacles in slice of scan
   int n_scans_close_enough = 0;
-  // int size_scan = msg->ranges.size();
 
   for(int i=min_index; i<max_index; i++)
   {
@@ -64,25 +63,29 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
 
   geometry_msgs::PointStamped cluster_pos_localframe;
   geometry_msgs::PointStamped cluster_pos_mapframe;
+  cluster_pos_localframe.header.frame_id = "laser";
+  cluster_pos_mapframe.header.frame_id = "map";
 
   // Fill data, transform, send cluster_center_pos here
   if(percent_scans_close > percent_thres)
   {
+    ROS_INFO("Naive_obstacle_detector: Found obstacle.");
     found_obs = true;
+
     cluster_pos_localframe.point.x = obs_dist;
     cluster_pos_localframe.point.y = 0;
     cluster_pos_localframe.point.z = 0;
-    cluster_pos_localframe.header.frame_id = "laser";
-    cluster_pos_mapframe = transform_laser_to_map(cluster_pos_localframe);
-    cc_pos.publish(cluster_pos_mapframe);
-    //   ROS_INFO("Found obstacle, published.");
+
+    if (transform_laser_to_map(cluster_pos_localframe, cluster_pos_mapframe))
+    {
+      cc_pos.publish(cluster_pos_mapframe);
+    }
   }
   else
   {
     cluster_pos_mapframe.point.x = 999;
     cluster_pos_mapframe.point.y = 0;
     cluster_pos_mapframe.point.z = 0;
-    cluster_pos_mapframe.header.frame_id = "map";
     cc_pos.publish(cluster_pos_mapframe);
   }
 }
@@ -93,26 +96,28 @@ void insert_fake_obs()
 
   geometry_msgs::PointStamped cluster_pos_localframe;
   geometry_msgs::PointStamped cluster_pos_mapframe;
+  cluster_pos_localframe.header.frame_id = "laser";
+  cluster_pos_mapframe.header.frame_id = "map";
 
   cluster_pos_localframe.point.x = 1;
   cluster_pos_localframe.point.y = 0;
   cluster_pos_localframe.point.z = 0;
-  cluster_pos_localframe.header.frame_id = "laser";
-  cluster_pos_mapframe.header.frame_id = "map";
-  cluster_pos_mapframe = transform_laser_to_map(cluster_pos_localframe);
+  transform_laser_to_map(cluster_pos_localframe, cluster_pos_mapframe);
   cc_pos.publish(cluster_pos_mapframe);
+  ROS_INFO("Naive_obstacle_detector: Published fake obstacle at %f, %f", cluster_pos_mapframe.point.x, cluster_pos_mapframe.point.y);
 }
 
 void mode_cb(const geometry_msgs::Point &msg)
 {
   if(msg.x == 8)
   {
-    // ROS_INFO("Looking for obstacle again.");
+    ROS_INFO("Naive_obstacle_detector: Looking for obstacle again.");
     found_obs = false;
   }
-  if(msg.x == 12)
+  else if(msg.x == 12)
   {
-    void insert_fake_obs();
+    ROS_INFO("Naive_obstacle_detector: Inserting fake obstacle.");
+    insert_fake_obs();
   }
 }
 
