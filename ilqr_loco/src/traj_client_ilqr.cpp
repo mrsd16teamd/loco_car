@@ -156,12 +156,16 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 
   double dt = 0.1; //[s] TODO make this parameter, or function of T_horizon_ and max_iter_
 
-  extrapolated.pose.pose.position.x += (dt*extrapolated.twist.twist.linear.x);
-  extrapolated.pose.pose.position.y += (dt*extrapolated.twist.twist.linear.y);
-
-  // double theta = tf::getYaw(extrapolated.pose.pose.orientation);
-  // theta += dt*extrapolated.twist.twist.angular.z;
-  // extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+  // extrapolated.pose.pose.position.x += (dt*extrapolated.twist.twist.linear.x);
+  // extrapolated.pose.pose.position.y += (dt*extrapolated.twist.twist.linear.y);
+    double theta = tf::getYaw(extrapolated.pose.pose.orientation);
+    double vx_world = extrapolated.twist.twist.linear.x*cos(theta) + extrapolated.twist.twist.linear.y*sin(theta);
+    double vy_world = extrapolated.twist.twist.linear.x*sin(theta) + extrapolated.twist.twist.linear.y*cos(theta);
+    extrapolated.pose.pose.position.x += (dt*vx_world);
+    extrapolated.pose.pose.position.y += (dt*vy_world);
+  
+    theta += dt*extrapolated.twist.twist.angular.z;
+    extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
   return extrapolated;
 }
