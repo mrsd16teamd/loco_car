@@ -43,14 +43,25 @@ geometry_msgs::Twist TrajServer::pid_correct_yaw(geometry_msgs::Twist orig_twist
   double orig_steer = orig_twist.angular.z;
 
   // Correct steering to compensate for yaw error
-  double error = yaw_des - cur_yaw_;
-  cur_integral_ += error*dt;
-  double steer = orig_steer + kp_*error + (std::abs(cur_integral_)<1 ? ki_*cur_integral_ : 0) + (dt>0.01 ? kd_*(error-prev_error_)/dt : 0);
-  prev_error_ = error;
+  double yaw_error = yaw_des - cur_yaw_;
+  cur_integral_ += yaw_error*dt;
+
+  double p = kp_*yaw_error;
+  double i = clamp(ki_*cur_integral_, -0.25, 0.25);
+  double d = clamp(kd_*(yaw_error-prev_error_), -0.1, 0.1);
+  double correction =  p + i + d;
+
+  double steer = orig_steer + correction;
+  prev_error_ = yaw_error;
 
   geometry_msgs::Twist new_twist;
   new_twist.linear.x = orig_twist.linear.x;
   new_twist.angular.z = steer;
+
+  // ROS_INFO("P = %f,  |  I = %f,  |  D = %f", p, i, d);
+  // ROS_INFO("Output = %f", output);
+
+  prev_error_ = yaw_error;
 
   return new_twist;
 }

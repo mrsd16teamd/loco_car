@@ -24,7 +24,7 @@ public:
   TrajServer():
     as(nh, "traj_server", boost::bind(&TrajServer::execute_trajectory, this,
     _1), false), traj_action("traj_server"), cur_yaw_(0), cur_integral_(0),
-    prev_error_(0), dt(0.02)
+    prev_error_(0), dt(0.05)
     {
 	    ROS_INFO("Starting traj server.");
 
@@ -66,6 +66,11 @@ private:
   geometry_msgs::Twist pid_correct_yaw(geometry_msgs::Twist orig_twist, nav_msgs::Odometry state);
   void stateCb(const nav_msgs::Odometry &msg);
   void PublishPath(const ilqr_loco::TrajExecGoalConstPtr &goal);
+
+  double clamp(double val, double min_val, double max_val)
+  {
+    return std::max(min_val, std::min(val, max_val));
+  }
 
 };
 

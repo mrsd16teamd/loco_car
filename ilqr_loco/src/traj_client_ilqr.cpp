@@ -68,11 +68,11 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
 void TrajClient::PlanFromCurrentStateILQR()
 {
   ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
+  // TODO do some quick checks on trajectory?
 
   if (mode_ == 7) // turn on pid heading corrections during server execution
   	goal.traj.mode = 1;
 
-  // TODO do some quick checks on trajectory?
   SendTrajectory(goal);
 }
 
@@ -81,6 +81,10 @@ void TrajClient::PlanFromExtrapolatedILQR()
   nav_msgs::Odometry extrapolated = ExtrapolateState(cur_state_);
   ilqr_loco::TrajExecGoal goal  = GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
+
+  if (mode_ == 7) // turn on pid heading corrections during server execution
+  	goal.traj.mode = 1;
+
   SendTrajectory(goal);
 }
 
@@ -111,6 +115,7 @@ void TrajClient::MpcILQR()
     T_++;
     // ROS_INFO("DistToGoal: %f", DistToGoal());
   }
+  ROS_INFO("Exiting MPC mode: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)));
   SendZeroCommand();
 }
 

@@ -1,9 +1,0 @@
-<!-- Launch file for running obstacle tracking algorithm. --> 
-
-<launch>
-
-<node pkg="kf_tracker" type="tracker" name="tracker" output="screen"/>
-<node pkg="publishpcl" type="publishpcl" name="publishpcl" output="screen"/>
-
-
-</launch>

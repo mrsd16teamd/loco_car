@@ -58,9 +58,9 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       SendZeroCommand(); //brake
     else if (mode_ == 2)
       PlanFromExtrapolatedILQR();
-    else if (mode_==3 || mode_==7)
+    else if (mode_==3)
       PlanFromCurrentStateILQR();
-    else if (mode_==4 || mode_==5)
+    else if (mode_==4 || mode_==5 || mode_==7)
       MpcILQR();
     else if (mode_==6 || mode_==11)
       FixedRateReplanILQR();
@@ -97,6 +97,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             PlanFromCurrentStateILQR();
             mode_ = 0;
             #endif
+
             break;
             // wait for obsCb to plan
     case 3: ROS_INFO("Mode 3: ramp -> iLQR open loop.");
@@ -107,7 +108,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             mode_ = 4;
             break;
             //wait for stateCb to ramp
-    case 5: ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
+    case 5: ROS_INFO("Mode 5: MPC iLQR from static initial conditions.");
             mode_ = 5;
 
             #if ILQRDEBUG
@@ -115,6 +116,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             MpcILQR();
             mode_ = 0;
             #endif
+
             break;
             //wait for obsCb to plan
     case 6: ROS_INFO("Mode 6: iLQR with fixed rate replanning from static.");
@@ -125,8 +127,9 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             FixedRateReplanILQR();
             mode_=0;
             #endif
+
             break;
-    case 7: ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
+    case 7: ROS_INFO("Mode 7: MPC iLQR w/ pid corrections from static initial conditions.");
             mode_ = 7;
             break;
     case 8: ROS_INFO("Resetting obs_received_ to false.");
@@ -149,7 +152,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
 void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback)
 {
-  // ROS_INFO("Last steer: %f", last_steer_cmd_);
+  // Keeps track of progress of TrajAction server along most recently sent trajectory
   step_on_last_traj_ = feedback->step;
 }
 

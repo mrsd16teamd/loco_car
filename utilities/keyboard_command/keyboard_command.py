@@ -30,13 +30,13 @@ commandBindings = {
 	     }
 
 commands = {
-	'a': 'ramp',
+	'a': 'ramp (and brake)',
 	'b': 'iLQR open-loop from static',
 	'c': 'ramp and iLQR open-loop',
-	'd': 'ramp and iLQR rh',
-	'e': 'iLQR rh from static',
+	'd': 'ramp and iLQR mpc',
+	'e': 'iLQR mpc from static',
 	'f': 'iLQR fixed rate replanning from static',
-	'g': 'iLQR open-loop with PID corrections from static',
+	'g': 'iLQR mpc with PID corrections from static',
     'h': 'ramp and iLQR fixed rate replanning',
 	'z': 'execute initial control sequence',
 	'r': 'reset obs',
