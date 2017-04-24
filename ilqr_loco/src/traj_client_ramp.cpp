@@ -29,6 +29,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   ros::Duration time_since_start = cur_state.header.stamp - start_time_;
   if (time_since_start.toSec() < pre_ramp_time_) {
     v = pre_ramp_vel_ + 0.25;
+    ROS_INFO("v = %f", v);
   }
   else {
     // v = cur_state.twist.twist.linear.x + accel_*dt+ 0.25;
