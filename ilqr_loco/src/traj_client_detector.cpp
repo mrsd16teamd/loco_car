@@ -73,8 +73,10 @@ void TrajClient::scanCb(const sensor_msgs::LaserScanConstPtr &msg)
       found_obstacle_ = true;
       obs_pos_pub_.publish(obs_pos_mapframe);
 
-      if (reacted_to_obstacle_)
+      if (!reacted_to_obstacle_)
         ReactToObstacle();
+
+        ros::spinOnce();
     }
   }
 }
@@ -96,6 +98,11 @@ void TrajClient::InsertFakeObs()
   obs_pos_.y = 0; // hack to deal with heading uncertainty
   obs_pos_mapframe.point.y = 0; // hack to deal with heading uncertainty
   obs_pos_pub_.publish(obs_pos_mapframe);
+
+  if (!reacted_to_obstacle_)
+    ReactToObstacle();
+
+  ros::spinOnce();
   // ROS_INFO("Obstacle_detector: Published fake obstacle at %f, %f", cluster_pos_mapframe.point.x, cluster_pos_mapframe.point.y);
 }
 
@@ -109,4 +116,5 @@ void TrajClient::ResetObstacle()
   reset_obs_pos.point.x = 999;
   reset_obs_pos.point.y = 0;
   obs_pos_pub_.publish(reset_obs_pos);
+  ros::spinOnce();
 }
