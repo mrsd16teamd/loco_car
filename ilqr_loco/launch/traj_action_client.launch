@@ -1,7 +1,7 @@
 <launch>
 <!-- use argument for choosing yaml file for initial control-->
 <!-- roslaunch traj_action_client.launch yaml:= ?init_control? -->
- <arg name="control" default="moose_2mps" />
+ <arg name="control" default="20Hz_1mps_T68" />
   <!-- <arg name="control" default="drift5" /> -->
 
 <!--  <include file="$(find loco)/launch/openloop_sve.launch" /> -->

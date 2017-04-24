@@ -16,7 +16,6 @@
 
 #include "try_get_param.h"
 
-//TODO is there a way for server to know who called it?
 
 class TrajServer
 {
@@ -29,12 +28,14 @@ public:
 	    ROS_INFO("Starting traj server.");
 
       as.start();
-      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
+      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
       path_pub = nh.advertise<nav_msgs::Path>("path", 1);
       state_sub  = nh.subscribe("odometry/filtered", 1, &TrajServer::stateCb, this);
 
       LoadParams();
       ROS_INFO("Started iLQR executer node. Send me actions!");
+
+      t_ = ros::Time::now().toSec();
     }
 
 private:
@@ -56,7 +57,7 @@ private:
   double cur_integral_;
   double prev_error_;
   int use_pid_;
-  float kp_, ki_, kd_, dt;
+  float kp_, ki_, kd_, dt, t_;
 
   ros::Publisher cmd_pub;
   ros::Publisher path_pub;

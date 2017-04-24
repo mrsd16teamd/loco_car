@@ -11,6 +11,7 @@ TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
   state_sub_  = nh.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
   obs_sub_ = nh.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
   mode_sub_ = nh.subscribe("client_command", 1, &TrajClient::modeCb, this);
+  predicted_state_pub_ = nh.advertise<nav_msgs::Odometry>("odometry/predicted", 1);
 
   state_estimate_received_ = false;
   obs_received_ = false;

@@ -37,6 +37,7 @@ protected:
   ros::Subscriber state_sub_;
   ros::Subscriber obs_sub_;
   ros::Subscriber mode_sub_;
+  ros::Publisher predicted_state_pub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
 
   // ilqr parameters and saved data
@@ -106,6 +107,7 @@ protected:
   double replan_rate_;
   int step_on_last_traj_;
   int use_extrapolate_;
+  double extrapolate_dt_;
 
   void LoadParams();
   void LoadCarParams();
