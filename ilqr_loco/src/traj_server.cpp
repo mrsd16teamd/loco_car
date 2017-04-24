@@ -12,7 +12,6 @@ void TrajServer::LoadParams()
     TRYGETPARAM("kp_heading", kp_)
     TRYGETPARAM("ki_heading", ki_)
     TRYGETPARAM("kd_heading", kd_)
-	TRYGETPARAM("use_pid", use_pid_)
 }
 
 void TrajServer::PublishPath(const ilqr_loco::TrajExecGoalConstPtr &goal)
@@ -102,7 +101,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     // else, execute command!
     else
     {
-      if (use_pid_ &&  goal->traj.commands.size() != 1)
+      if (goal->traj.execution_mode == 1)
       {
         geometry_msgs::Twist pid_twist = pid_correct_yaw(goal->traj.commands[i], goal->traj.states[i]);
         ROS_INFO("Command: %f, %f", pid_twist.linear.x, pid_twist.angular.z);
@@ -110,7 +109,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       }
       else
       {
-		ROS_INFO("Command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
+		     ROS_INFO("Command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
         cmd_pub.publish(goal->traj.commands[i]);
       }
 

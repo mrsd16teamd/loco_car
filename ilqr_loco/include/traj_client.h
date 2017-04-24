@@ -109,6 +109,8 @@ protected:
   int use_extrapolate_;
   double extrapolate_dt_;
 
+  int use_pid_;
+
   void LoadParams();
   void LoadCarParams();
   void LoadCostParams();
@@ -119,7 +121,7 @@ protected:
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
                                                  nav_msgs::Odometry cur_state_);
 
-  void Plan();											
+  void Plan();
   void PlanFromCurrentStateILQR();
   void PlanFromExtrapolatedILQR();
   ilqr_loco::TrajExecGoal GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,

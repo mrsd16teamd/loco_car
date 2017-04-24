@@ -69,6 +69,10 @@ void TrajClient::PlanFromCurrentStateILQR()
 {
   ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
+
+  if(use_pid_)
+  	goal.traj.execution_mode = 1;
+
   SendTrajectory(goal);
 }
 
@@ -77,6 +81,10 @@ void TrajClient::PlanFromExtrapolatedILQR()
   nav_msgs::Odometry extrapolated = ExtrapolateState(cur_state_);
   ilqr_loco::TrajExecGoal goal  = GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
+  
+  if(use_pid_)
+  	goal.traj.execution_mode = 1;
+
   SendTrajectory(goal);
 }
 
@@ -138,7 +146,7 @@ void TrajClient::FixedRateReplanILQR()
     T_++;
     rate.sleep();
   }
-  
+
   SendZeroCommand();
 }
 

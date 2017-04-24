@@ -19,6 +19,8 @@ void TrajClient::LoadParams()
     TRYGETPARAM("pre_ramp_time", pre_ramp_time_)
     TRYGETPARAM("timeout_ramp", timeout_)
 
+    TRYGETPARAM("use_pid", use_pid_);
+
     TRYGETPARAM("X_des", x_des_)
     TRYGETPARAM("timeout_ilqr_mpc", mpc_timeout_)
     TRYGETPARAM("stop_goal_threshold", goal_threshold_)
