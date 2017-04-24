@@ -69,6 +69,7 @@ void TrajClient::scanCb(const sensor_msgs::LaserScanConstPtr &msg)
     {
       obs_pos_.x = obs_pos_mapframe.point.x;
       obs_pos_.y = 0; // hack to deal with heading uncertainty
+      obs_pos_mapframe.point.y = 0; // hack to deal with heading uncertainty
       found_obstacle_ = true;
       obs_pos_pub_.publish(obs_pos_mapframe);
     }
@@ -88,6 +89,8 @@ void TrajClient::InsertFakeObs()
   obs_pos_localframe.point.y = 0;
 
   TransformLaserToMap(obs_pos_localframe, obs_pos_mapframe);
+  obs_pos_.x = obs_pos_mapframe.point.x;
+  obs_pos_.y = 0; // hack to deal with heading uncertainty
   obs_pos_mapframe.point.y = 0; // hack to deal with heading uncertainty
   obs_pos_pub_.publish(obs_pos_mapframe);
   // ROS_INFO("Obstacle_detector: Published fake obstacle at %f, %f", cluster_pos_mapframe.point.x, cluster_pos_mapframe.point.y);
