@@ -37,6 +37,7 @@ protected:
   ros::Subscriber state_sub_;
   ros::Subscriber obs_sub_;
   ros::Subscriber mode_sub_;
+  ros::Publisher predicted_state_pub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
 
   // ilqr parameters and saved data
@@ -106,7 +107,9 @@ protected:
   int ilqr_regType_;
   int ilqr_debug_level_;
   std::vector<double> replan_times_;
-  float last_steer_cmd_;
+  double replan_rate_;
+  int step_on_last_traj_;
+  int use_extrapolate_;
 
   void LoadParams();
   void LoadCarParams();
@@ -123,12 +126,14 @@ protected:
   ilqr_loco::TrajExecGoal GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
           std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos);
   void MpcILQR();
-  void SparseReplanILQR();
+  void FixedRateReplanILQR();
   double DistToGoal();
   nav_msgs::Odometry ExtrapolateState(const nav_msgs::Odometry &state);
 
-	void SendZeroCommand();
+  void SendZeroCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
+  void SendInitControlSeq();
+
 
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const geometry_msgs::PointStamped &msg);

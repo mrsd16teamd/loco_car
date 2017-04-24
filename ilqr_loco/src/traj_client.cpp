@@ -1,15 +1,17 @@
 #include "traj_client.h"
 
-#define ILQRDEBUG 1
-#define DUMMYOBSSTATE {obs_pos_.x = 2.599635; obs_pos_.y = 0.365210; cur_state_.pose.pose.position.x = 1.826; cur_state_.pose.pose.position.y = 0.340; double theta = 0.0032; cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta); cur_state_.twist.twist.linear.x = 0.062; cur_state_.twist.twist.linear.y = -0.009; cur_state_.twist.twist.angular.z = 0.00023;last_steer_cmd_=0.0;}
+#define ILQRDEBUG 0
+#define DUMMYOBS obs_pos_.x = 999; obs_pos_.y = 0.365210;
+#define DUMMYOBSSTATE {obs_pos_.x = 2.599635; obs_pos_.y = 0.365210; cur_state_.pose.pose.position.x = 1.826; cur_state_.pose.pose.position.y = 0.340; double theta = 0.0032; cur_state_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta); cur_state_.twist.twist.linear.x = 0.062; cur_state_.twist.twist.linear.y = -0.009; cur_state_.twist.twist.angular.z = 0.00023;}
 
 
 TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
-                          cur_integral_(0), prev_error_(0)
+                          cur_integral_(0), prev_error_(0), step_on_last_traj_(0)
 {
   state_sub_  = nh.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
   obs_sub_ = nh.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
   mode_sub_ = nh.subscribe("client_command", 1, &TrajClient::modeCb, this);
+  predicted_state_pub_ = nh.advertise<nav_msgs::Odometry>("odometry/predicted", 1);
 
   state_estimate_received_ = false;
   obs_received_ = false;
@@ -39,7 +41,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) || (mode_==11 && !obs_received_))
+  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_))
   {
     rampPlan();
   }
@@ -59,10 +61,10 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       PlanFromExtrapolatedILQR();
     else if (mode_==3 || mode_==7)
       PlanFromCurrentStateILQR();
-    else if (mode_==4 || mode_==5)
+    else if (mode_==4 || mode_==5 || mode_==11)
       MpcILQR();
-    else if (mode_==6 || mode_==11)
-      SparseReplanILQR();
+    else if (mode_==6)
+      FixedRateReplanILQR();
   }
 }
 
@@ -88,11 +90,15 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             break;
             // wait for stateCb to ramp
     case 2: ROS_INFO("Mode 2: iLQR from static initial conditions.");
-            #if ILQRDEBUG
-            DUMMYOBSSTATE
-            PlanFromCurrentStateILQR();
-            #endif
             mode_ = 2;
+
+            #if ILQRDEBUG
+            DUMMYOBS
+            u_seq_saved_ = init_control_seq_;
+            PlanFromCurrentStateILQR();
+            mode_ = 0;
+            #endif
+
             break;
             // wait for obsCb to plan
     case 3: ROS_INFO("Mode 3: ramp -> iLQR open loop.");
@@ -103,19 +109,30 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             mode_ = 4;
             break;
             //wait for stateCb to ramp
-    case 5: ROS_INFO("Mode 5: Receding horizon iLQR from static initial conditions.");
+    case 5: ROS_INFO("Mode 5: MPC iLQR from static initial conditions.");
             mode_ = 5;
+
+            #if ILQRDEBUG
+            DUMMYOBS
+            MpcILQR();
+            mode_ = 0;
+            #endif
+
             break;
             //wait for obsCb to plan
-    case 6: ROS_INFO("Mode 6: iLQR with sparse replanning from static.");
+    case 6: ROS_INFO("Mode 6: iLQR with fixed rate replanning from static.");
+            mode_ = 6;
+
             #if ILQRDEBUG
             DUMMYOBSSTATE
-            SparseReplanILQR();
+            FixedRateReplanILQR();
+            mode_=0;
             #endif
-            mode_ = 6;
+
             break;
-    case 7: ROS_INFO("Mode 7: iLQR w/ pid corrections from static initial conditions.");
+    case 7: ROS_INFO("Mode 7: o-l iLQR w/ pid corrections from static initial conditions.");
             mode_ = 7;
+            u_seq_saved_ = init_control_seq_;
             break;
     case 8: ROS_INFO("Resetting obs_received_ to false.");
             obs_received_ = false;
@@ -124,17 +141,21 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             SendZeroCommand();
             ros::shutdown();
             break;
-    case 11: ROS_INFO("Mode 8: ramp -> iLQR with sparse replanning.");
+    case 10: ROS_INFO("Play back initial control sequence.");
+             SendInitControlSeq();
+             break;
+    case 11: ROS_INFO("Mode 8: MPC iLQR w/ pid corrections from static initial conditions.");
              mode_ = 11;
              break;
+
     default: ROS_INFO("Please enter valid command.");
   }
 }
 
 void TrajClient::feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback)
 {
-  // ROS_INFO("Last steer: %f", last_steer_cmd_);
-  last_steer_cmd_ = feedback->last_steer;
+  // Keeps track of progress of TrajAction server along most recently sent trajectory
+  step_on_last_traj_ = feedback->step;
 }
 
 int main(int argc, char** argv)

@@ -24,17 +24,19 @@ public:
   TrajServer():
     as(nh, "traj_server", boost::bind(&TrajServer::execute_trajectory, this,
     _1), false), traj_action("traj_server"), cur_yaw_(0), cur_integral_(0),
-    prev_error_(0), dt(0.02)
+    prev_error_(0), dt(0.05)
     {
 	    ROS_INFO("Starting traj server.");
 
       as.start();
-      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
+      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
       path_pub = nh.advertise<nav_msgs::Path>("path", 1);
       state_sub  = nh.subscribe("odometry/filtered", 1, &TrajServer::stateCb, this);
 
       LoadParams();
       ROS_INFO("Started iLQR executer node. Send me actions!");
+
+      t_ = ros::Time::now().toSec();
     }
 
 private:
@@ -55,7 +57,7 @@ private:
   double cur_yaw_;
   double cur_integral_;
   double prev_error_;
-  float kp_, ki_, kd_, dt;
+  float kp_, ki_, kd_, dt, t_;
 
   ros::Publisher cmd_pub;
   ros::Publisher path_pub;
@@ -66,6 +68,11 @@ private:
   geometry_msgs::Twist pid_correct_yaw(geometry_msgs::Twist orig_twist, nav_msgs::Odometry state);
   void stateCb(const nav_msgs::Odometry &msg);
   void PublishPath(const ilqr_loco::TrajExecGoalConstPtr &goal);
+
+  double clamp(double val, double min_val, double max_val)
+  {
+    return std::max(min_val, std::min(val, max_val));
+  }
 
 };
 

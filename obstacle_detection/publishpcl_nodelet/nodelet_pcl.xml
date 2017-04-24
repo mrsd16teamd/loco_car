@@ -1,0 +1,7 @@
+<library path="lib/libnodelet_pcl">
+  <class name="publishpcl_nodelet/Scan2Cloud" type="publishpcl_nodelet::Scan2Cloud" base_class_type="nodelet::Nodelet">
+    <description>
+      A node to add a value and republish.
+    </description>
+  </class>
+</library>

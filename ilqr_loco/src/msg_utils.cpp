@@ -5,6 +5,7 @@ void TrajClient::FillGoalMsgHeader(ilqr_loco::TrajExecGoal &goal)
   goal.traj.header.seq = T_;
   goal.traj.header.stamp = ros::Time::now();
   goal.traj.header.frame_id = "base_link";
+  goal.traj.timestep = timestep_;
 }
 
 void TrajClient::FillTwistMsg(geometry_msgs::Twist &twist, double lin_x, double ang_z)
@@ -42,6 +43,25 @@ void TrajClient::SendZeroCommand()
   end_goal.traj.states.push_back(cur_state_);
   SendTrajectory(end_goal);
   ROS_INFO("Sent zero command.");
+}
+
+void TrajClient::SendInitControlSeq()
+{
+  ilqr_loco::TrajExecGoal goal;
+  FillGoalMsgHeader(goal);
+  geometry_msgs::Twist control_msg;
+
+  for (int i=0; i<(init_control_seq_.size()/2); i++)
+  {
+    FillTwistMsg(control_msg, init_control_seq_[2*i], init_control_seq_[(2*i)+1]);
+    goal.traj.commands.push_back(control_msg);
+    goal.traj.states.push_back(cur_state_);
+  }
+  FillTwistMsg(control_msg, 0, 0);
+  goal.traj.commands.push_back(control_msg);
+  goal.traj.states.push_back(cur_state_);
+
+  SendTrajectory(goal);
 }
 
 void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)

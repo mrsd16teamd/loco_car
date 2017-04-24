@@ -41,10 +41,10 @@
 #include <utility>
 #include <ctime>
 
-
+static bool found_obs = false;
 ros::Publisher objID_pub;
 ros::Publisher cc_pos;
-ros::Publisher markerPub1;
+//ros::Publisher markerPub1;
 
 tf::TransformListener* tran;
 
@@ -57,6 +57,8 @@ int DEBUGMODE = 0;
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 {
+    if(found_obs) return;
+
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
     float xcoordinate(9.0f);
@@ -72,12 +74,9 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
 
     pcl::fromROSMsg (*input, *input_cloud);
-  //  clock_t start = clock();
+    clock_t start = clock();
     cluster_extraction (input, cluster_indices);
-  //  clock_t end = clock();
-  //  float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-  //  std::cout<<"clustering time"<<std::endl;
-  //  std::cout<<seconds<<std::endl;
+
 
 
 /*
@@ -179,6 +178,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
     }
 
     //setting up the marker 
+/*
     visualization_msgs::MarkerArray clusterMarkers1;
 
 
@@ -193,7 +193,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         m1.color.r=1;
         m1.color.g=0;
         m1.color.b=0;
-
+*/
      
 // checking if the cluster was found near the give radious of robot 
 
@@ -231,15 +231,16 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
        mapframe.point.x = 999 ;
        mapframe.point.y  = 999 ;
        mapframe.point.z  = 0;
+      // cc_pos.publish(mapframe);
 
    } 
 
   if( obstaclepresent == 1 )
    {    
-
-	clusterMarkers1.markers.push_back(m1);  
+        found_obs = true;
+//	clusterMarkers1.markers.push_back(m1);  
 	cc_pos.publish(mapframe);
-	markerPub1.publish(clusterMarkers1);
+//	markerPub1.publish(clusterMarkers1);
 
 
    } 
@@ -248,14 +249,25 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
   obstaclepresent = 0;
    
 
+    clock_t end = clock();
+    float seconds = (float)(end - start) / CLOCKS_PER_SEC;
 
-
+ //   std::cout<<"clustering time"<<std::endl;
+ //   std::cout<<seconds<<std::endl;
+    
 
 
 
 };
 
 
+void mode_cb(const geometry_msgs::Point &msg)
+{
+  if(msg.x == 8){
+    ROS_INFO("Looking for obstacle again.");
+    found_obs = false;
+  }
+}
 
 
 int main(int argc, char** argv)
@@ -267,9 +279,10 @@ int main(int argc, char** argv)
     tf::TransformListener lr(ros::Duration(10));
     tran=&lr;
     ros::Subscriber sub = nh.subscribe ("scan_cloud", 1, cloud_cb);
+  ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
     cc_pos=nh.advertise<geometry_msgs::PointStamped>("cluster_center",100);//clusterCenter1
 
-    markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
+   // markerPub1= nh.advertise<visualization_msgs::MarkerArray> ("viz1",1);
 
 
     ros::spin();

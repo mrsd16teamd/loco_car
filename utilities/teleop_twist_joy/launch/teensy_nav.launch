@@ -11,7 +11,7 @@
 
   <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node">
     <rosparam command="load" file="$(arg config_filepath)" />
-    <param name="scale_angular" value="0.8"/>
+    <param name="scale_angular" value="0.77"/>
     <param name="scale_linear" value="2.0"/>
     <param name="scale_linear_turbo" value="3.0"/>
     <param name="enable_button" value="-1"/>
@@ -22,12 +22,12 @@
   </node>
 
 <!--    <node pkg="rosserial_python" name="rosserial_python" type="serial_node.py">
-	<param name="port" value="/dev/teensy" />
-	<param name="baud" value="115200" />
+    <param name="port" value="/dev/teensy" />
+    <param name="baud" value="115200" />
    </node> -->
-   <node pkg="rosserial_server" name="rosserial_server" type="serial_node">
-  <param name="port" value="/dev/teensy" />
-  <param name="baud" value="115200" />
-   </node>
+  <node pkg="rosserial_server" name="rosserial_server" type="serial_node" respawn="true">
+    <param name="port" value="/dev/teensy" />
+    <param name="baud" value="115200" />
+  </node>
    <!-- <node pkg="rosserial_python" type="message_info_service.py" name="rosserial_message_info" /> -->
 </launch>

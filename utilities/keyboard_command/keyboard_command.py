@@ -25,20 +25,24 @@ commandBindings = {
 		'g': 7,
 		'r': 8,
 		'k': 9,
-        'h': 11
+		'z': 10,
+        'h': 11,
+		'o': 12
 	     }
 
 commands = {
-	'a': 'ramp',
+	'a': 'ramp (and brake)',
 	'b': 'iLQR open-loop from static',
 	'c': 'ramp and iLQR open-loop',
-	'd': 'ramp and iLQR rh',
-	'e': 'iLQR rh from static',
-	'f': 'iLQR sparse replanning from static',
-	'g': 'iLQR open-loop with PID corrections from static',
-    'h': 'ramp and iLQR sparse replanning',
+	'd': 'ramp and iLQR mpc',
+	'e': 'iLQR mpc from static',
+	'f': 'iLQR fixed rate replanning from static',
+	'g': 'iLQR o-l with PID corrections from static',
+    'h': 'iLQR mpc w/ pid corrections from static initial conditions',
+	'z': 'execute initial control sequence',
 	'r': 'reset obs',
-	'k': 'kill client'
+	'k': 'kill client',
+	'o': 'insert fake obstacle 1m in front of robot'
 }
 instructions = OrderedDict(sorted(commands.items(), key=lambda t: t[0]))
 
@@ -65,7 +69,7 @@ if __name__=="__main__":
 
 			if key in commandBindings.keys():
 				command = commandBindings[key]
-				print "Key: ", key, " - ", instructions[key]
+				print "Key: ", key, " - ", instructions[key], " (", commandBindings[key] , ")"
 			else:
 				command = 0
 				print "Key: ", key, " NO COMMAND"

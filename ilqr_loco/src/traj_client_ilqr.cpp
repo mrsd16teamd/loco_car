@@ -1,12 +1,11 @@
 #include "traj_client.h"
 
-ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
+ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_start, std::vector<double> &u_init,
                                   std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos)
 {
   // ROS_INFO("Generating iLQG trajectory.");
   ilqr_loco::TrajExecGoal goal;
   FillGoalMsgHeader(goal);
-  goal.traj.timestep = timestep_;
 
   // ROS_INFO("Start state (before prediction): %f, %f, %f, %f, %f, %f",
   //         cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta,
@@ -14,11 +13,11 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
 
   //Pre-process inputs - put them in format that C-code wants
   // TODO figure out good way to initialize previous steering
-  double theta = tf::getYaw(x_cur.pose.pose.orientation);
-  double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
-                   x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
-                   x_cur.twist.twist.angular.z,
-                   x_cur.twist.twist.linear.x, last_steer_cmd_};
+  double theta = tf::getYaw(x_start.pose.pose.orientation);
+  double x0[10] = {x_start.pose.pose.position.x, x_start.pose.pose.position.y, theta,
+                   x_start.twist.twist.linear.x, x_start.twist.twist.linear.y,
+                   x_start.twist.twist.angular.z,
+                   x_start.twist.twist.linear.x, u_init[2*step_on_last_traj_+1]};
 
   double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array
   double* u0 = &u_init[0];
@@ -70,9 +69,11 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
 void TrajClient::PlanFromCurrentStateILQR()
 {
   ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
+  // TODO do some quick checks on trajectory?
 
-  if (mode_ == 7) // turn on pid heading corrections during server execution
-  	goal.traj.mode = 1;
+  if (mode_ == 7 || mode_==11) // turn on pid heading corrections during server execution
+  	goal.traj.execution_mode = 1;
+
   SendTrajectory(goal);
 }
 
@@ -80,6 +81,11 @@ void TrajClient::PlanFromExtrapolatedILQR()
 {
   nav_msgs::Odometry extrapolated = ExtrapolateState(cur_state_);
   ilqr_loco::TrajExecGoal goal  = GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
+  // TODO do some quick checks on trajectory?
+
+  if (mode_ == 7 || mode_==11) // turn on pid heading corrections during server execution
+  	goal.traj.execution_mode = 1;
+
   SendTrajectory(goal);
 }
 
@@ -89,41 +95,59 @@ void TrajClient::MpcILQR()
   ROS_INFO("Starting mpc.");
   start_time_ = ros::Time::now();
 
-  ilqr_loco::TrajExecGoal goal;
-
   while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
   {
     ROS_INFO("Receding horizon iteration #%d", T_);
 
-    // TODO do some quick checks on trajectory?
-    PlanFromExtrapolatedILQR();
-    // PlanFromCurrentStateILQR();
+    // Change u_seq_saved_ using step_on_last_traj_
+    ROS_INFO("step_on_last_traj_: %d", step_on_last_traj_);
+    std::vector<double> u_seq_temp_ = u_seq_saved_;
+    std::copy(u_seq_saved_.begin() + (2*step_on_last_traj_), u_seq_saved_.end(), u_seq_temp_.begin());
+    u_seq_saved_ = u_seq_temp_;
+
+    if (use_extrapolate_) {
+      PlanFromExtrapolatedILQR();
+    }
+    else{
+      PlanFromCurrentStateILQR();
+    }
 
     ros::spinOnce(); // to pick up new state estimates
     T_++;
     // ROS_INFO("DistToGoal: %f", DistToGoal());
   }
+  ROS_INFO("Exiting MPC mode: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_).toSec());
   SendZeroCommand();
 }
 
-void TrajClient::SparseReplanILQR()
+void TrajClient::FixedRateReplanILQR()
 {
+  T_ = 0;
+  ROS_INFO("Starting mpc.");
   start_time_ = ros::Time::now();
+  ros::Rate rate(replan_rate_);
 
-  for (int i=0; i<replan_times_.size()-1; i++)
+  while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
   {
-    ROS_INFO("Replan #%d", i);
-    // PlanFromExtrapolatedILQR();
-    PlanFromCurrentStateILQR();
+    ROS_INFO("Receding horizon iteration #%d", T_);
 
-    T_++;
-    while (ros::Time::now() - start_time_ < ros::Duration(replan_times_[i+1]))
-    {
-      ros::spinOnce(); // to pick up new state estimates
+    // Change u_seq_saved_ using step_on_last_traj_
+    ROS_INFO("step_on_last_traj_: %d", step_on_last_traj_);
+    std::vector<double> u_seq_temp_(2*T_horizon_);
+    std::copy(u_seq_saved_.begin() + (2*step_on_last_traj_), u_seq_saved_.end(), u_seq_temp_.begin());
+    u_seq_saved_ = u_seq_temp_;
+
+    if (use_extrapolate_){
+      PlanFromExtrapolatedILQR();
     }
-  }
+    else{
+      PlanFromCurrentStateILQR();
+    }
 
-  ROS_INFO("iLQR sparse replan timed out.");
+    ros::spinOnce(); // to pick up new state estimates
+    T_++;
+    rate.sleep();
+  }
   SendZeroCommand();
 }
 
@@ -133,12 +157,18 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 
   double dt = 0.1; //[s] TODO make this parameter, or function of T_horizon_ and max_iter_
 
-  extrapolated.pose.pose.position.x += (dt*extrapolated.twist.twist.linear.x);
-  extrapolated.pose.pose.position.y += (dt*extrapolated.twist.twist.linear.y);
+  // extrapolated.pose.pose.position.x += (dt*extrapolated.twist.twist.linear.x);
+  // extrapolated.pose.pose.position.y += (dt*extrapolated.twist.twist.linear.y);
+    double theta = tf::getYaw(extrapolated.pose.pose.orientation);
+    double vx_world = extrapolated.twist.twist.linear.x*cos(theta) + extrapolated.twist.twist.linear.y*sin(theta);
+    double vy_world = extrapolated.twist.twist.linear.x*sin(theta) + extrapolated.twist.twist.linear.y*cos(theta);
+    extrapolated.pose.pose.position.x += (dt*vx_world);
+    extrapolated.pose.pose.position.y += (dt*vy_world);
 
-  // double theta = tf::getYaw(extrapolated.pose.pose.orientation);
-  // theta += dt*extrapolated.twist.twist.angular.z;
-  // extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+    theta += dt*extrapolated.twist.twist.angular.z;
+    extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+
+    predicted_state_pub_.publish(extrapolated);
 
   return extrapolated;
 }
