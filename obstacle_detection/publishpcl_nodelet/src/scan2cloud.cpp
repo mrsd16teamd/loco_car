@@ -32,7 +32,7 @@ namespace publishpcl_nodelet // @(namespace)
     ros::Timer timer_;
 
     double front_angle_; // currently 90 degrees
-    double new_angle_min__;
+    double new_angle_min_;
     double new_angle_max_;
     int min_index_;
     int max_index_;
@@ -48,9 +48,8 @@ namespace publishpcl_nodelet // @(namespace)
       scan_sub_ = nh.subscribe<sensor_msgs::LaserScan> ("scan", 1, &Scan2Cloud::scanCallback, this);
       pcl_pub_ = private_nh.advertise<sensor_msgs::PointCloud2> ("scan_cloud", 1, false);
 
-      if (nh.hasParam("my_param")){
+      if (nh.hasParam("scan_clip_angle")){
         nh.getParam("scan_clip_angle", front_angle_);
-        // std::cout << "front_angle_ = " << front_angle_ << std::endl;
       }
       else{
         NODELET_INFO_STREAM("Need param scan_clip_angle!");
@@ -78,7 +77,7 @@ namespace publishpcl_nodelet // @(namespace)
       scan_front_.scan_time = scan->scan_time;
       scan_front_.range_min = scan->range_min;
       scan_front_.range_max = scan->range_max;
-      scan_front_.ranges.assign(scan.begin()+min_index_, scan.begin()+max_index_);
+      scan_front_.ranges.assign(scan->ranges.begin()+min_index_, scan->ranges.begin()+max_index_);
 
       projector_.projectLaser(scan_front_, cloud_);
       pcl_pub_.publish(cloud_);
