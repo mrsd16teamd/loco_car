@@ -11,14 +11,16 @@ filepath = '/home/ubuntu/catkin_ws/src/ilqr_loco/control_seq/' + filename
 
 
 def callback(msg):
-	print("I heard: " + str(msg.linear.x) + ", " + str(msg.angular.z))
 	if (msg.linear.x < 0.05 and msg.angular.z < 0.05):
 		return
+	else:
+		print("I heard: " + str(msg.linear.x) + ", " + str(msg.angular.z))
 	u_seq.append(msg.linear.x)
 	u_seq.append(msg.angular.z)
 
 def listener():
 	print("Writing to: " + filepath)
+	print("Go!")
 	print("Hit ctrl+c when you're done.")
 
 	rospy.init_node('control_recorder', anonymous=True)

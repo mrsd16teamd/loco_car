@@ -188,6 +188,9 @@ public:
       bool publication_pending = false;
       tv.tv_sec = 1;
       tv.tv_usec = 0;
+
+	  ros::Rate rate(20.);
+
       sensor_msgs::Joy joy_msg; // Here because we want to reset it on device close.
       while (nh_.ok())
       {
@@ -275,16 +278,15 @@ public:
           // This should be the case as the kernel sends them along as soon as
           // the device opens.
           //ROS_INFO("Publish...");
-          if ( ((ros::Time::now() - last_pub_time).toSec()) > 0.05)
-          {
-            last_pub_time = ros::Time::now();
-            pub_.publish(joy_msg);
-            publish_now = false;
-            tv_set = false;
-            publication_pending = false;
-            publish_soon = false;
-            pub_count_++;
-          }
+
+          last_pub_time = ros::Time::now();
+          pub_.publish(joy_msg);
+          publish_now = false;
+          tv_set = false;
+          publication_pending = false;
+          publish_soon = false;
+          pub_count_++;
+          rate.sleep();
         }
 
         // If an axis event occurred, start a timer to combine with other

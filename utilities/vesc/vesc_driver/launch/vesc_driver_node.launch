@@ -14,7 +14,7 @@
 
   <!-- VESC driver node -->
   <node pkg="vesc_driver" type="vesc_driver_node" name="$(arg node_name)"
-        output="screen" launch-prefix="$(arg launch_prefix)" >
+        output="screen" launch-prefix="$(arg launch_prefix)" respawn="true" respawn_delay="10">
     <param name="port" value="$(arg port)" />
 
   </node>
