@@ -77,6 +77,7 @@ void scan_cb(const sensor_msgs::LaserScanConstPtr &msg)
 
     if (transform_laser_to_map(cluster_pos_localframe, cluster_pos_mapframe))
     {
+      cluster_pos_mapframe.point.y = 0; // hack to deal with heading uncertainty
       cc_pos.publish(cluster_pos_mapframe);
     }
   }
@@ -101,7 +102,9 @@ void insert_fake_obs()
   cluster_pos_localframe.point.x = obstacle_thres;
   cluster_pos_localframe.point.y = 0;
   cluster_pos_localframe.point.z = 0;
+
   transform_laser_to_map(cluster_pos_localframe, cluster_pos_mapframe);
+  cluster_pos_mapframe.point.y = 0; // hack to deal with heading uncertainty
   cc_pos.publish(cluster_pos_mapframe);
   // ROS_INFO("Naive_obstacle_detector: Published fake obstacle at %f, %f", cluster_pos_mapframe.point.x, cluster_pos_mapframe.point.y);
 }

@@ -15,11 +15,11 @@ kp_ramp_y: 0.01
 accel_ramp: 1.5
 target_vel_ramp: 3.0
 pre_ramp_vel: 0.5
-pre_ramp_time: 1
-timeout_ramp: 5.5
+pre_ramp_time: 0.5
+timeout_ramp: 3.5
 
 # iLQR params
-timeout_ilqr_mpc: 5
+timeout_ilqr_mpc: 4
 stop_goal_threshold: 0.3
 
 ilqr_tolFun: 0.0000001
