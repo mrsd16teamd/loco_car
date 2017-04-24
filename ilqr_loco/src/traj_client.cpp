@@ -48,9 +48,6 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 
   if (mode_==1 || (mode_==5 && !found_obstacle_) || (mode_==6 && !found_obstacle_) || (mode_==7 && !found_obstacle_))
     rampPlan();
-
-  if (found_obstacle_ && !reacted_to_obstacle_)
-    ReactToObstacle();
 }
 
 void TrajClient::ReactToObstacle()
@@ -125,9 +122,8 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 	  case 7: ROS_INFO("Mode 7: ramp -> playback");
             mode_ = 7;
             break;
-    case 8: ROS_INFO("Resetting found_obstacle_ to false.");
-            reacted_to_obstacle_ = false;
-            found_obstacle_ = false;
+    case 8: ROS_INFO("Resetting obstacle.");
+			      ResetObstacle();
             break;
     case 10: ROS_INFO("Play back initial control sequence.");
              SendInitControlSeq();

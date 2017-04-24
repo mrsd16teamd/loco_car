@@ -164,6 +164,7 @@ protected:
   bool TransformLaserToMap(geometry_msgs::PointStamped &pos_laser_frame, geometry_msgs::PointStamped &pos_map_frame);
   void InsertFakeObs();
   void ReactToObstacle();
+  void ResetObstacle();
 
   double clamp(double val, double min_val, double max_val)
   {
