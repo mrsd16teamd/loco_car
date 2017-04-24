@@ -57,6 +57,7 @@ void TrajClient::LoadCarParams()
   TRYGETPARAM("Opt_car_param/mu_s", mu_s_);
   TRYGETPARAM("Opt_car_param/limSteer", limSteer_);
   TRYGETPARAM("Opt_car_param/limThr", limThr_);
+  TRYGETPARAM("Opt_car_param/k_steer", k_steer_);
 
   a_ = L_ - b_;
   G_f_ = m_*g_*b_/L_;
@@ -76,7 +77,6 @@ void TrajClient::LoadCostParams()
   TRYGETPARAM("Opt_cost/k_pos", k_pos_);
   TRYGETPARAM("Opt_cost/k_vel", k_vel_);
   TRYGETPARAM("Opt_cost/d_thres", d_thres_);
-  TRYGETPARAM("Opt_cost/k_steer", k_steer_);
 }
 
 // changed to pass by reference to apply and keep edit

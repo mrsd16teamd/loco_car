@@ -98,7 +98,7 @@ void insert_fake_obs()
   cluster_pos_localframe.header.frame_id = "laser";
   cluster_pos_mapframe.header.frame_id = "map";
 
-  cluster_pos_localframe.point.x = 1;
+  cluster_pos_localframe.point.x = obstacle_thres;
   cluster_pos_localframe.point.y = 0;
   cluster_pos_localframe.point.z = 0;
   transform_laser_to_map(cluster_pos_localframe, cluster_pos_mapframe);

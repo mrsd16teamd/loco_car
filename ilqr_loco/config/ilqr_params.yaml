@@ -35,15 +35,16 @@ use_extrapolate: 1
 # Original params:
 Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
                 c_x: 116, c_a: 197, Iz: 0.045, mu: 1.31, mu_s: 0.55, #Iz: 0.025
-                limThr: [0, 2.0], limSteer: [-0.77, 0.77]} #limSteer: [-0.68, 0.76]
+                limThr: [0, 2.0], limSteer: [-0.77, 0.77],
+                k_steer: 20 } #limSteer: [-0.68, 0.76]
 
 # # Test param tests: 1-fail, 2-bad fail, 3-fail
 # Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
 #                 c_x: 250, c_a: 297, Iz: 0.025, mu: 1.60, mu_s: 0.5,
 #                 limThr: [0, 4.0], limSteer: [-0.68, 0.76]}
 
-Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
-           cf: [10, 10, 5, 10, 0.1, 0.1],
+Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 0.4],
+           cf: [100, 100, 5, 10, 0.1, 0.1],
            pf: [0.01, 0.01, 0.1, 0.1, 0.1, 0.1],
            cx: [0.05, 0.05, 0.04], cdx: [0.001, 0.005, 0.002],
            px: [0.01, 0.01, 0.1],
@@ -56,7 +57,7 @@ old_msg_discard_thres: 0.5 #[seconds]
 
 # Obstacle detection params
 scan_clip_angle: 0.6 #radians
-naive_obstacle_dist_thres: 1.0
+naive_obstacle_dist_thres: 1.25
 naive_obstacle_percent_thres: 0.2
 
 # PID heading correction params
