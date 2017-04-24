@@ -40,6 +40,10 @@ void TrajClient::LoadParams()
 	  u_seq_saved_ = init_control_seq_;
 	T_horizon_ = init_control_seq_.size();
 
+	TRYGETPARAM("naive_obstacle_dist_thres", obs_dist_thres_)
+	TRYGETPARAM("naive_obstacle_percent_thres", obs_percent_thres_)
+	TRYGETPARAM("scan_clip_angle", scan_front_angle_)
+
     LoadOpt();
   }
   catch(...)

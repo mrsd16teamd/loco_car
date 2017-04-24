@@ -6,20 +6,22 @@
 
 
 TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
-                          cur_integral_(0), prev_error_(0), step_on_last_traj_(0)
+                          cur_integral_(0), prev_error_(0), step_on_last_traj_(0),
+                          tf_listener_(nh, ros::Duration(5), true)
 {
   state_sub_  = nh.subscribe("odometry/filtered", 1, &TrajClient::stateCb, this);
-  obs_sub_ = nh.subscribe("cluster_center", 1, &TrajClient::obsCb, this);
   mode_sub_ = nh.subscribe("client_command", 1, &TrajClient::modeCb, this);
   scan_sub_ = nh.subscribe("scan", 1, &TrajClient::scanCb, this);
 
   predicted_state_pub_ = nh.advertise<nav_msgs::Odometry>("odometry/predicted", 1);
+  obs_pos_pub_ = nh.advertise<geometry_msgs::PointStamped>("cluster_center", 1);
 
   state_estimate_received_ = false;
-  obs_received_ = false;
+  found_obstacle_ = false;
   ramp_goal_flag_ = false;
 
   LoadParams();
+  InitDetector();
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
@@ -43,18 +45,16 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || (mode_==5 && !obs_received_) || (mode_==6 && !obs_received_) || (mode_==7 && !obs_received_))
+  if (mode_==1 || (mode_==5 && !found_obstacle_) || (mode_==6 && !found_obstacle_) || (mode_==7 && !found_obstacle_))
     rampPlan();
+
+  if (found_obstacle_)
+    ReactToObstacle();
 }
 
-void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
+void TrajClient::ReactToObstacle()
 {
-  if (msg.point.x < 100) {
-    ROS_INFO("Received obstacle message.");
-    obs_pos_.x = msg.point.x;
-    obs_pos_.y = msg.point.y;
-    obs_received_ = true;
-
+    ROS_INFO("Reacting to obstacle!");
     if (mode_ == 1)
       SendZeroCommand(); //brake
     else if (mode_==2 || mode_==5)
@@ -67,7 +67,6 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       SendInitControlSeq();
 
     mode_ = 0;
-  }
 }
 
 void TrajClient::modeCb(const geometry_msgs::Point &msg)
@@ -118,13 +117,15 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             break;
 	  case 7: ROS_INFO("Mode 7: ramp -> playback");
             break;
-    case 8: ROS_INFO("Resetting obs_received_ to false.");
-            obs_received_ = false;
+    case 8: ROS_INFO("Resetting found_obstacle_ to false.");
+            found_obstacle_ = false;
             break;
     case 10: ROS_INFO("Play back initial control sequence.");
              SendInitControlSeq();
              break;
-    case 12: break;
+    case 12: ROS_INFO("Setting fake obstacle.");
+             InsertFakeObs();
+             break;
     default: ROS_INFO("Please enter valid command.");
   }
 }

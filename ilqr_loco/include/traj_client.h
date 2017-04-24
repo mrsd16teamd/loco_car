@@ -40,8 +40,9 @@ protected:
   ros::Subscriber mode_sub_;
   ros::Subscriber scan_sub_;
   ros::Publisher predicted_state_pub_;
+  ros::Publisher obs_pos_pub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
-  tf::TransformListener tf_listener;
+  tf::TransformListener tf_listener_;
 
   // ilqr parameters and saved data
   int T_horizon_;
@@ -74,7 +75,7 @@ protected:
   int mode_;                      // Operation mode from keyboard teleop
   ros::Time start_time_;          // Operation start time
   bool state_estimate_received_;  // Initial estimate flag
-  bool obs_received_;
+  bool found_obstacle_;
 
   // State variables
   nav_msgs::Odometry start_state_;
@@ -114,9 +115,9 @@ protected:
   int use_pid_;
 
   // Obstacle detector parameters
-  float obstacle_thres_; //[m]f
+  float obs_dist_thres_; //[m]f
   float obs_percent_thres_;
-  float front_angle_;
+  float scan_front_angle_;
   float scan_min_index_, scan_max_index_;
 
   void LoadParams();
@@ -145,7 +146,6 @@ protected:
   void SendInitControlSeq();
 
   void stateCb(const nav_msgs::Odometry &msg);
-  void obsCb(const geometry_msgs::PointStamped &msg);
   void modeCb(const geometry_msgs::Point &msg);
   void scanCb(const sensor_msgs::LaserScanConstPtr &msg);
 
@@ -159,8 +159,10 @@ protected:
   void FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
                    double yaw, double Ux, double Uy, double w);
 
-  bool transform_laser_to_map(geometry_msgs::PointStamped &pos_laser_frame, geometry_msgs::PointStamped &pos_map_frame);
-  void insert_fake_obs();
+  void InitDetector();
+  bool TransformLaserToMap(geometry_msgs::PointStamped &pos_laser_frame, geometry_msgs::PointStamped &pos_map_frame);
+  void InsertFakeObs();
+  void ReactToObstacle();
 
   double clamp(double val, double min_val, double max_val)
   {
