@@ -41,6 +41,9 @@ void TrajClient::LoadParams()
 	T_horizon_ = init_control_seq_.size();
 
 	TRYGETPARAM("naive_obstacle_dist_thres", obs_dist_thres_)
+  double lidar_to_bumper_dist = 0.1;
+  obs_dist_thres_ += lidar_to_bumper_dist;
+
 	TRYGETPARAM("naive_obstacle_percent_thres", obs_percent_thres_)
 	TRYGETPARAM("scan_clip_angle", scan_front_angle_)
 
