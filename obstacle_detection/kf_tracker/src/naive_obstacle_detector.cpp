@@ -7,9 +7,6 @@ So once an obstacle is detected, this node does nothing.
 
 #include <ros/ros.h>
 #include <geometry_msgs/Point.h>
-#include <std_msgs/Float32MultiArray.h>
-#include <std_msgs/Int32MultiArray.h>
-#include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/LaserScan.h>
 #include <tf/transform_listener.h>
 

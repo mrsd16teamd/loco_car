@@ -7,6 +7,7 @@
 #include <ilqr_loco/TrajExecAction.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Point.h>
+#include <sensor_msgs/LaserScan.h>
 #include "try_get_param.h"
 
 #include <ros/ros.h>
@@ -37,8 +38,10 @@ protected:
   ros::Subscriber state_sub_;
   ros::Subscriber obs_sub_;
   ros::Subscriber mode_sub_;
+  ros::Subscriber scan_sub_;
   ros::Publisher predicted_state_pub_;
   actionlib::SimpleActionClient<ilqr_loco::TrajExecAction> ac_;
+  tf::TransformListener tf_listener;
 
   // ilqr parameters and saved data
   int T_horizon_;
@@ -110,6 +113,12 @@ protected:
   double extrapolate_dt_;
   int use_pid_;
 
+  // Obstacle detector parameters
+  float obstacle_thres_; //[m]f
+  float obs_percent_thres_;
+  float front_angle_;
+  float scan_min_index_, scan_max_index_;
+
   void LoadParams();
   void LoadCarParams();
   void LoadCostParams();
@@ -138,16 +147,20 @@ protected:
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const geometry_msgs::PointStamped &msg);
   void modeCb(const geometry_msgs::Point &msg);
+  void scanCb(const sensor_msgs::LaserScanConstPtr &msg);
+
+  //  void activeCb();
+  void feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback);
+  //  void doneCb(const actionlib::SimpleClientGoalState& state,
+              //  const ilqr_loco::TrajExecResultConstPtr& result);
 
   void FillGoalMsgHeader(ilqr_loco::TrajExecGoal &goal);
   void FillTwistMsg(geometry_msgs::Twist &twist, double lin_x, double ang_z);
   void FillOdomMsg(nav_msgs::Odometry &odom, double x, double y,
                    double yaw, double Ux, double Uy, double w);
 
-  //  void activeCb();
-   void feedbackCb(const ilqr_loco::TrajExecFeedbackConstPtr& feedback);
-  //  void doneCb(const actionlib::SimpleClientGoalState& state,
-              //  const ilqr_loco::TrajExecResultConstPtr& result);
+  bool transform_laser_to_map(geometry_msgs::PointStamped &pos_laser_frame, geometry_msgs::PointStamped &pos_map_frame);
+  void insert_fake_obs();
 
   double clamp(double val, double min_val, double max_val)
   {
