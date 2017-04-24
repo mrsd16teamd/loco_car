@@ -107,6 +107,7 @@ protected:
   double replan_rate_;
   int step_on_last_traj_;
   int use_extrapolate_;
+  double extrapolate_dt_;
 
   void LoadParams();
   void LoadCarParams();

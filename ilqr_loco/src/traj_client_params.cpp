@@ -8,6 +8,7 @@ void TrajClient::LoadParams()
 
     // Get parameters from ROS Param server
     TRYGETPARAM("timestep", timestep_)
+    TRYGETPARAM("extrapolate_dt", extrapolate_dt_)
 
     TRYGETPARAM("kp_ramp", kp_)
     TRYGETPARAM("ki_ramp", ki_)
