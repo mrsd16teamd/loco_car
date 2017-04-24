@@ -119,6 +119,7 @@ protected:
   float obs_percent_thres_;
   float scan_front_angle_;
   float scan_min_index_, scan_max_index_;
+  bool reacted_to_obstacle_;
 
   void LoadParams();
   void LoadCarParams();

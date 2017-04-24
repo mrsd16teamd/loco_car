@@ -19,6 +19,7 @@ TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
   state_estimate_received_ = false;
   found_obstacle_ = false;
   ramp_goal_flag_ = false;
+  reacted_to_obstacle_ = false;
 
   LoadParams();
   InitDetector();
@@ -48,7 +49,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
   if (mode_==1 || (mode_==5 && !found_obstacle_) || (mode_==6 && !found_obstacle_) || (mode_==7 && !found_obstacle_))
     rampPlan();
 
-  if (found_obstacle_)
+  if (found_obstacle_ && !reacted_to_obstacle_)
     ReactToObstacle();
 }
 
@@ -66,6 +67,7 @@ void TrajClient::ReactToObstacle()
     else if (mode_==7)
       SendInitControlSeq();
 
+    reacted_to_obstacle_ = true;
     mode_ = 0;
 }
 
@@ -124,6 +126,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             mode_ = 7;
             break;
     case 8: ROS_INFO("Resetting found_obstacle_ to false.");
+            reacted_to_obstacle_ = false;
             found_obstacle_ = false;
             break;
     case 10: ROS_INFO("Play back initial control sequence.");
