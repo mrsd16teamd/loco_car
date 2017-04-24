@@ -70,10 +70,15 @@ void TrajClient::PlanFromCurrentStateILQR()
   ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
 
+  ROS_INFO("before pid");
   if(use_pid_)
   	goal.traj.execution_mode = 1;
+    ROS_INFO("after pid");
+
 
   SendTrajectory(goal);
+  ROS_INFO("traj sent");
+
 }
 
 void TrajClient::PlanFromExtrapolatedILQR()
@@ -81,7 +86,7 @@ void TrajClient::PlanFromExtrapolatedILQR()
   nav_msgs::Odometry extrapolated = ExtrapolateState(cur_state_);
   ilqr_loco::TrajExecGoal goal  = GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
-  
+
   if(use_pid_)
   	goal.traj.execution_mode = 1;
 
@@ -90,6 +95,7 @@ void TrajClient::PlanFromExtrapolatedILQR()
 
 void TrajClient::Plan()
 {
+  ROS_INFO("PLAN");
   if (use_extrapolate_) {
     PlanFromExtrapolatedILQR();
   }

@@ -25,7 +25,7 @@
     <param name="port" value="/dev/teensy" />
     <param name="baud" value="115200" />
    </node> -->
-  <node pkg="rosserial_server" name="rosserial_server" type="serial_node" respawn="true">
+  <node pkg="rosserial_server" name="rosserial_server" type="serial_node" respawn="true" respawn_delay="5">
     <param name="port" value="/dev/teensy" />
     <param name="baud" value="115200" />
   </node>

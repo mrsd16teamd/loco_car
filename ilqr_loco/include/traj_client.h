@@ -108,7 +108,6 @@ protected:
   int step_on_last_traj_;
   int use_extrapolate_;
   double extrapolate_dt_;
-
   int use_pid_;
 
   void LoadParams();
