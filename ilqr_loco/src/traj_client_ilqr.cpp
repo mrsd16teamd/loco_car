@@ -45,14 +45,6 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_start, std
   std::vector<double> x_sol(Traj.x, Traj.x+(n*N));
   x_traj_saved_ = x_sol;
 
-  for(int i=0; i<T_horizon_; i++) {
-    std::cout << u_sol[i*2] << "," << u_sol[i*2+1] << "\n";
-  }
-
-  for(int i=0; i<T_horizon_; i++) {
-    std::cout << x_sol[i*9+6] << "," << "\n";
-  }
-
   //Put states and controls into format that action client wants.
   goal.traj.states.reserve(N);
   goal.traj.commands.reserve(N);
