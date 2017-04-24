@@ -63,6 +63,8 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       MpcILQR();
     else if (mode_==4)
       FixedRateReplanILQR();
+
+    mode_ = 0;
   }
 }
 

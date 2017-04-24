@@ -138,6 +138,7 @@ void TrajClient::FixedRateReplanILQR()
     T_++;
     rate.sleep();
   }
+  
   SendZeroCommand();
 }
 
@@ -161,7 +162,7 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 
 double TrajClient::DistToGoal()
 {
-  if ( (x_des_[0] - cur_state_.pose.pose.position.x) > 0.1 )
+  if ( (x_des_[0] - cur_state_.pose.pose.position.x) < 0.1 )
   {
     // quick way to make sure robot doesn't run away past the goal point
     return 0;

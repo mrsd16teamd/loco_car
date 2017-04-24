@@ -25,15 +25,13 @@ public:
     _1), false), traj_action("traj_server"), cur_yaw_(0), cur_integral_(0),
     prev_error_(0), dt(0.05)
     {
-	    ROS_INFO("Starting traj server.");
-
       as.start();
       cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
       path_pub = nh.advertise<nav_msgs::Path>("path", 1);
       state_sub  = nh.subscribe("odometry/filtered", 1, &TrajServer::stateCb, this);
 
       LoadParams();
-      ROS_INFO("Started iLQR executer node. Send me actions!");
+      ROS_INFO("Started traj server. Send me actions!");
 
       t_ = ros::Time::now().toSec();
     }
