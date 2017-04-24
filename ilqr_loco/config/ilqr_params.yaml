@@ -16,7 +16,7 @@ accel_ramp: 1.5
 target_vel_ramp: 2.0
 pre_ramp_vel: 0.5
 pre_ramp_time: 1
-timeout_ramp: 5.5
+timeout_ramp: 10
 
 # iLQR params
 timeout_ilqr_mpc: 5
@@ -29,8 +29,9 @@ ilqr_max_iter: 30
 ilqr_regType: 1
 ilqr_debug_level: 2
 
-replan_rate: 3 # for fixed rate replanning
-use_extrapolate: 1
+replan_times: [0.0, 1.0, 2.0, 3.0]
+replan_rate: 3
+use_extrapolate: 0
 
 
 # Original params:
@@ -43,13 +44,14 @@ Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
 #                 c_x: 250, c_a: 297, Iz: 0.025, mu: 1.60, mu_s: 0.5,
 #                 limThr: [0, 4.0], limSteer: [-0.68, 0.76]}
 
-Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 1.5],
-           cf: [10, 10, 5, 10, 0.1, 0.1],
+Opt_cost: {cu: [0.01, 0.01], cdu: [0.4, 0.6],
+           cf: [100, 100, 5, 10, 0.1, 0.1],
            pf: [0.01, 0.01, 0.1, 0.1, 0.1, 0.1],
            cx: [0.05, 0.05, 0.04], cdx: [0.001, 0.005, 0.002],
            px: [0.01, 0.01, 0.1],
            cdrift: -0.001,
-           k_pos: 1.0, k_vel: 0, d_thres: 0.5}
+           k_pos: 1.0, k_vel: 0, d_thres: 0.5,
+           croad: 5, lane_center: 0.64, lane_thres: 0.45}
 
 ######
 # TrajServer params

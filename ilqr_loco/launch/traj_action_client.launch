@@ -1,7 +1,7 @@
 <launch>
 <!-- use argument for choosing yaml file for initial control-->
 <!-- roslaunch traj_action_client.launch yaml:= ?init_control? -->
- <arg name="control" default="moose_2mps" />
+ <arg name="control" default="20Hz_0mps_T20" />
   <!-- <arg name="control" default="drift5" /> -->
 
 <!--  <include file="$(find loco)/launch/openloop_sve.launch" /> -->
@@ -10,7 +10,7 @@
   <node pkg="kf_tracker" type="naive_detector" name="naive_detector" output="screen"/>
 
 <!-- Load Planner configs from YAML -->
-  <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params_test.yaml"/>
+  <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params.yaml"/>
   <rosparam command="load" file="$(find ilqr_loco)/control_seq/$(arg control).yaml"/>
 
 <!-- Start planner client-server nodes-->

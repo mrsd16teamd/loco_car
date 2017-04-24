@@ -92,7 +92,7 @@ void TrajClient::PlanFromExtrapolatedILQR()
 void TrajClient::MpcILQR()
 {
   T_ = 0;
-  ROS_INFO("Starting mpc.");
+  // ROS_INFO("Starting mpc.");
   start_time_ = ros::Time::now();
 
   while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
@@ -116,7 +116,7 @@ void TrajClient::MpcILQR()
     T_++;
     // ROS_INFO("DistToGoal: %f", DistToGoal());
   }
-  ROS_INFO("Exiting MPC mode: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_).toSec());
+  ROS_INFO("Exiting MPC mode: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_).toSec()-mpc_timeout_);
   SendZeroCommand();
 }
 
