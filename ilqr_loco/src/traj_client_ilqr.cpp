@@ -167,6 +167,8 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
     theta += dt*extrapolated.twist.twist.angular.z;
     extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
+    predicted_state_pub_.publish(extrapolated);
+
   return extrapolated;
 }
 

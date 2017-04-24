@@ -29,7 +29,7 @@ public:
 	    ROS_INFO("Starting traj server.");
 
       as.start();
-      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 3);
+      cmd_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
       path_pub = nh.advertise<nav_msgs::Path>("path", 1);
       state_sub  = nh.subscribe("odometry/filtered", 1, &TrajServer::stateCb, this);
 
