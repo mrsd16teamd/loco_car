@@ -13,7 +13,7 @@ kd_ramp: 1.2 #0.3
 kp_ramp_y: 0.01
 
 accel_ramp: 1.5
-target_vel_ramp: 2.0
+target_vel_ramp: 1.0
 pre_ramp_vel: 0.5
 pre_ramp_time: 1
 timeout_ramp: 5.5
@@ -62,7 +62,7 @@ naive_obstacle_dist_thres: 1.25
 naive_obstacle_percent_thres: 0.2
 
 # PID heading correction params
-use_pid: 0
+use_pid: 1
 kp_heading: 0.1
 ki_heading: 0.0
 kd_heading: 0.1

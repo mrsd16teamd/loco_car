@@ -45,7 +45,7 @@ add_executable(traj_client src/traj_client.cpp
 													 src/traj_client_ramp.cpp
 													 src/traj_client_ilqr.cpp
 													 src/traj_client_params.cpp
-                           src/msg_utils.cpp
+                           src/traj_client_msg_utils.cpp
 												   ${C_SOURCES})
 target_link_libraries(traj_client ${catkin_LIBRARIES})
 add_dependencies(traj_client ${ilqr_loco_EXPORTED_TARGETS})

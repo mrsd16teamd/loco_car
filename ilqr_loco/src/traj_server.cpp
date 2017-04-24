@@ -81,6 +81,8 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   ros::Rate loop_rate(1.0/timestep);
   ROS_INFO("Executing trajectory.");
 
+  PublishPath(goal);
+
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
     // check that preempt has not been requested by the client
@@ -100,7 +102,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     // else, execute command!
     else
     {
-      if (use_pid_)
+      if (use_pid_ &&  goal->traj.commands.size() != 1)
       {
         geometry_msgs::Twist pid_twist = pid_correct_yaw(goal->traj.commands[i], goal->traj.states[i]);
         ROS_INFO("Command: %f, %f", pid_twist.linear.x, pid_twist.angular.z);
@@ -108,7 +110,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       }
       else
       {
-		    ROS_INFO("Command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
+		ROS_INFO("Command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
         cmd_pub.publish(goal->traj.commands[i]);
       }
 

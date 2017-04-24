@@ -130,6 +130,7 @@ protected:
   nav_msgs::Odometry ExtrapolateState(const nav_msgs::Odometry &state);
 
   void SendZeroCommand();
+  void SendSwerveCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
   void SendInitControlSeq();
 
