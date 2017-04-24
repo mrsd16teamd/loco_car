@@ -25,13 +25,12 @@ stop_goal_threshold: 0.3
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
 ilqr_tolGrad: 0.00001
-ilqr_max_iter: 100
+ilqr_max_iter: 30
 ilqr_regType: 1
 ilqr_debug_level: 2
 
-replan_times: [0.0, 1.0, 2.0, 3.0]
-replan_rate: 3
-use_extrapolate: 0
+replan_rate: 3 # for fixed rate replanning
+use_extrapolate: 1
 
 
 # Original params:
@@ -62,6 +61,6 @@ naive_obstacle_dist_thres: 1.0
 naive_obstacle_percent_thres: 0.2
 
 # PID heading correction params
-kp_heading: 0.5
+kp_heading: 0.25
 ki_heading: 0.0
-kd_heading: 0.0
+kd_heading: 0.1

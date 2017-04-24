@@ -1,6 +1,6 @@
 #include "traj_client.h"
 
-ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
+ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_start, std::vector<double> &u_init,
                                   std::vector<double> &x_des, geometry_msgs::Point &obstacle_pos)
 {
   // ROS_INFO("Generating iLQG trajectory.");
@@ -13,10 +13,10 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_cur, std::
 
   //Pre-process inputs - put them in format that C-code wants
   // TODO figure out good way to initialize previous steering
-  double theta = tf::getYaw(x_cur.pose.pose.orientation);
-  double x0[10] = {x_cur.pose.pose.position.x, x_cur.pose.pose.position.y, theta,
-                   x_cur.twist.twist.linear.x, x_cur.twist.twist.linear.y,
-                   x_cur.twist.twist.angular.z,
+  double theta = tf::getYaw(x_start.pose.pose.orientation);
+  double x0[10] = {x_start.pose.pose.position.x, x_start.pose.pose.position.y, theta,
+                   x_start.twist.twist.linear.x, x_start.twist.twist.linear.y,
+                   x_start.twist.twist.angular.z,
                    u_init[0], u_init[1], 0, 0};
 
   double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array

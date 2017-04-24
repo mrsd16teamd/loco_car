@@ -40,6 +40,8 @@ void TrajServer::stateCb(const nav_msgs::Odometry &msg)
 geometry_msgs::Twist TrajServer::pid_correct_yaw(geometry_msgs::Twist orig_twist, nav_msgs::Odometry state)
 {
   double yaw_des = tf::getYaw(state.pose.pose.orientation);
+  double dt = (state.header.stamp).toSec() - t_;
+  t_ = (state.header.stamp).toSec();
   double orig_steer = orig_twist.angular.z;
 
   // Correct steering to compensate for yaw error
@@ -48,7 +50,7 @@ geometry_msgs::Twist TrajServer::pid_correct_yaw(geometry_msgs::Twist orig_twist
 
   double p = kp_*yaw_error;
   double i = clamp(ki_*cur_integral_, -0.25, 0.25);
-  double d = clamp(kd_*(yaw_error-prev_error_), -0.1, 0.1);
+  double d = clamp(kd_*(yaw_error-prev_error_)/dt, -0.1, 0.1);
   double correction =  p + i + d;
 
   double steer = orig_steer + correction;
@@ -76,7 +78,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   double traj_start_time = (goal->traj.header.stamp).toSec();
 
   ros::Rate loop_rate(1.0/timestep);
-
+  PublishPath(goal);   // For visualization
   ROS_INFO("Executing trajectory in mode %d", goal->traj.execution_mode); // TODO print client name
 
   for (int i=0; i < goal->traj.commands.size(); i++)
@@ -120,7 +122,6 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     }
   }
 
-  PublishPath(goal);   // For visualization
   if (success)
   {
     ROS_INFO("%s: Finished publishing trajectory`", traj_action.c_str());
