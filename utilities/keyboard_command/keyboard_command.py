@@ -22,6 +22,7 @@ commandBindings = {
 		'd': 4,
 		'e': 5,
 		'f': 6,
+		'g': 7,
 		'r': 8,
 		'z': 10,
 		'o': 12
@@ -34,6 +35,7 @@ commands = {
 	'd': 'iLQR fixed rate replanning from static',
 	'e': 'ramp -> iLQR open-loop',
 	'f': 'ramp -> iLQR mpc',
+	'g': 'ramp -> playback',
 	'z': 'execute initial control sequence',
 	'r': 'reset obs',
 	'o': 'insert fake obstacle 1m in front of robot'
