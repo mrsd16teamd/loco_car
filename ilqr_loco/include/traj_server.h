@@ -55,6 +55,7 @@ private:
   double cur_yaw_;
   double cur_integral_;
   double prev_error_;
+  int use_pid_;
   float kp_, ki_, kd_, dt;
 
   ros::Publisher cmd_pub;

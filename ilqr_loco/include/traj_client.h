@@ -117,6 +117,7 @@ protected:
   ilqr_loco::TrajExecGoal rampGenerateTrajectory(nav_msgs::Odometry prev_state_,
                                                  nav_msgs::Odometry cur_state_);
 
+  void Plan();											
   void PlanFromCurrentStateILQR();
   void PlanFromExtrapolatedILQR();
   ilqr_loco::TrajExecGoal GenTrajILQR(nav_msgs::Odometry &x_cur, std::vector<double> &u_init,
@@ -129,7 +130,6 @@ protected:
   void SendZeroCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
   void SendInitControlSeq();
-
 
   void stateCb(const nav_msgs::Odometry &msg);
   void obsCb(const geometry_msgs::PointStamped &msg);

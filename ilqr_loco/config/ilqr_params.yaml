@@ -62,6 +62,7 @@ naive_obstacle_dist_thres: 1.0
 naive_obstacle_percent_thres: 0.2
 
 # PID heading correction params
+use_pid: 0
 kp_heading: 0.5
 ki_heading: 0.0
 kd_heading: 0.0

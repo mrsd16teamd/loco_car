@@ -40,7 +40,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_))
+  if (mode_==1 || (mode_==5 && !obs_received_) || (mode_==6 && !obs_received_))
   {
     rampPlan();
   }
@@ -56,13 +56,11 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
 
     if (mode_ == 1)
       SendZeroCommand(); //brake
-    else if (mode_ == 2)
-      PlanFromExtrapolatedILQR();
-    else if (mode_==3 || mode_==7)
-      PlanFromCurrentStateILQR();
-    else if (mode_==4 || mode_==5 || mode_==11)
+    else if (mode_==2 || mode_==5)
+      Plan();
+    else if (mode_==3 || mode_==6)
       MpcILQR();
-    else if (mode_==6)
+    else if (mode_==4)
       FixedRateReplanILQR();
   }
 }
@@ -88,7 +86,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             mode_ = 1;
             break;
             // wait for stateCb to ramp
-    case 2: ROS_INFO("Mode 2: iLQR from static initial conditions.");
+    case 2: ROS_INFO("Mode 2:iLQR open-loop from static.");
             mode_ = 2;
 
             #if ILQRDEBUG
@@ -100,16 +98,8 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
             break;
             // wait for obsCb to plan
-    case 3: ROS_INFO("Mode 3: ramp -> iLQR open loop.");
+    case 3: ROS_INFO("Mode 3: iLQR mpc from static");
             mode_ = 3;
-            break;
-            //wait for stateCb to ramp
-    case 4: ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
-            mode_ = 4;
-            break;
-            //wait for stateCb to ramp
-    case 5: ROS_INFO("Mode 5: MPC iLQR from static initial conditions.");
-            mode_ = 5;
 
             #if ILQRDEBUG
             DUMMYOBS
@@ -118,35 +108,25 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             #endif
 
             break;
-            //wait for obsCb to plan
-    case 6: ROS_INFO("Mode 6: iLQR with fixed rate replanning from static.");
-            mode_ = 6;
-
-            #if ILQRDEBUG
-            DUMMYOBSSTATE
-            FixedRateReplanILQR();
-            mode_=0;
-            #endif
-
+            //wait for stateCb to ramp
+    case 4: ROS_INFO("Mode 4: iLQR fixed rate replanning from static");
+            mode_ = 4;
             break;
-    case 7: ROS_INFO("Mode 7: o-l iLQR w/ pid corrections from static initial conditions.");
-            mode_ = 7;
-            u_seq_saved_ = init_control_seq_;
+            //wait for stateCb to ramp
+    case 5: ROS_INFO("Mode 5: ramp -> iLQR open-loop.");
+            mode_ = 5;
+            break;
+            //wait for obsCb to plan
+    case 6: ROS_INFO("Mode 6: ramp -> iLQR mpc");
+            mode_ = 6;
             break;
     case 8: ROS_INFO("Resetting obs_received_ to false.");
             obs_received_ = false;
             break;
-    case 9: ROS_INFO("Sending zero and killing node.");
-            SendZeroCommand();
-            ros::shutdown();
-            break;
     case 10: ROS_INFO("Play back initial control sequence.");
              SendInitControlSeq();
              break;
-    case 11: ROS_INFO("Mode 8: MPC iLQR w/ pid corrections from static initial conditions.");
-             mode_ = 11;
-             break;
-
+    case 12: break;
     default: ROS_INFO("Please enter valid command.");
   }
 }
