@@ -58,8 +58,6 @@ namespace publishpcl_nodelet // @(namespace)
 
       new_angle_min_ = -front_angle_/2;
       new_angle_max_ = front_angle_/2;
-      scan_front_.angle_min = new_angle_min_;
-      scan_front_.angle_max = new_angle_max_;
 
       double old_angle = 2.35619449615;
       double increment = 0.00436332309619;
@@ -72,7 +70,9 @@ namespace publishpcl_nodelet // @(namespace)
 
     void scanCallback(const sensor_msgs::LaserScan::ConstPtr scan) {
       scan_front_ = *scan;
-    //   scan_front_.ranges.assign(scan->ranges.begin()+min_index_, scan->ranges.begin()+max_index_);
+      scan_front_.angle_min = new_angle_min_;
+      scan_front_.angle_max = new_angle_max_;
+      scan_front_.ranges.assign(scan->ranges.begin()+min_index_, scan->ranges.begin()+max_index_);
       projector_.projectLaser(scan_front_, cloud_);
       pcl_pub_.publish(cloud_);
     }
