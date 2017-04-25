@@ -46,7 +46,9 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || (mode_==5 && !found_obstacle_) || (mode_==6 && !found_obstacle_) || (mode_==7 && !found_obstacle_))
+  // if (mode_==1 || (mode_==5 && !found_obstacle_) || (mode_==6 && !found_obstacle_) || (mode_==7 && !found_obstacle_))
+  //   rampPlan();
+  if (mode_==1 || ((mode_==5 || mode_==6 || mode_==7 || mode_==13 || mode_==14) && !found_obstacle_))
     rampPlan();
 }
 
@@ -61,8 +63,13 @@ void TrajClient::ReactToObstacle()
       MpcILQR();
     else if (mode_==4)
       FixedRateReplanILQR();
-    else if (mode_==7)
+    else if (mode_==7 || mode_==13 || mode_==14) {
       SendInitControlSeq();
+      if (mode_==13)
+        Plan();
+      else if (mode_=14)
+        MpcILQR();
+    }
 
     reacted_to_obstacle_ = true;
     mode_ = 0;
@@ -119,19 +126,27 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
     case 6: ROS_INFO("Mode 6: ramp -> iLQR mpc");
             mode_ = 6;
             break;
-	  case 7: ROS_INFO("Mode 7: ramp -> playback");
+	case 7: ROS_INFO("Mode 7: ramp -> playback");
             mode_ = 7;
             break;
     case 8: ROS_INFO("Resetting obstacle.");
 			      ResetObstacle();
             break;
-    case 10: ROS_INFO("Play back initial control sequence.");
-			       mode_ = 10;
+    case 10: ROS_INFO("Play back initial control sequence");
+			 mode_ = 10;
              SendInitControlSeq();
              break;
     case 12: ROS_INFO("Placing fake obstacle %f meters ahead.", obs_dist_thres_);
              InsertFakeObs();
              break;
+
+    case 13: ROS_INFO("ramp -> playback -> iLQR open-loop.");
+			 mode_ = 13;
+             break;
+    case 14: ROS_INFO("ramp -> playback -> iLQR mpc");
+    	     mode_ = 14;
+             break;
+
     default: ROS_INFO("Please enter valid command.");
   }
 }

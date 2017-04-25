@@ -26,13 +26,13 @@ stop_goal_threshold: 0.3
 ilqr_tolFun: 0.0000001
 ilqr_tolConstraint: 0.0000001
 ilqr_tolGrad: 0.00001
-ilqr_max_iter: 30
+ilqr_max_iter: 100
 ilqr_regType: 1
 ilqr_debug_level: 2
 
 replan_rate: 3 # for fixed rate replanning
 use_extrapolate: 1
-extrapolate_dt: 0.1
+extrapolate_dt: 0.15
 
 # Original params:
 Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
@@ -59,11 +59,11 @@ old_msg_discard_thres: 0.5 #[seconds]
 
 # Obstacle detection params
 scan_clip_angle: 0.6 #radians
-naive_obstacle_dist_thres: 1.20
-naive_obstacle_percent_thres: 0.2
+naive_obstacle_dist_thres: 1.5
+naive_obstacle_percent_thres: 0.0001
 
 # PID heading correction params
-use_pid: 0
+use_pid: 1
 kp_heading: 0.1
 ki_heading: 0.0
 kd_heading: 0.1

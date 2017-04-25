@@ -62,6 +62,7 @@ void TrajClient::SendSwerveCommand()
 
 void TrajClient::SendInitControlSeq()
 {
+  ROS_INFO("Filling playback msg.");
   ilqr_loco::TrajExecGoal goal;
   FillGoalMsgHeader(goal);
   geometry_msgs::Twist control_msg;
@@ -77,6 +78,7 @@ void TrajClient::SendInitControlSeq()
   goal.traj.states.push_back(cur_state_);
 
   SendTrajectory(goal);
+  ROS_INFO("Sending playback command.");
 }
 
 void TrajClient::SendTrajectory(ilqr_loco::TrajExecGoal &goal)

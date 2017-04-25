@@ -34,6 +34,8 @@ bool TrajClient::TransformLaserToMap(geometry_msgs::PointStamped &pos_laser_fram
 
 void TrajClient::scanCb(const sensor_msgs::LaserScanConstPtr &msg)
 {
+  // ROS_INFO("start obstacle detector");
+
   if(found_obstacle_) return;
 
   // Look for obstacles in slice of scan
@@ -51,18 +53,19 @@ void TrajClient::scanCb(const sensor_msgs::LaserScanConstPtr &msg)
 
   float percent_scans_close = float(n_scans_close_enough)/float(scan_max_index_ - scan_min_index_);
 
-  geometry_msgs::PointStamped obs_pos_localframe;
-  geometry_msgs::PointStamped obs_pos_mapframe;
-  obs_pos_localframe.header.frame_id = "laser";
-  obs_pos_mapframe.header.frame_id = "map";
-
   // Fill data, transform, send cluster_center_pos here
   if(percent_scans_close > obs_percent_thres_)
   {
     ROS_INFO("Obstacle detector: Found obstacle.");
+    geometry_msgs::PointStamped obs_pos_localframe;
+    geometry_msgs::PointStamped obs_pos_mapframe;
+    obs_pos_localframe.header.frame_id = "laser";
+    obs_pos_mapframe.header.frame_id = "map";
+
     found_obstacle_ = true;
 
-    obs_pos_localframe.point.x = obs_dist;
+    double yaw = tf::getYaw(cur_state_.pose.pose.orientation);
+    obs_pos_localframe.point.x = obs_dist * cos(yaw);
     obs_pos_localframe.point.y = 0;
 
     if (TransformLaserToMap(obs_pos_localframe, obs_pos_mapframe))
@@ -72,6 +75,7 @@ void TrajClient::scanCb(const sensor_msgs::LaserScanConstPtr &msg)
       obs_pos_mapframe.point.y = 0; // hack to deal with heading uncertainty
       found_obstacle_ = true;
       obs_pos_pub_.publish(obs_pos_mapframe);
+	  ROS_INFO("Transformed obs pos.");
 
       if (!reacted_to_obstacle_)
         ReactToObstacle();

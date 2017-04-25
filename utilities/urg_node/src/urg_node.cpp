@@ -116,7 +116,7 @@ void update_reconfigure_limits(){
   min.angle_max = min.angle_min;
   max.angle_max = urg_->getAngleMaxLimit();
   max.angle_min = max.angle_max;
-  
+
   srv_->setConfigMin(min);
   srv_->setConfigMax(max);
 }
@@ -277,7 +277,7 @@ int main(int argc, char **argv)
 	    }
 	  } else {
 	  	if(!laser_pub){
-	    	laser_pub = n.advertise<sensor_msgs::LaserScan>("scan", 20);
+	    	laser_pub = n.advertise<sensor_msgs::LaserScan>("scan", 1);
 	    }
 	  }
 

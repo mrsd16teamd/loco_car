@@ -78,9 +78,10 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   double traj_start_time = (goal->traj.header.stamp).toSec();
 
   ros::Rate loop_rate(1.0/timestep);
-  // ROS_INFO("Executing trajectory.");
+  ROS_INFO("Executing trajectory.");
 
   PublishPath(goal);
+  ROS_INFO("Finished publishing path.");
 
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
@@ -110,12 +111,21 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       else
       {
 		// ROS_INFO("Command: %f, %f", goal->traj.commands[i].linear.x, goal->traj.commands[i].angular.z);
+        if (goal->traj.commands.size() == 1)
+        {
+          ROS_INFO("Ramp twist.");
+        }
+        else
+        {
+          ROS_INFO("Playback twist.");
+        }
+
         cmd_pub.publish(goal->traj.commands[i]);
       }
 
   	  feedback_.step = i;
   	  as.publishFeedback(feedback_);
-      ros::spinOnce();
+      ros::spinOnce();  
 
       int steps_left = goal->traj.commands.size() - i;
       if (steps_left>1)
