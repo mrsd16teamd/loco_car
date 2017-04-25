@@ -70,15 +70,10 @@ void TrajClient::PlanFromCurrentStateILQR()
   ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
 
-  ROS_INFO("before pid");
-  if(use_pid_)
+  if (mode_ == 7 || mode_==11) // turn on pid heading corrections during server execution
   	goal.traj.execution_mode = 1;
-    ROS_INFO("after pid");
-
 
   SendTrajectory(goal);
-  ROS_INFO("traj sent");
-
 }
 
 void TrajClient::PlanFromExtrapolatedILQR()
@@ -87,21 +82,10 @@ void TrajClient::PlanFromExtrapolatedILQR()
   ilqr_loco::TrajExecGoal goal  = GenTrajILQR(extrapolated, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
 
-  if(use_pid_)
+  if (mode_ == 7 || mode_==11) // turn on pid heading corrections during server execution
   	goal.traj.execution_mode = 1;
 
   SendTrajectory(goal);
-}
-
-void TrajClient::Plan()
-{
-  ROS_INFO("PLAN");
-  if (use_extrapolate_) {
-    PlanFromExtrapolatedILQR();
-  }
-  else{
-    PlanFromCurrentStateILQR();
-  }
 }
 
 void TrajClient::MpcILQR()
@@ -120,19 +104,25 @@ void TrajClient::MpcILQR()
     std::copy(u_seq_saved_.begin() + (2*step_on_last_traj_), u_seq_saved_.end(), u_seq_temp_.begin());
     u_seq_saved_ = u_seq_temp_;
 
-    Plan();
+    if (use_extrapolate_) {
+      PlanFromExtrapolatedILQR();
+    }
+    else{
+      PlanFromCurrentStateILQR();
+    }
 
     ros::spinOnce(); // to pick up new state estimates
     T_++;
+    // ROS_INFO("DistToGoal: %f", DistToGoal());
   }
-  ROS_INFO("Stopping MPC: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_).toSec());
+  ROS_INFO("Exiting MPC mode: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_).toSec());
   SendZeroCommand();
 }
 
 void TrajClient::FixedRateReplanILQR()
 {
   T_ = 0;
-  ROS_INFO("Starting fixed rate replanning.");
+  ROS_INFO("Starting mpc.");
   start_time_ = ros::Time::now();
   ros::Rate rate(replan_rate_);
 
@@ -146,13 +136,17 @@ void TrajClient::FixedRateReplanILQR()
     std::copy(u_seq_saved_.begin() + (2*step_on_last_traj_), u_seq_saved_.end(), u_seq_temp_.begin());
     u_seq_saved_ = u_seq_temp_;
 
-    Plan();
+    if (use_extrapolate_){
+      PlanFromExtrapolatedILQR();
+    }
+    else{
+      PlanFromCurrentStateILQR();
+    }
 
     ros::spinOnce(); // to pick up new state estimates
     T_++;
     rate.sleep();
   }
-
   SendZeroCommand();
 }
 
@@ -160,31 +154,27 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 {
   nav_msgs::Odometry extrapolated = state;
 
-  double theta = tf::getYaw(extrapolated.pose.pose.orientation);
-  double vx_world = extrapolated.twist.twist.linear.x*cos(theta) + extrapolated.twist.twist.linear.y*sin(theta);
-  double vy_world = extrapolated.twist.twist.linear.x*sin(theta) + extrapolated.twist.twist.linear.y*cos(theta);
-  extrapolated.pose.pose.position.x += (extrapolate_dt_ * vx_world);
-  extrapolated.pose.pose.position.y += (extrapolate_dt_ * vy_world);
+  //now a parameter: extrapolate_dt_
+  // double dt = 0.1; //[s] TODO make this parameter, or function of T_horizon_ and max_iter_
 
-  theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
-  extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
+  // extrapolated.pose.pose.position.x += (dt*extrapolated.twist.twist.linear.x);
+  // extrapolated.pose.pose.position.y += (dt*extrapolated.twist.twist.linear.y);
+    double theta = tf::getYaw(extrapolated.pose.pose.orientation);
+    double vx_world = extrapolated.twist.twist.linear.x*cos(theta) + extrapolated.twist.twist.linear.y*sin(theta);
+    double vy_world = extrapolated.twist.twist.linear.x*sin(theta) + extrapolated.twist.twist.linear.y*cos(theta);
+    extrapolated.pose.pose.position.x += (extrapolate_dt_*vx_world);
+    extrapolated.pose.pose.position.y += (extrapolate_dt_*vy_world);
+  
+    theta += extrapolate_dt_*extrapolated.twist.twist.angular.z;
+    extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
-  predicted_state_pub_.publish(extrapolated);
+    predicted_state_pub_.publish(extrapolated);
 
   return extrapolated;
 }
 
 double TrajClient::DistToGoal()
 {
-  if ( (x_des_[0] - cur_state_.pose.pose.position.x) < 0.1 )
-  {
-    // quick way to make sure robot doesn't run away past the goal point
-    return 0;
-  }
-  else
-  {
-    return sqrt( pow((x_des_[0]- cur_state_.pose.pose.position.x), 2) +
-                 pow((x_des_[1]- cur_state_.pose.pose.position.y), 2) );
-  }
-
+  return sqrt( pow((x_des_[0]- cur_state_.pose.pose.position.x), 2) +
+               pow((x_des_[1]- cur_state_.pose.pose.position.y), 2) );
 }

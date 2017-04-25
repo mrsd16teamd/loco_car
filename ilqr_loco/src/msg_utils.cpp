@@ -45,19 +45,6 @@ void TrajClient::SendZeroCommand()
   ROS_INFO("Sent zero command.");
 }
 
-void TrajClient::SendSwerveCommand()
-{
-  ilqr_loco::TrajExecGoal end_goal;
-
-  FillGoalMsgHeader(end_goal);
-  geometry_msgs::Twist control_msg;
-  FillTwistMsg(control_msg, 0, 0.77);
-  end_goal.traj.commands.push_back(control_msg);
-  end_goal.traj.states.push_back(cur_state_);
-  SendTrajectory(end_goal);
-  ROS_INFO("Sent swerve command.");
-}
-
 void TrajClient::SendInitControlSeq()
 {
   ilqr_loco::TrajExecGoal goal;

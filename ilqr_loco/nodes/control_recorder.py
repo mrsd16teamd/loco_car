@@ -31,6 +31,7 @@ def listener():
 def write_to_file():
 	n_commands = len(u_seq)/2
 	with open(filepath, "w+") as f:
+		f.write("T_horizon: " + str(n_commands) + "\n")
 		f.write("init_control_seq: [\n")
 		for i in range(n_commands):
 			f.write(str(u_seq[2*i] ) + ", " + str(u_seq[2*i+1]))

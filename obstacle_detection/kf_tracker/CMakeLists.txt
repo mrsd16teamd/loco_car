@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(naive_obstacle_detector)
+project(kf_tracker)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -48,6 +48,9 @@ include_directories(
 
 ## Declare a cpp executable
 # add_executable(kf_tracker_node src/kf_tracker_node.cpp)
+add_executable( tracker src/kf_tracker.cpp )
+target_link_libraries ( tracker ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+
 add_executable(naive_detector src/naive_obstacle_detector.cpp)
 target_link_libraries(naive_detector ${catkin_LIBRARIES})
 

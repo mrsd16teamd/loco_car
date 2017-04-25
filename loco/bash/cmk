@@ -1,37 +1,18 @@
 #!/bin/bash
 
-# This script provides a custom command to navigate
+# This script provides a custon command to navigate
 # to the catkin_ws workspace and invokes catkin_make,
-# then returns you to the current working directory
+# then retuns you to the current working directory
 
-# Move this file to ~/bin then $chmod +x cmk
-# OR append "export PATH=$PATH:~/<ws_name>/src/loco/bash" to your .bashrc
+# move this file to ~/bin then $chmod +x cmk
+# OR append "export PATH=$PATH:~/<ws_name>/src/loco/scripts/bash_scripts" to your .bashrc
 
+# Note: If your workspace is not named catkin_ws
+# use workspace path as an argument. Example:
+# $ cmk loco_ws
 
 CUR_DIR=$PWD
-WS_PATH=~/catkin_ws/
-PACKAGE=''
-
-while getopts 'hp:d:' flag; do
-  case "${flag}" in
-    p) PACKAGE="--pkg $OPTARG"
-       echo $PACKAGE ;;
-    d) WS_PATH=$OPTARG;;
-    h) echo "Quick catkin_make script"
-       echo "usage: cmk [-h] [-p PACKAGES] [-d CATKIN_WS_PATH]"
-       echo ""
-       echo -e "-h \t\t\t\t Show this help message and exit"
-       echo ""
-       echo -e "-p \"[PACKAGES]\" \t\t Build specific packages. For multiple packages, enclose all package names in a single pair of double-quotes"
-       echo ""
-       echo -e "-d [CATKIN_WS_PATH] \t\t path of your catkin workspace. Default: ~/catkin_ws/"
-       exit 1;;
-    *) error "Unexpected option ${flag}"
-       exit 1;;
-  esac
-done
-
+WS_PATH=${1:-~/catkin_ws}
 cd $WS_PATH
-catkin_make $PACKAGE
+catkin_make
 cd $CUR_DIR
-

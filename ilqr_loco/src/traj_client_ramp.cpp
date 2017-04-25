@@ -30,7 +30,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
     v = pre_ramp_vel_;
   }
   else {
-    v = cur_state.twist.twist.linear.x + accel_*dt;
+    v = cur_state.twist.twist.linear.x + accel_*dt +0.25;
     v = (v < target_vel_) ? v : target_vel_;
     // ROS_INFO("v = %f", v);
   }

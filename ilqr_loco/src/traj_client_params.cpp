@@ -8,6 +8,7 @@ void TrajClient::LoadParams()
 
     // Get parameters from ROS Param server
     TRYGETPARAM("timestep", timestep_)
+    TRYGETPARAM("extrapolate_dt", extrapolate_dt_)
 
     TRYGETPARAM("kp_ramp", kp_)
     TRYGETPARAM("ki_ramp", ki_)
@@ -19,14 +20,11 @@ void TrajClient::LoadParams()
     TRYGETPARAM("pre_ramp_time", pre_ramp_time_)
     TRYGETPARAM("timeout_ramp", timeout_)
 
-    TRYGETPARAM("use_pid", use_pid_);
-
+    TRYGETPARAM("T_horizon", T_horizon_)
     TRYGETPARAM("X_des", x_des_)
     TRYGETPARAM("timeout_ilqr_mpc", mpc_timeout_)
     TRYGETPARAM("stop_goal_threshold", goal_threshold_)
     TRYGETPARAM("use_extrapolate", use_extrapolate_)
-    TRYGETPARAM("extrapolate_dt", extrapolate_dt_)
-
 	  TRYGETPARAM("replan_rate", replan_rate_)
 
     TRYGETPARAM("ilqr_tolFun", ilqr_tolFun_)
@@ -38,14 +36,6 @@ void TrajClient::LoadParams()
 
     TRYGETPARAM("init_control_seq", init_control_seq_)
 	  u_seq_saved_ = init_control_seq_;
-	T_horizon_ = init_control_seq_.size();
-
-	TRYGETPARAM("naive_obstacle_dist_thres", obs_dist_thres_)
-  double lidar_to_bumper_dist = 0.1;
-  obs_dist_thres_ += lidar_to_bumper_dist;
-
-	TRYGETPARAM("naive_obstacle_percent_thres", obs_percent_thres_)
-	TRYGETPARAM("scan_clip_angle", scan_front_angle_)
 
     LoadOpt();
   }

@@ -24,20 +24,24 @@ commandBindings = {
 		'f': 6,
 		'g': 7,
 		'r': 8,
+		'k': 9,
 		'z': 10,
+        'h': 11,
 		'o': 12
 	     }
 
 commands = {
-	'a': 'ramp (-> brake)',
+	'a': 'ramp (and brake)',
 	'b': 'iLQR open-loop from static',
-	'c': 'iLQR mpc from static',
-	'd': 'iLQR fixed rate replanning from static',
-	'e': 'ramp -> iLQR open-loop',
-	'f': 'ramp -> iLQR mpc',
-	'g': 'ramp -> playback',
+	'c': 'ramp and iLQR open-loop',
+	'd': 'ramp and iLQR mpc',
+	'e': 'iLQR mpc from static',
+	'f': 'iLQR fixed rate replanning from static',
+	'g': 'iLQR o-l with PID corrections from static',
+    'h': 'iLQR mpc w/ pid corrections from static initial conditions',
 	'z': 'execute initial control sequence',
 	'r': 'reset obs',
+	'k': 'kill client',
 	'o': 'insert fake obstacle 1m in front of robot'
 }
 instructions = OrderedDict(sorted(commands.items(), key=lambda t: t[0]))
