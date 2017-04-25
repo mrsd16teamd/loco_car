@@ -132,6 +132,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             ros::shutdown();
             break;
     case 10: ROS_INFO("Play back initial control sequence.");
+			       mode_ = 10;
              SendInitControlSeq();
              break;
     case 11: ROS_INFO("Mode 8: MPC iLQR w/ pid corrections from static initial conditions.");
