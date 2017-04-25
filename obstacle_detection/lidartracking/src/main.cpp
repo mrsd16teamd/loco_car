@@ -40,7 +40,8 @@
 #include "Kf.h"
 #include <utility>
 #include <ctime>
-
+float obstacle_thres;
+int mode;
 static bool found_obs = false;
 ros::Publisher objID_pub;
 ros::Publisher cc_pos;
@@ -56,9 +57,11 @@ int DEBUGMODE = 0;
 
 void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 
+{ 
+ if(mode)
 {
     if(found_obs) return;
-
+}
     //initialize the clustercenter
     std_msgs::Float32MultiArray cluster_center;
     float xcoordinate(9.0f);
@@ -117,7 +120,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
         centroid.y=y/numPts;
         centroid.z=0.0;
  
-        if (centroid.x < 1.0  && centroid.x > -1.0 && centroid.y > -1.5 && centroid.y < 1.5 && centroid.x != 0 && centroid.y != 0 )
+        if (centroid.x < obstacle_thres && centroid.x > -1*obstacle_thres && centroid.y > -1*obstacle_thres && centroid.y < obstacle_thres && centroid.x != 0 && centroid.y != 0 )
         {
              
             xcoordinate = centroid.x;
@@ -272,12 +275,27 @@ void mode_cb(const geometry_msgs::Point &msg)
 
 int main(int argc, char** argv)
 {
+
+
+
+
  
     ros::init (argc,argv,"naive_detector");
     ros::NodeHandle nh;
     std::cout<<"About to setup callback tracker\n";
     tf::TransformListener lr(ros::Duration(10));
     tran=&lr;
+
+  try{
+    nh.getParam("naive_obstacle_dist_thres", obstacle_thres);
+   nh.getParam("setforcontinuousdetection", mode);
+  }
+  catch(...){
+    ROS_ERROR("Need param obstacle_thres");
+    ros::shutdown();
+  }
+
+
     ros::Subscriber sub = nh.subscribe ("scan_cloud", 1, cloud_cb);
   ros::Subscriber mode_sub = nh.subscribe("client_command", 1, mode_cb);
     cc_pos=nh.advertise<geometry_msgs::PointStamped>("cluster_center",100);//clusterCenter1
