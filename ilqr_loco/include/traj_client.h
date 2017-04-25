@@ -97,6 +97,7 @@ protected:
   float pre_ramp_time_;
   float timeout_;
   double timestep_;
+  double steering_offset_;
 
   //iLQR parameters
   float mpc_timeout_;

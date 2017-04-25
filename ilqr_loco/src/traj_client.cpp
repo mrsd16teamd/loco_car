@@ -126,6 +126,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 			      ResetObstacle();
             break;
     case 10: ROS_INFO("Play back initial control sequence.");
+			       mode_ = 10;
              SendInitControlSeq();
              break;
     case 12: ROS_INFO("Placing fake obstacle %f meters ahead.", obs_dist_thres_);
