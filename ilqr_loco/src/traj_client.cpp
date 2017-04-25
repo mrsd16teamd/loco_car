@@ -128,6 +128,7 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             obs_received_ = false;
             break;
     case 10: ROS_INFO("Play back initial control sequence.");
+			       mode_ = 10;
              SendInitControlSeq();
              break;
     case 12: break;

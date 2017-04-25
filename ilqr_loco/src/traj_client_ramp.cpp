@@ -18,8 +18,8 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   double p = kp_*error;
   double i = clamp(ki_*cur_integral_, -0.25, 0.25);
   double d = clamp(kd_*(error-prev_error_), -0.1, 0.1);
-  double output =  p + i + d;
-  // ROS_INFO("P = %f,  |  I = %f,  |  D = %f", p, i, d);
+  double output =  clamp(p + i + d + steering_offset_, -0.77, 0.77);
+  ROS_INFO("err = %.2f, P = %.2f,  |  I = %.2f,  |  D = %.2f | output = %.2f", error, p, i, d, output);
   // ROS_INFO("Output = %f", output);
 
   prev_error_ = error;
@@ -27,14 +27,15 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   // Generate goal
   double v;
   ros::Duration time_since_start = cur_state.header.stamp - start_time_;
-  if (time_since_start.toSec() < pre_ramp_time_) {
-    v = pre_ramp_vel_ + 0.25;
-    ROS_INFO("v = %f", v);
+  if (time_since_start.toSec() < pre_ramp_time_)
+  {
+    v = pre_ramp_vel_;
   }
-  else {
+  else
+  {
     // v = cur_state.twist.twist.linear.x + accel_*dt+ 0.25;
-    v = accel_*time_since_start.toSec() + 0.25;
-    v = (v < target_vel_) ? v : target_vel_;
+    v = accel_ * (time_since_start.toSec() - pre_ramp_time_) + pre_ramp_vel_;
+    v = clamp(v, 0, target_vel_);
     // ROS_INFO("v = %f", v);
   }
 
