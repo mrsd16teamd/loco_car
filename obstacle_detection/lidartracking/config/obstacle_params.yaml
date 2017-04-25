@@ -1,0 +1,7 @@
+
+
+# Obstacle detection params
+
+naive_obstacle_dist_thres: 1.20
+setforcontinuousdetection: 1 
+
