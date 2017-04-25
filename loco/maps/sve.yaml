@@ -1,5 +1,5 @@
 free_thresh: 0.05
-image: sve_tracks.pgm
+image: sve_tracks_obstacle.pgm
 negate: 0
 occupied_thresh: 0.65
 origin: [-2.1, -1.9, 0.0]

@@ -86,12 +86,11 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   switch (command)
   {
     case 1: ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
-            mode_ = 1;
+			      mode_ = 1;
             break;
             // wait for stateCb to ramp
-    case 2: ROS_INFO("Mode 2: iLQR from static initial conditions.");
-            mode_ = 2;
-
+    case 2: ROS_INFO("Mode 2:iLQR open-loop from static.");
+			      mode_ = 2;
             #if ILQRDEBUG
             DUMMYOBS
             u_seq_saved_ = init_control_seq_;
@@ -101,38 +100,29 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
 
             break;
             // wait for obsCb to plan
-    case 3: ROS_INFO("Mode 3: ramp -> iLQR open loop.");
+    case 3: ROS_INFO("Mode 3: iLQR mpc from static");
             mode_ = 3;
-            break;
-            //wait for stateCb to ramp
-    case 4: ROS_INFO("Mode 4: ramp -> receding horizon iLQR.");
-            mode_ = 4;
-            break;
-            //wait for stateCb to ramp
-    case 5: ROS_INFO("Mode 5: MPC iLQR from static initial conditions.");
-            mode_ = 5;
 
             #if ILQRDEBUG
             DUMMYOBS
             MpcILQR();
             mode_ = 0;
             #endif
-
+            break;
+            //wait for stateCb to ramp
+    case 4: ROS_INFO("Mode 4: iLQR fixed rate replanning from static");
+            mode_ = 4;
+            break;
+            //wait for stateCb to ramp
+    case 5: ROS_INFO("Mode 5: ramp -> iLQR open-loop.");
+            mode_ = 5;
             break;
             //wait for obsCb to plan
-    case 6: ROS_INFO("Mode 6: iLQR with fixed rate replanning from static.");
+    case 6: ROS_INFO("Mode 6: ramp -> iLQR mpc");
             mode_ = 6;
-
-            #if ILQRDEBUG
-            DUMMYOBSSTATE
-            FixedRateReplanILQR();
-            mode_=0;
-            #endif
-
             break;
-    case 7: ROS_INFO("Mode 7: o-l iLQR w/ pid corrections from static initial conditions.");
+	  case 7: ROS_INFO("Mode 7: ramp -> playback");
             mode_ = 7;
-            u_seq_saved_ = init_control_seq_;
             break;
     case 8: ROS_INFO("Resetting obs_received_ to false.");
             obs_received_ = false;

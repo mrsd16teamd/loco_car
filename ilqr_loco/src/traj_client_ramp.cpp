@@ -26,11 +26,14 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
 
   // Generate goal
   double v;
-  if (cur_state.header.stamp - start_time_ < ros::Duration(pre_ramp_time_)) {
-    v = pre_ramp_vel_;
+  ros::Duration time_since_start = cur_state.header.stamp - start_time_;
+  if (time_since_start.toSec() < pre_ramp_time_) {
+    v = pre_ramp_vel_ + 0.25;
+    ROS_INFO("v = %f", v);
   }
   else {
-    v = cur_state.twist.twist.linear.x + accel_*dt +0.25;
+    // v = cur_state.twist.twist.linear.x + accel_*dt+ 0.25;
+    v = accel_*time_since_start.toSec() + 0.25;
     v = (v < target_vel_) ? v : target_vel_;
     // ROS_INFO("v = %f", v);
   }
