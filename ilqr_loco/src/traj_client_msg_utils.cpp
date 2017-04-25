@@ -63,7 +63,6 @@ void TrajClient::SendSwerveCommand()
 void TrajClient::FillInitControlSeq()
 {
   ROS_INFO("Filling playback msg.");
-  FillGoalMsgHeader(playback_goal_);
   geometry_msgs::Twist control_msg;
 
   for (int i=0; i<(init_control_seq_.size()/2); i++)
@@ -79,7 +78,9 @@ void TrajClient::FillInitControlSeq()
 
 void TrajClient::SendInitControlSeq()
 {
+  FillGoalMsgHeader(playback_goal_);
   SendTrajectory(playback_goal_);
+  // step_on_last_traj_ = 3;
   ROS_INFO("Sending playback command.");
 }
 
