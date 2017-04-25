@@ -48,7 +48,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
 
   // if (mode_==1 || (mode_==5 && !found_obstacle_) || (mode_==6 && !found_obstacle_) || (mode_==7 && !found_obstacle_))
   //   rampPlan();
-  if (mode_==1 || ((mode_==5 || mode_==6 || mode_==7 || mode_==13 || mode_==14) && !found_obstacle_))
+  if (mode_==1 || ((mode_==5 || mode_==6 || mode_==7 || mode_==13 || mode_==14 || mode_==15) && !found_obstacle_))
     rampPlan();
 }
 
@@ -67,7 +67,9 @@ void TrajClient::ReactToObstacle()
       SendInitControlSeq();
       if (mode_==13)
         Plan();
-      else if (mode_=14)
+      else if (mode_==14)
+        MpcILQR();
+      else if (mode_==15)
         MpcILQR();
     }
 
@@ -93,25 +95,25 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   switch (command)
   {
     case 1: ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
-			      mode_ = 1;
+			mode_ = 1;
             break;
             // wait for stateCb to ramp
     case 2: ROS_INFO("Mode 2:iLQR open-loop from static.");
             mode_ = 2;
             #if ILQRDEBUG
-            DUMMYOBS
-            u_seq_saved_ = init_control_seq_;
-            PlanFromCurrentStateILQR();
-            mode_ = 0;
+                DUMMYOBS
+                u_seq_saved_ = init_control_seq_;
+                PlanFromCurrentStateILQR();
+                mode_ = 0;
             #endif
             break;
             // wait for obsCb to plan
     case 3: ROS_INFO("Mode 3: iLQR mpc from static");
             mode_ = 3;
             #if ILQRDEBUG
-            DUMMYOBS
-            MpcILQR();
-            mode_ = 0;
+                DUMMYOBS
+                MpcILQR();
+                mode_ = 0;
             #endif
             break;
             //wait for stateCb to ramp
@@ -145,6 +147,9 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
              break;
     case 14: ROS_INFO("ramp -> playback -> iLQR mpc");
     	     mode_ = 14;
+             break;
+    case 15: ROS_INFO("ramp -> playback -> iLQR fixed rate replan");
+     	     mode_ = 15;
              break;
 
     default: ROS_INFO("Please enter valid command.");

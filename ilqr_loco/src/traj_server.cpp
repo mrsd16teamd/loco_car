@@ -105,7 +105,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       if (goal->traj.execution_mode == 1)
       {
         geometry_msgs::Twist pid_twist = pid_correct_yaw(goal->traj.commands[i], goal->traj.states[i]);
-        // ROS_INFO("Command: %f, %f", pid_twist.linear.x, pid_twist.angular.z);
+        ROS_INFO("iLQR Twist: %f, %f", pid_twist.linear.x, pid_twist.angular.z);
         cmd_pub.publish(pid_twist);
       }
       else
@@ -125,7 +125,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
   	  feedback_.step = i;
   	  as.publishFeedback(feedback_);
-      ros::spinOnce();  
+      ros::spinOnce();
 
       int steps_left = goal->traj.commands.size() - i;
       if (steps_left>1)
