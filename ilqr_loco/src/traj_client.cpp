@@ -63,14 +63,14 @@ void TrajClient::ReactToObstacle()
       MpcILQR();
     else if (mode_==4)
       FixedRateReplanILQR();
-    else if (mode_==7 || mode_==13 || mode_==14) {
+    else if (mode_==7 || mode_==13 || mode_==14 || mode_==15) {
       SendInitControlSeq();
       if (mode_==13)
         Plan();
       else if (mode_==14)
         MpcILQR();
       else if (mode_==15)
-        MpcILQR();
+        FixedRateReplanILQR();
     }
 
     reacted_to_obstacle_ = true;
