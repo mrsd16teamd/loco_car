@@ -105,31 +105,6 @@ void TrajClient::MpcILQR()
   T_ = 0;
   ROS_INFO("Starting mpc.");
   start_time_ = ros::Time::now();
-
-  while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
-  {
-    ROS_INFO("Receding horizon iteration #%d", T_);
-
-    // Change u_seq_saved_ using step_on_last_traj_
-    ROS_INFO("step_on_last_traj_: %d", step_on_last_traj_);
-    std::vector<double> u_seq_temp_ = u_seq_saved_;
-    std::copy(u_seq_saved_.begin() + (2*step_on_last_traj_), u_seq_saved_.end(), u_seq_temp_.begin());
-    u_seq_saved_ = u_seq_temp_;
-
-    Plan();
-
-    ros::spinOnce(); // to pick up new state estimates
-    T_++;
-  }
-  ROS_INFO("Stopping MPC: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_).toSec());
-  SendZeroCommand();
-}
-
-void TrajClient::FixedRateReplanILQR()
-{
-  T_ = 0;
-  ROS_INFO("Starting fixed rate replanning.");
-  start_time_ = ros::Time::now();
   ros::Rate rate(replan_rate_);
 
   while( (DistToGoal() > goal_threshold_) && (ros::Time::now() - start_time_ < ros::Duration(mpc_timeout_)) )
@@ -146,23 +121,25 @@ void TrajClient::FixedRateReplanILQR()
 
     ros::spinOnce(); // to pick up new state estimates
     T_++;
-    rate.sleep();
+    if (use_fixed_rate_replan_){
+      rate.sleep();
+    }
   }
-
+  ROS_INFO("Stopping MPC: DistToGoal: %f, time over timeout: %f.", DistToGoal(), (ros::Time::now() - start_time_).toSec());
   SendZeroCommand();
 }
 
 nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 {
   nav_msgs::Odometry extrapolated = state;
-
   double theta = tf::getYaw(extrapolated.pose.pose.orientation);
+
   double vx_world = extrapolated.twist.twist.linear.x*cos(theta) + extrapolated.twist.twist.linear.y*sin(theta);
   double vy_world = extrapolated.twist.twist.linear.x*sin(theta) + extrapolated.twist.twist.linear.y*cos(theta);
-  theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
 
   extrapolated.pose.pose.position.x += (extrapolate_dt_ * vx_world);
   extrapolated.pose.pose.position.y += (extrapolate_dt_ * vy_world);
+  theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
   extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
   predicted_state_pub_.publish(extrapolated);

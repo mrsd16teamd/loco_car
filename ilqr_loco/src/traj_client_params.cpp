@@ -28,8 +28,6 @@ void TrajClient::LoadParams()
     TRYGETPARAM("use_extrapolate", use_extrapolate_)
     TRYGETPARAM("extrapolate_dt", extrapolate_dt_)
 
-	  TRYGETPARAM("replan_rate", replan_rate_)
-
     TRYGETPARAM("ilqr_tolFun", ilqr_tolFun_)
     TRYGETPARAM("ilqr_tolConstraint", ilqr_tolConstraint_)
     TRYGETPARAM("ilqr_tolGrad", ilqr_tolGrad_)
@@ -47,6 +45,9 @@ void TrajClient::LoadParams()
 
 	TRYGETPARAM("naive_obstacle_percent_thres", obs_percent_thres_)
 	TRYGETPARAM("scan_clip_angle", scan_front_angle_)
+
+	TRYGETPARAM("use_fixed_rate_replan", use_fixed_rate_replan_)
+  TRYGETPARAM("replan_rate", replan_rate_)
 
     LoadOpt();
   }

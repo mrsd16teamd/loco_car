@@ -51,6 +51,7 @@ protected:
   std::vector<double> x_traj_saved_;
   std::vector<double> x_des_;
   tOptSet Opt;
+  ilqr_loco::TrajExecGoal playback_goal_;
 
   // iLQR Opt.p: Car Params
   double g_, L_, m_, b_, a_, G_f_, G_r_, c_x_, c_a_, Iz_, mu_, mu_s_;
@@ -108,10 +109,10 @@ protected:
   int ilqr_max_iter_;
   int ilqr_regType_;
   int ilqr_debug_level_;
-  std::vector<double> replan_times_;
   double replan_rate_;
   int step_on_last_traj_;
   int use_extrapolate_;
+  int use_fixed_rate_replan_;
   double extrapolate_dt_;
   int use_pid_;
 
@@ -146,6 +147,7 @@ protected:
   void SendSwerveCommand();
   void SendTrajectory(ilqr_loco::TrajExecGoal &goal);
   void SendInitControlSeq();
+  void FillInitControlSeq();
 
   void stateCb(const nav_msgs::Odometry &msg);
   void modeCb(const geometry_msgs::Point &msg);

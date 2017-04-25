@@ -60,24 +60,26 @@ void TrajClient::SendSwerveCommand()
   ROS_INFO("Sent swerve command.");
 }
 
-void TrajClient::SendInitControlSeq()
+void TrajClient::FillInitControlSeq()
 {
   ROS_INFO("Filling playback msg.");
-  ilqr_loco::TrajExecGoal goal;
-  FillGoalMsgHeader(goal);
+  FillGoalMsgHeader(playback_goal_);
   geometry_msgs::Twist control_msg;
 
   for (int i=0; i<(init_control_seq_.size()/2); i++)
   {
     FillTwistMsg(control_msg, init_control_seq_[2*i], init_control_seq_[(2*i)+1]);
-    goal.traj.commands.push_back(control_msg);
-    goal.traj.states.push_back(cur_state_);
+    playback_goal_.traj.commands.push_back(control_msg);
+    playback_goal_.traj.states.push_back(cur_state_);
   }
   FillTwistMsg(control_msg, 0, 0);
-  goal.traj.commands.push_back(control_msg);
-  goal.traj.states.push_back(cur_state_);
+  playback_goal_.traj.commands.push_back(control_msg);
+  playback_goal_.traj.states.push_back(cur_state_);
+}
 
-  SendTrajectory(goal);
+void TrajClient::SendInitControlSeq()
+{
+  SendTrajectory(playback_goal_);
   ROS_INFO("Sending playback command.");
 }
 

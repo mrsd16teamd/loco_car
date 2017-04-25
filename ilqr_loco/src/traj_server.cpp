@@ -83,10 +83,10 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   double traj_start_time = (goal->traj.header.stamp).toSec();
 
   ros::Rate loop_rate(1.0/timestep);
-  ROS_INFO("Executing trajectory.");
+  // ROS_INFO("Executing trajectory.");
 
   PublishPath(goal);
-  ROS_INFO("Finished publishing path.");
+  // ROS_INFO("Finished publishing path.");
 
   if ( (cur_x_ - goal_x_) > 0.1 )
   {

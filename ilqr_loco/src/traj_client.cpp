@@ -23,6 +23,7 @@ TrajClient::TrajClient(): ac_("traj_server", true), mode_(0), T_(0),
 
   LoadParams();
   InitDetector();
+  FillInitControlSeq();
 
   ROS_INFO("Waiting for action server to start.");
   ac_.waitForServer(); //will wait for infinite time
@@ -46,7 +47,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || ((mode_==5 || mode_==6 || mode_==7 || mode_==13 || mode_==14 || mode_==15) && !found_obstacle_))
+  if (mode_==1 || ((mode_==5 || mode_==6 || mode_==7 || mode_==13 || mode_==14) && !found_obstacle_))
     rampPlan();
 }
 
@@ -59,16 +60,12 @@ void TrajClient::ReactToObstacle()
       Plan();
     else if (mode_==3 || mode_==6)
       MpcILQR();
-    else if (mode_==4)
-      FixedRateReplanILQR();
     else if (mode_==7 || mode_==13 || mode_==14 || mode_==15) {
       SendInitControlSeq();
       if (mode_==13)
         Plan();
       else if (mode_==14)
         MpcILQR();
-      else if (mode_==15)
-        FixedRateReplanILQR();
     }
 
     reacted_to_obstacle_ = true;
@@ -116,10 +113,6 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             #endif
             break;
             //wait for stateCb to ramp
-    case 4: ROS_INFO("Mode 4: iLQR fixed rate replanning from static");
-            mode_ = 4;
-            break;
-            //wait for stateCb to ramp
     case 5: ROS_INFO("Mode 5: ramp -> iLQR open-loop.");
             mode_ = 5;
             break;
@@ -141,13 +134,10 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
              InsertFakeObs();
              break;
     case 13: ROS_INFO("ramp -> playback -> iLQR open-loop.");
-			       mode_ = 13;
+			 mode_ = 13;
              break;
     case 14: ROS_INFO("ramp -> playback -> iLQR mpc");
     	       mode_ = 14;
-             break;
-    case 15: ROS_INFO("ramp -> playback -> iLQR fixed rate replan");
-     	       mode_ = 15;
              break;
 
     default: ROS_INFO("Please enter valid command.");
