@@ -68,7 +68,7 @@ namespace publishpcl_nodelet // @(namespace)
     //   std::cout << "max_index_ = " << max_index_ << std::endl;
     };
 
-    void scanCallback(const sensor_msgs::LaserScan::ConstPtr scan) {
+    void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan) {
       scan_front_ = *scan;
       scan_front_.angle_min = new_angle_min_;
       scan_front_.angle_max = new_angle_max_;
