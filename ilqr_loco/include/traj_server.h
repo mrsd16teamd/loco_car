@@ -56,6 +56,9 @@ private:
   double prev_error_;
   float kp_, ki_, kd_, dt, t_;
 
+  double cur_x_;
+  double goal_x_;
+
   ros::Publisher cmd_pub;
   ros::Publisher path_pub;
   ros::Subscriber state_sub;

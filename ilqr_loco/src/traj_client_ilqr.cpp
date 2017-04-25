@@ -70,15 +70,11 @@ void TrajClient::PlanFromCurrentStateILQR()
   ilqr_loco::TrajExecGoal goal = GenTrajILQR(cur_state_, u_seq_saved_, x_des_, obs_pos_);
   // TODO do some quick checks on trajectory?
 
-  ROS_INFO("before pid");
   if(use_pid_)
   	goal.traj.execution_mode = 1;
-    ROS_INFO("after pid");
-
 
   SendTrajectory(goal);
-  ROS_INFO("traj sent");
-
+  // ROS_INFO("traj sent");
 }
 
 void TrajClient::PlanFromExtrapolatedILQR()
@@ -95,7 +91,7 @@ void TrajClient::PlanFromExtrapolatedILQR()
 
 void TrajClient::Plan()
 {
-  ROS_INFO("PLAN");
+  // ROS_INFO("PLAN");
   if (use_extrapolate_) {
     PlanFromExtrapolatedILQR();
   }
@@ -161,12 +157,12 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
   nav_msgs::Odometry extrapolated = state;
 
   double theta = tf::getYaw(extrapolated.pose.pose.orientation);
-  theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
   double vx_world = extrapolated.twist.twist.linear.x*cos(theta) + extrapolated.twist.twist.linear.y*sin(theta);
   double vy_world = extrapolated.twist.twist.linear.x*sin(theta) + extrapolated.twist.twist.linear.y*cos(theta);
+  theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
+
   extrapolated.pose.pose.position.x += (extrapolate_dt_ * vx_world);
   extrapolated.pose.pose.position.y += (extrapolate_dt_ * vy_world);
-
   extrapolated.pose.pose.orientation = tf::createQuaternionMsgFromYaw(theta);
 
   predicted_state_pub_.publish(extrapolated);
@@ -176,7 +172,7 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 
 double TrajClient::DistToGoal()
 {
-  if ( (x_des_[0] - cur_state_.pose.pose.position.x) < 0.1 )
+  if ( (cur_state_.pose.pose.position.x - x_des_[0]) > 0.3 )
   {
     // quick way to make sure robot doesn't run away past the goal point
     return 0;

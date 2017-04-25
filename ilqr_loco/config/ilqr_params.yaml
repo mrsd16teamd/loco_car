@@ -1,5 +1,5 @@
 # TrajClient params
-X_des: [5.000000,0.000000,0.000000,0.000000,0.000000,0.000000]
+X_des: [5.600000,0.000000,0.000000,0.000000,0.000000,0.000000]
 # X_des: [2.7,1.05,3.1415,0.000000,0.000000,0.000000]
 
 timestep: 0.05 #0.02
@@ -40,11 +40,6 @@ Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
                 limThr: [0, 3.0], limSteer: [-0.77, 0.77],
                 k_steer: 20 } #limSteer: [-0.68, 0.76]
 
-# # Test param tests: 1-fail, 2-bad fail, 3-fail
-# Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
-#                 c_x: 250, c_a: 297, Iz: 0.025, mu: 1.60, mu_s: 0.5,
-#                 limThr: [0, 4.0], limSteer: [-0.68, 0.76]}
-
 Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 0.4],
            cf: [100, 100, 5, 10, 0.1, 0.1],
            pf: [0.01, 0.01, 0.1, 0.1, 0.1, 0.1],
@@ -55,11 +50,11 @@ Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 0.4],
 
 ######
 # TrajServer params
-old_msg_discard_thres: 0.5 #[seconds]
+old_msg_discard_thres: 0.15 #[seconds]
 
 # Obstacle detection params
 scan_clip_angle: 0.6 #radians
-naive_obstacle_dist_thres: 1.25
+naive_obstacle_dist_thres: 1.5
 naive_obstacle_percent_thres: 0.0001
 
 # PID heading correction params

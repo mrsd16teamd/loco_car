@@ -12,6 +12,10 @@ void TrajServer::LoadParams()
     TRYGETPARAM("kp_heading", kp_)
     TRYGETPARAM("ki_heading", ki_)
     TRYGETPARAM("kd_heading", kd_)
+    std::vector<double> goal_state;
+    TRYGETPARAM("X_des", goal_state)
+    goal_x_ = goal_state[0];
+    ROS_INFO("TrajServer: goal x= %f", goal_x_);
 }
 
 void TrajServer::PublishPath(const ilqr_loco::TrajExecGoalConstPtr &goal)
@@ -34,6 +38,7 @@ void TrajServer::PublishPath(const ilqr_loco::TrajExecGoalConstPtr &goal)
 
 void TrajServer::stateCb(const nav_msgs::Odometry &msg)
 {
+  cur_x_ = msg.pose.pose.position.x;
   cur_yaw_  = tf::getYaw(msg.pose.pose.orientation);
 }
 
@@ -60,7 +65,7 @@ geometry_msgs::Twist TrajServer::pid_correct_yaw(geometry_msgs::Twist orig_twist
   new_twist.linear.x = orig_twist.linear.x;
   new_twist.angular.z = steer;
 
-  // ROS_INFO("TrajServer: P: %.2f | I: %.2f  | D: %.2f | out: %.2f", p, i, d, correction);
+  ROS_INFO("TrajServer: P: %.2f | I: %.2f  | D: %.2f | out: %.2f", p, i, d, correction);
 
   prev_error_ = yaw_error;
 
@@ -83,6 +88,19 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
   PublishPath(goal);
   ROS_INFO("Finished publishing path.");
 
+  if ( (cur_x_ - goal_x_) > 0.1 )
+  {
+    // Make sure robot doesn't run away past the goal point
+    geometry_msgs::Twist twist;
+    twist.linear.x = 0;
+    twist.angular.z = 0;
+    cmd_pub.publish(twist);
+    ROS_INFO("Passed goal point.");
+    result_.done = 0;
+    as.setSucceeded(result_);
+    return;
+  }
+
   for (int i=0; i < goal->traj.commands.size(); i++)
   {
     // check that preempt has not been requested by the client
@@ -94,7 +112,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       break;
     }
     // check that commands in plan are not too old
-    else if ((ros::Time::now().toSec() - (traj_start_time + (i*timestep))) > old_msg_thres)
+    else if ((ros::Time::now().toSec() - (traj_start_time + (i*timestep))) > old_msg_thres || (goal->traj.commands.size()>1 && i<3) )
     {
      ROS_INFO("%s: Ignoring old command.", traj_action.c_str());
      continue;
