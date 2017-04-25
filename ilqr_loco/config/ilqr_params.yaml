@@ -59,7 +59,7 @@ old_msg_discard_thres: 0.5 #[seconds]
 
 # Obstacle detection params
 scan_clip_angle: 0.6 #radians
-naive_obstacle_dist_thres: 1.25
+naive_obstacle_dist_thres: 1.2
 naive_obstacle_percent_thres: 0.2
 
 # PID heading correction params

@@ -27,7 +27,8 @@ commandBindings = {
 		'k': 9,
 		'z': 10,
         'h': 11,
-		'o': 12
+		'o': 12,
+		'i': 14
 	     }
 
 commands = {

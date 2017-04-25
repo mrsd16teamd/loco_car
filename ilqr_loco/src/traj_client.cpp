@@ -41,7 +41,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_))
+  if (mode_==1 || (mode_==3 && !obs_received_) || (mode_==4 && !obs_received_) || (mode_==13 && !obs_received_))
   {
     rampPlan();
   }
@@ -65,6 +65,8 @@ void TrajClient::obsCb(const geometry_msgs::PointStamped &msg)
       MpcILQR();
     else if (mode_==6)
       FixedRateReplanILQR();
+    else if (mode_==13)
+      SendInitControlSeq();
   }
 }
 
@@ -132,13 +134,15 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
             ros::shutdown();
             break;
     case 10: ROS_INFO("Play back initial control sequence.");
-			       mode_ = 10;
+			 mode_ = 10;
              SendInitControlSeq();
              break;
     case 11: ROS_INFO("Mode 8: MPC iLQR w/ pid corrections from static initial conditions.");
              mode_ = 11;
              break;
-
+    case 13: ROS_INFO("Mode 9: ramp -> playback");
+             mode_ = 13;
+             break;
     default: ROS_INFO("Please enter valid command.");
   }
 }
