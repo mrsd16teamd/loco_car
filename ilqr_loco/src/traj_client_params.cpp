@@ -37,7 +37,7 @@ void TrajClient::LoadParams()
 
     TRYGETPARAM("init_control_seq", init_control_seq_)
 	  u_seq_saved_ = init_control_seq_;
-	T_horizon_ = init_control_seq_.size();
+	T_horizon_ = init_control_seq_.size()/2;
 
 	TRYGETPARAM("naive_obstacle_dist_thres", obs_dist_thres_)
   double lidar_to_bumper_dist = 0.1;

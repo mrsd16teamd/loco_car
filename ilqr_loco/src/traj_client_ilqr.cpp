@@ -7,9 +7,9 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_start, std
   ilqr_loco::TrajExecGoal goal;
   FillGoalMsgHeader(goal);
 
-  // ROS_INFO("Start state (before prediction): %f, %f, %f, %f, %f, %f",
-  //         cur_state_.pose.pose.position.x, cur_state_.pose.pose.position.y, theta,
-  //         cur_state_.twist.twist.linear.x, cur_state_.twist.twist.linear.y, cur_state_.twist.twist.angular.z);
+  // ROS_INFO("Start state: %f, %f, %f, %f, %f, %f",
+  //         x_start.pose.pose.position.x, x_start.pose.pose.position.y, x_start,
+  //         x_start.twist.twist.linear.x, x_start.twist.twist.linear.y, x_start.twist.twist.angular.z);
 
   //Pre-process inputs - put them in format that C-code wants
   // TODO figure out good way to initialize previous steering

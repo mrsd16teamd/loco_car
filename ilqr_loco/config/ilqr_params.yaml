@@ -34,7 +34,7 @@ use_fixed_rate_replan: 1
 replan_rate: 2 # for fixed rate replanning
 
 use_extrapolate: 1
-extrapolate_dt: 0.15
+extrapolate_dt: 0.20
 
 # Original params:
 Opt_car_param: {g: 9.81, m: 2.35, L: 0.257, b: 0.14328,
