@@ -47,7 +47,7 @@ void TrajClient::stateCb(const nav_msgs::Odometry &msg)
     start_time_ = ros::Time::now();
   }
 
-  if (mode_==1 || ((mode_==5 || mode_==6 || mode_==7 || mode_==13 || mode_==14) && !found_obstacle_))
+  if (mode_==1 || ((mode_==5 || mode_==6 || mode_==7 || mode_==13 || mode_==14 || mode_==15) && !found_obstacle_))
     rampPlan();
 }
 
@@ -60,7 +60,7 @@ void TrajClient::ReactToObstacle()
       Plan();
     else if (mode_==3 || mode_==6)
       MpcILQR();
-    else if (mode_==7 || mode_==13 || mode_==14 || mode_==15) {
+    else if (mode_==7 || mode_==13 || mode_==14) {
       SendInitControlSeq();
       if (mode_==13)
         Plan();
@@ -138,6 +138,9 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
              break;
     case 14: ROS_INFO("ramp -> playback -> iLQR mpc");
     	       mode_ = 14;
+             break;
+    case 15: ROS_INFO("Ramp without brake");
+             mode_ = 15;
              break;
 
     default: ROS_INFO("Please enter valid command.");

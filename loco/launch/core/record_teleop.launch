@@ -1,9 +1,0 @@
-<launch>
-
-  <include file="$(find teleop_twist_joy)/launch/20Hz.launch" />
-
-  <include file="$(find vesc_driver)/launch/vesc_driver_node.launch" /> 
-
-  <include file="$(find twist_mux)/launch/twist_mux.launch" />
-
-</launch>

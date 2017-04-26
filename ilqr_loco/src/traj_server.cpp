@@ -120,7 +120,7 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     // else, execute command!
     else
     {
-      if (goal->traj.execution_mode == 1)
+      if (goal->traj.execution_mode == 1 && i < goal->traj.commands.size()-1)
       {
         geometry_msgs::Twist pid_twist = pid_correct_yaw(goal->traj.commands[i], goal->traj.states[i]);
         ROS_INFO("iLQR Twist: %f, %f", pid_twist.linear.x, pid_twist.angular.z);

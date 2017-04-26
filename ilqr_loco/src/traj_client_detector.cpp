@@ -62,8 +62,6 @@ void TrajClient::scanCb(const sensor_msgs::LaserScanConstPtr &msg)
     obs_pos_localframe.header.frame_id = "laser";
     obs_pos_mapframe.header.frame_id = "map";
 
-    found_obstacle_ = true;
-
     double yaw = tf::getYaw(cur_state_.pose.pose.orientation);
     obs_pos_localframe.point.x = obs_dist * cos(yaw);
     obs_pos_localframe.point.y = 0;
@@ -75,7 +73,7 @@ void TrajClient::scanCb(const sensor_msgs::LaserScanConstPtr &msg)
       obs_pos_mapframe.point.y = 0; // hack to deal with heading uncertainty
       found_obstacle_ = true;
       obs_pos_pub_.publish(obs_pos_mapframe);
-	  ROS_INFO("Transformed obs pos.");
+  	  ROS_INFO("Transformed obs pos.");
 
       if (!reacted_to_obstacle_)
         ReactToObstacle();

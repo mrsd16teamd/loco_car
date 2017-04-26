@@ -3,7 +3,7 @@
   <include file="$(find loco)/launch/amcl/amcl_sve.launch" />
   <node pkg="loco" type="amcl_echo" name="amcl_echo" output="screen"/>
 
-  <include file="$(find loco)/launch/core/record_teleop.launch" />
+  <include file="$(find loco)/launch/core/teleop_record.launch" />
 
   <include file="$(find robot_localization)/launch/ekf_state_estimate.launch" />
 
