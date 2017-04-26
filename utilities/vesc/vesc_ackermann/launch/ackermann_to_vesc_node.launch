@@ -10,7 +10,7 @@
 speed_to_erpm_gain: -1680
 speed_to_erpm_offset: 0
 steering_angle_to_servo_gain: -1.0
-steering_angle_to_servo_offset: 0.01
+steering_angle_to_servo_offset: -0.01
 wheelbase: 0.257
 speed_min: -7200
 speed_max:  7200
