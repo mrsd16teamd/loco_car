@@ -65,7 +65,7 @@ geometry_msgs::Twist TrajServer::pid_correct_yaw(geometry_msgs::Twist orig_twist
   new_twist.linear.x = orig_twist.linear.x;
   new_twist.angular.z = steer;
 
-  ROS_INFO("TrajServer: P: %.2f | I: %.2f  | D: %.2f | out: %.2f", p, i, d, correction);
+  // ROS_INFO("TrajServer: P: %.2f | I: %.2f  | D: %.2f | out: %.2f", p, i, d, correction);
 
   prev_error_ = yaw_error;
 

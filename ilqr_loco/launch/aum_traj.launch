@@ -1,12 +1,12 @@
 <launch>
 <!-- use argument for choosing yaml file for initial control-->
 <!-- roslaunch traj_action_client.launch yaml:= ?init_control? -->
- <arg name="control" default="3mps_4" />
+ <!-- <arg name="control" default="3mps_4" /> -->
   <!-- <arg name="control" default="drift5" /> This is the parallel parking one.-->
-  <!-- <arg name="control" default="aum3" /> --> <!-- This is the 1m one. --> 
+  <arg name="control" default="aum3" />
 
 <!-- Load Planner configs from YAML -->
-  <rosparam command="load" file="$(find ilqr_loco)/config/ilqr_params.yaml"/>
+  <rosparam command="load" file="$(find ilqr_loco)/config/aum_ilqr_params.yaml"/>
   <rosparam command="load" file="$(find ilqr_loco)/control_seq/$(arg control).yaml"/>
 
 <!-- Start planner client-server nodes-->
