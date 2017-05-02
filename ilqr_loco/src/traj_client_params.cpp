@@ -86,9 +86,13 @@ void TrajClient::LoadCostParams()
   TRYGETPARAM("Opt_cost/cdx", cdx_)
   TRYGETPARAM("Opt_cost/px", px_)
   TRYGETPARAM("Opt_cost/k_pos", k_pos_)
-  TRYGETPARAM("Opt_cost/d_thres", d_thres_)
   TRYGETPARAM("Opt_cost/k_pos", k_pos2_)
-  TRYGETPARAM("Opt_cost/d_thres", d_thres2_)
+  TRYGETPARAM("Opt_cost/k_pos", k_pos3_)
+  TRYGETPARAM("Opt_cost/k_pos", k_pos4_)
+  TRYGETPARAM("Opt_cost/d_thres", d_thres_)
+  d_thres2_ = 0.5;
+  d_thres3_ = 0.5;
+  d_thres4_ = 0.5;
 }
 
 // changed to pass by reference to apply and keep edit
@@ -142,9 +146,12 @@ void TrajClient::LoadOpt()
   Opt.p[12] = assignPtrVal(&cx_[0],3);
   Opt.p[13] = assignPtrVal(&d_thres_,1);
   Opt.p[14] = assignPtrVal(&d_thres2_,1);
+
+
   Opt.p[15] = assignPtrVal(&timestep_,1);
   Opt.p[16] = assignPtrVal(&k_pos_,1);
   Opt.p[17] = assignPtrVal(&k_pos2_,1);
+
   Opt.p[18] = assignPtrVal(&limSteer_[0],2);
   Opt.p[19] = assignPtrVal(&limThr_[0],2);
   Opt.p[20] = assignPtrVal(&m_,1);

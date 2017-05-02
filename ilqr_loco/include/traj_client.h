@@ -70,6 +70,10 @@ protected:
   double d_thres_;                // Obstacle threshold
   double k_pos2_;                  // Obstacle pos cost
   double d_thres2_;                // Obstacle threshold
+  double k_pos3_;
+  double d_thres3_;
+  double k_pos4_;
+  double d_thres4_;
 
   // Helper variables
   int T_;                         // Sequence ID number (starts from 0, in lifetime of client)
