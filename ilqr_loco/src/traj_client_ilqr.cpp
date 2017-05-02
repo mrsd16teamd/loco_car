@@ -139,10 +139,11 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 
   extrapolated.pose.pose.position.x += (extrapolate_dt_ * vx_world);
   extrapolated.pose.pose.position.y += (extrapolate_dt_ * vy_world);
-  theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
+  // theta = 0;
+  // theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
 
-  if (T_==0)
-    theta = 0;
+  // if (T_==0)
+  //   theta = 0;
 
   // double steer_scaling_factor = 5;
   // double last_steer = u_seq_saved_[2*step_on_last_traj_ + 1];
