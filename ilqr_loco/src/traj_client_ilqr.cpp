@@ -22,10 +22,6 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_start, std
   double* xDes = &x_des[0]; //std::vector trick to convert vector to C-style array
   double* u0 = &u_init[0];
   double Obs[2] = {(double)obstacle_pos.x, (double)obstacle_pos.y};
-  double Obs2[2] = {(double)obstacle_pos.x, (double)obstacle_pos.y-0.15};
-  double Obs3[2] = {(double)obstacle_pos.x, (double)obstacle_pos.y-0.30};
-  double Obs4[2] = {(double)obstacle_pos.x, (double)obstacle_pos.y-0.45};
-
 
   int N = T_horizon_+1;
   int n = 8; //state size
@@ -36,7 +32,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_start, std
   Traj.x = (double *) malloc(n*N*sizeof(double));
   Traj.u = (double *) malloc(m*(N-1)*sizeof(double));
 
-  plan_trajectory(x0, u0, xDes, Obs, Obs2, Obs3, Obs4, T_horizon_, &Opt, &Traj);
+  plan_trajectory(x0, u0, xDes, Obs, T_horizon_, &Opt, &Traj);
 
   // TODO find better way that doesn't copy twice
   std::vector<double> u_sol(Traj.u, Traj.u+(2*T_horizon_));

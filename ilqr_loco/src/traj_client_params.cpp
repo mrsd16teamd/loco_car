@@ -90,6 +90,7 @@ void TrajClient::LoadCostParams()
   TRYGETPARAM("Opt_cost/k_pos", k_pos3_)
   TRYGETPARAM("Opt_cost/k_pos", k_pos4_)
   TRYGETPARAM("Opt_cost/d_thres", d_thres_)
+  TRYGETPARAM("Opt_cost/Obs_offset", Obs_offset_)
   d_thres2_ = 0.5;
   d_thres3_ = 0.5;
   d_thres4_ = 0.5;
@@ -132,10 +133,10 @@ void TrajClient::LoadOpt()
   Opt.p= (double **) malloc(n_params*sizeof(double *));
 
   Opt.p[0] = assignPtrVal(&G_f_,1);
-  Opt.p[1] = assignPtrVal(&G_r_,1);;
-  Opt.p[2] = assignPtrVal(&Iz_,1);;
+  Opt.p[1] = assignPtrVal(&G_r_,1);
+  Opt.p[2] = assignPtrVal(&Iz_,1);
   // [3] Obs
-  // [4] Obs2
+  Opt.p[4] = assignPtrVal(&Obs_offset_[0],3);
   Opt.p[5] = assignPtrVal(&a_,1);
   Opt.p[6] = assignPtrVal(&b_,1);
   Opt.p[7] = assignPtrVal(&c_a_,1);
@@ -146,20 +147,23 @@ void TrajClient::LoadOpt()
   Opt.p[12] = assignPtrVal(&cx_[0],3);
   Opt.p[13] = assignPtrVal(&d_thres_,1);
   Opt.p[14] = assignPtrVal(&d_thres2_,1);
+  Opt.p[15] = assignPtrVal(&d_thres3_,1);
+  Opt.p[16] = assignPtrVal(&d_thres4_,1);
 
+  Opt.p[17] = assignPtrVal(&timestep_,1);
+  Opt.p[18] = assignPtrVal(&k_pos_,1);
+  Opt.p[19] = assignPtrVal(&k_pos2_,1);
+  Opt.p[20] = assignPtrVal(&k_pos3_,1);
+  Opt.p[21] = assignPtrVal(&k_pos4_,1);
 
-  Opt.p[15] = assignPtrVal(&timestep_,1);
-  Opt.p[16] = assignPtrVal(&k_pos_,1);
-  Opt.p[17] = assignPtrVal(&k_pos2_,1);
-
-  Opt.p[18] = assignPtrVal(&limSteer_[0],2);
-  Opt.p[19] = assignPtrVal(&limThr_[0],2);
-  Opt.p[20] = assignPtrVal(&m_,1);
-  Opt.p[21] = assignPtrVal(&mu_,1);
-  Opt.p[22] = assignPtrVal(&mu_s_,1);
-  Opt.p[23] = assignPtrVal(&pf_[0],3);
-  Opt.p[24] = assignPtrVal(&px_[0],3);
-  // [25] xDes
+  Opt.p[22] = assignPtrVal(&limSteer_[0],2);
+  Opt.p[23] = assignPtrVal(&limThr_[0],2);
+  Opt.p[24] = assignPtrVal(&m_,1);
+  Opt.p[25] = assignPtrVal(&mu_,1);
+  Opt.p[26] = assignPtrVal(&mu_s_,1);
+  Opt.p[27] = assignPtrVal(&pf_[0],3);
+  Opt.p[28] = assignPtrVal(&px_[0],3);
+  // [29] xDes
 
   char *err_msg;
 }

@@ -17,7 +17,7 @@ struct trajectory {
 };
 
 double* assignPtrVal(double* values, int numVal);
-void init_params(tOptSet *o, double* xDes, double* Obs, double* Obs2);
-void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, double* Obs2, int T,  tOptSet *o, struct trajectory* Traj);
+void init_params(tOptSet *o, double* xDes, double* Obs);
+void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T,  tOptSet *o, struct trajectory* Traj);
 
 #endif

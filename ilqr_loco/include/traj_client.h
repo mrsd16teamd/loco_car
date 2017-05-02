@@ -74,6 +74,7 @@ protected:
   double d_thres3_;
   double k_pos4_;
   double d_thres4_;
+  std::vector<double> Obs_offset_;
 
   // Helper variables
   int T_;                         // Sequence ID number (starts from 0, in lifetime of client)

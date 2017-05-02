@@ -9,14 +9,13 @@ double* assignPtrVal(double* values, int numVal) {
     return temp;
 }
 
-void init_params(tOptSet *o, double* xDes, double* Obs, double* Obs2)
+void init_params(tOptSet *o, double* xDes, double* Obs)
 {
     o->p[3] = assignPtrVal(Obs,2);
-    o->p[4] = assignPtrVal(Obs2,2);
-    o->p[25] = assignPtrVal(xDes,6);
+    o->p[29] = assignPtrVal(xDes,6);
 }
 
-void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, double* Obs2, int T, tOptSet *o, struct trajectory* Traj)
+void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, int T, tOptSet *o, struct trajectory* Traj)
 {
     // dims
     int N, n, m, m_, n_, si, i, k;
@@ -41,7 +40,7 @@ void plan_trajectory(double* x0, double* u0, double* xDes, double* Obs, double* 
 
     standard_parameters(o);
     // Set model and problem parameters
-    init_params(o, xDes, Obs, Obs2);
+    init_params(o, xDes, Obs);
 
     // outputs
     double success[1];
