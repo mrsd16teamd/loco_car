@@ -12,13 +12,13 @@ void TrajClient::LoadParams()
     TRYGETPARAM("kp_ramp", kp_)
     TRYGETPARAM("ki_ramp", ki_)
     TRYGETPARAM("kd_ramp", kd_)
-	TRYGETPARAM("steering_offset", steering_offset_)
 	  TRYGETPARAM("kp_ramp_y", kp_y_)
     TRYGETPARAM("accel_ramp", accel_)
     TRYGETPARAM("target_vel_ramp", target_vel_)
     TRYGETPARAM("pre_ramp_vel", pre_ramp_vel_)
     TRYGETPARAM("pre_ramp_time", pre_ramp_time_)
     TRYGETPARAM("timeout_ramp", timeout_)
+    TRYGETPARAM("ramp_steer_multiplier", ramp_steer_multiplier_)
 
     TRYGETPARAM("use_pid", use_pid_);
 

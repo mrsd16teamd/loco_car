@@ -10,7 +10,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   // PID control for vehicle heading
   double y_error = (ramp_start_y_ - cur_state_.pose.pose.position.y);
   double yaw_des = kp_y_*y_error;
-  // ROS_INFO("y_error = %f", y_error);
+  ROS_INFO("yaw_des = %.2f, y_error = %.2f", yaw_des, y_error);
   // ROS_INFO("output_y: %f, kp_y_: %f", kp_y_*y_error, kp_y_);
 
   double error = yaw_des - yaw;
@@ -18,7 +18,7 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   double p = kp_*error;
   double i = clamp(ki_*cur_integral_, -0.25, 0.25);
   double d = clamp(kd_*(error-prev_error_), -0.1, 0.1);
-  double output =  clamp(p + i + d + steering_offset_, -0.77, 0.77);
+  double output =  clamp(p + i + d, -0.77, 0.77);
   ROS_INFO("err = %.2f, P = %.2f,  |  I = %.2f,  |  D = %.2f | output = %.2f", error, p, i, d, output);
   // ROS_INFO("Output = %f", output);
 
@@ -29,6 +29,8 @@ ilqr_loco::TrajExecGoal TrajClient::rampGenerateTrajectory(nav_msgs::Odometry pr
   ros::Duration time_since_start = cur_state.header.stamp - start_time_;
   if (time_since_start.toSec() < pre_ramp_time_)
   {
+    output *= ramp_steer_multiplier_;
+    ROS_INFO("Rampup steer: %.2f", output);
     v = pre_ramp_vel_;
   }
   else

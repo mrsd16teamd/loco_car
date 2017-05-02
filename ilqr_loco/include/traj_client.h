@@ -92,13 +92,13 @@ protected:
 
   //Constants for rampup planner
   float kp_, ki_, kd_, kp_y_;
+  float ramp_steer_multiplier_;
   float accel_;
   float target_vel_;
   float pre_ramp_vel_;
   float pre_ramp_time_;
   float timeout_;
   double timestep_;
-  double steering_offset_;
 
   //iLQR parameters
   float mpc_timeout_;

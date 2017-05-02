@@ -10,14 +10,14 @@ timestep: 0.05 #0.02
 kp_ramp: 0.9 #0.6
 ki_ramp: 0.3 #0.2
 kd_ramp: 1.2 #0.3
-kp_ramp_y: 0.01
-steering_offset: 0.007 #0.025
+kp_ramp_y: 0.2
+ramp_steer_multiplier: 1.5
 
 accel_ramp: 2.5
 target_vel_ramp: 3.0
 pre_ramp_vel: 0.5
-pre_ramp_time: 1.0
-timeout_ramp: 3.5
+pre_ramp_time: 2.0
+timeout_ramp: 4.5
 
 # iLQR params
 timeout_ilqr_mpc: 2.5
