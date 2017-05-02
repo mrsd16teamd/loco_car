@@ -10,7 +10,7 @@ timestep: 0.05 #0.02
 kp_ramp: 0.9 #0.6
 ki_ramp: 0.3 #0.2
 kd_ramp: 1.2 #0.3
-kp_ramp_y: 0.2
+kp_ramp_y: 0.3
 ramp_steer_multiplier: 1.5
 
 accel_ramp: 2.5
