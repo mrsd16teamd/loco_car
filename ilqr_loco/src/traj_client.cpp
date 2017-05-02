@@ -61,6 +61,7 @@ void TrajClient::ReactToObstacle()
     else if (mode_==3 || mode_==6)
       MpcILQR();
     else if (mode_==7 || mode_==13 || mode_==14 || mode_==15) {
+   	  ROS_INFO("velocity: %f", cur_state_.twist.twist.linear.x);
       SendInitControlSeq();
       if (mode_==13)
         Plan();

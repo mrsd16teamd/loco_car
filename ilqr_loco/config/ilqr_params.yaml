@@ -1,6 +1,6 @@
 # TrajClient params
 X_des: [5.600000,0.000000,0.000000,0.000000,0.000000,0.000000]
-# X_des: [2.7,1.05,3.1415,0.000000,0.000000,0.000000]
+# X_des: [2.7,1.05,3.1415,0.000000,0.000000,0.000000] # parallel parking
 
 timestep: 0.05 #0.02
 
@@ -48,7 +48,7 @@ Opt_cost: {cu: [0.01, 0.01], cdu: [1.0, 0.4],
            cx: [0.5, 0.5, 0.04], cdx: [0.001, 0.005, 0.002],
            px: [0.01, 0.01, 0.1],
            cdrift: -0.001,
-           k_pos: 1.0, k_vel: 1.0, d_thres: 1.5}
+           k_pos: 2.0, k_vel: 1.0, d_thres: 1.5}
 
 ######
 # TrajServer params
@@ -61,6 +61,6 @@ naive_obstacle_percent_thres: 0.0001
 
 # PID heading correction params
 use_pid: 1
-kp_heading: 0.25
+kp_heading: 0.4
 ki_heading: 0.0
 kd_heading: 0.1
