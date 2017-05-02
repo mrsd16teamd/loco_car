@@ -85,10 +85,10 @@ void TrajClient::LoadCostParams()
   TRYGETPARAM("Opt_cost/cx", cx_)
   TRYGETPARAM("Opt_cost/cdx", cdx_)
   TRYGETPARAM("Opt_cost/px", px_)
-  TRYGETPARAM("Opt_cost/cdrift", cdrift_)
   TRYGETPARAM("Opt_cost/k_pos", k_pos_)
-  TRYGETPARAM("Opt_cost/k_vel", k_vel_)
   TRYGETPARAM("Opt_cost/d_thres", d_thres_)
+  TRYGETPARAM("Opt_cost/k_pos", k_pos2_)
+  TRYGETPARAM("Opt_cost/d_thres", d_thres2_)
 }
 
 // changed to pass by reference to apply and keep edit
@@ -131,26 +131,26 @@ void TrajClient::LoadOpt()
   Opt.p[1] = assignPtrVal(&G_r_,1);;
   Opt.p[2] = assignPtrVal(&Iz_,1);;
   // [3] Obs
-  Opt.p[4] = assignPtrVal(&a_,1);
-  Opt.p[5] = assignPtrVal(&b_,1);
-  Opt.p[6] = assignPtrVal(&c_a_,1);
-  Opt.p[7] = assignPtrVal(&c_x_,1);
-  Opt.p[8] = assignPtrVal(&cdrift_,1);
+  // [4] Obs2
+  Opt.p[5] = assignPtrVal(&a_,1);
+  Opt.p[6] = assignPtrVal(&b_,1);
+  Opt.p[7] = assignPtrVal(&c_a_,1);
+  Opt.p[8] = assignPtrVal(&c_x_,1);
   Opt.p[9] = assignPtrVal(&cdu_[0],2);
-  Opt.p[10] = assignPtrVal(&cdx_[0],3);
-  Opt.p[11] = assignPtrVal(&cf_[0],6);
-  Opt.p[12] = assignPtrVal(&cu_[0],2);
-  Opt.p[13] = assignPtrVal(&cx_[0],3);
-  Opt.p[14] = assignPtrVal(&d_thres_,1);
+  Opt.p[10] = assignPtrVal(&cf_[0],3);
+  Opt.p[11] = assignPtrVal(&cu_[0],2);
+  Opt.p[12] = assignPtrVal(&cx_[0],3);
+  Opt.p[13] = assignPtrVal(&d_thres_,1);
+  Opt.p[14] = assignPtrVal(&d_thres2_,1);
   Opt.p[15] = assignPtrVal(&timestep_,1);
   Opt.p[16] = assignPtrVal(&k_pos_,1);
-  Opt.p[17] = assignPtrVal(&k_vel_,1);
+  Opt.p[17] = assignPtrVal(&k_pos2_,1);
   Opt.p[18] = assignPtrVal(&limSteer_[0],2);
   Opt.p[19] = assignPtrVal(&limThr_[0],2);
   Opt.p[20] = assignPtrVal(&m_,1);
   Opt.p[21] = assignPtrVal(&mu_,1);
   Opt.p[22] = assignPtrVal(&mu_s_,1);
-  Opt.p[23] = assignPtrVal(&pf_[0],6);
+  Opt.p[23] = assignPtrVal(&pf_[0],3);
   Opt.p[24] = assignPtrVal(&px_[0],3);
   // [25] xDes
 

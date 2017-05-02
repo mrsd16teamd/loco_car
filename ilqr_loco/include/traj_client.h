@@ -66,10 +66,10 @@ protected:
   std::vector<double> cx_;        // Running cost of position
   std::vector<double> cdx_;       // Running cost of velocity
   std::vector<double> px_;        // Running cost smooth terms
-  double cdrift_;                 // Drift cost
   double k_pos_;                  // Obstacle pos cost
-  double k_vel_;                  // Obstacle vel cost
   double d_thres_;                // Obstacle threshold
+  double k_pos2_;                  // Obstacle pos cost
+  double d_thres2_;                // Obstacle threshold
 
   // Helper variables
   int T_;                         // Sequence ID number (starts from 0, in lifetime of client)
