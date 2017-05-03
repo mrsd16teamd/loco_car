@@ -86,12 +86,12 @@ void TrajClient::LoadCostParams()
   TRYGETPARAM("Opt_cost/cdx", cdx_)
   TRYGETPARAM("Opt_cost/px", px_)
   TRYGETPARAM("Opt_cost/k_pos", k_pos_)
-  TRYGETPARAM("Opt_cost/k_pos", k_pos2_)
-  TRYGETPARAM("Opt_cost/k_pos", k_pos3_)
-  TRYGETPARAM("Opt_cost/k_pos", k_pos4_)
   TRYGETPARAM("Opt_cost/d_thres", d_thres_)
   TRYGETPARAM("Opt_cost/Obs_offsetX", Obs_offsetX_)
   TRYGETPARAM("Opt_cost/Obs_offsetY", Obs_offsetY_)
+  k_pos2_ = 7.0;
+  k_pos3_ = 7.0;
+  k_pos4_ = 7.0;
   d_thres2_ = 0.5;
   d_thres3_ = 0.5;
   d_thres4_ = 0.5;
