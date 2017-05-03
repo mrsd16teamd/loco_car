@@ -113,9 +113,9 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     }
     // check that commands in plan are not too old
     else if ( (ros::Time::now().toSec() - (traj_start_time + (i*timestep)) ) > old_msg_thres
-                || (goal->traj.commands.size()>1 && i<5 && goal->traj.execution_mode == 1) ) // dirty way to skip first 3 commands of ilqr traj
+                || (goal->traj.commands.size()>1 && i<3 && goal->traj.execution_mode == 1) ) // dirty way to skip first 3 commands of ilqr traj
     {
-     ROS_INFO("%s: Ignoring old command.", traj_action.c_str());
+     ROS_INFO("%s: Ignoring old command. steering: %f", traj_action.c_str(), goal->traj.commands[i].angular.z);
      continue;
     }
     // else, execute command!
