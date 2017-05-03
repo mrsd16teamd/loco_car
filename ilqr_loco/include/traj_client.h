@@ -66,10 +66,16 @@ protected:
   std::vector<double> cx_;        // Running cost of position
   std::vector<double> cdx_;       // Running cost of velocity
   std::vector<double> px_;        // Running cost smooth terms
-  double cdrift_;                 // Drift cost
   double k_pos_;                  // Obstacle pos cost
-  double k_vel_;                  // Obstacle vel cost
   double d_thres_;                // Obstacle threshold
+  double k_pos2_;                  // Obstacle pos cost
+  double d_thres2_;                // Obstacle threshold
+  double k_pos3_;
+  double d_thres3_;
+  double k_pos4_;
+  double d_thres4_;
+  std::vector<double> Obs_offsetX_;
+  std::vector<double> Obs_offsetY_;
 
   // Helper variables
   int T_;                         // Sequence ID number (starts from 0, in lifetime of client)
@@ -92,13 +98,13 @@ protected:
 
   //Constants for rampup planner
   float kp_, ki_, kd_, kp_y_;
+  float ramp_steer_multiplier_;
   float accel_;
   float target_vel_;
   float pre_ramp_vel_;
   float pre_ramp_time_;
   float timeout_;
   double timestep_;
-  double steering_offset_;
 
   //iLQR parameters
   float mpc_timeout_;

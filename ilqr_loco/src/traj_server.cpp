@@ -112,9 +112,10 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
       break;
     }
     // check that commands in plan are not too old
-    else if ((ros::Time::now().toSec() - (traj_start_time + (i*timestep))) > old_msg_thres || (goal->traj.commands.size()>1 && i<3) )
+    else if ( (ros::Time::now().toSec() - (traj_start_time + (i*timestep)) ) > old_msg_thres
+                || (goal->traj.commands.size()>1 && i<3 && goal->traj.execution_mode == 1) ) // dirty way to skip first 3 commands of ilqr traj
     {
-     ROS_INFO("%s: Ignoring old command.", traj_action.c_str());
+     ROS_INFO("%s: Ignoring old command. steering: %f", traj_action.c_str(), goal->traj.commands[i].angular.z);
      continue;
     }
     // else, execute command!
@@ -122,9 +123,17 @@ void TrajServer::execute_trajectory(const ilqr_loco::TrajExecGoalConstPtr &goal)
     {
       if (goal->traj.execution_mode == 1 && i < goal->traj.commands.size()-1)
       {
-        geometry_msgs::Twist pid_twist = pid_correct_yaw(goal->traj.commands[i], goal->traj.states[i]);
-        ROS_INFO("iLQR Twist: %f, %f", pid_twist.linear.x, pid_twist.angular.z);
-        cmd_pub.publish(pid_twist);
+        if (goal->traj.commands[i].linear.x == 0)
+        {
+          ROS_INFO("Zero twist.");
+          cmd_pub.publish(goal->traj.commands[i]);
+        }
+        else
+        {
+          geometry_msgs::Twist pid_twist = pid_correct_yaw(goal->traj.commands[i], goal->traj.states[i]);
+          ROS_INFO("iLQR Twist: %f, %f", pid_twist.linear.x, pid_twist.angular.z);
+          cmd_pub.publish(pid_twist);
+        }
       }
       else
       {

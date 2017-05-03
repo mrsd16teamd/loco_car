@@ -14,12 +14,12 @@
 #define isNANorINF(v) (isnan(v) || isinf(v))
 #define INF INFINITY
 
-#define N_X 10 
+#define N_X 8 
 #define N_U 2 
 
-#define sizeofQxx 55 
+#define sizeofQxx 36 
 #define sizeofQuu 3 
-#define sizeofQxu 20 
+#define sizeofQxu 16 
 
 typedef struct {
     double x[N_X];

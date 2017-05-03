@@ -60,15 +60,15 @@ public:
 
   void update(const geometry_msgs::Twist& twist)
   {
-    marker_.points[1].x = twist.linear.x;
+    marker_.points[1].x = twist.linear.x * 0.5;
 
     if (fabs(twist.linear.y) > fabs(twist.angular.z))
     {
-      marker_.points[1].y = twist.linear.y;
+      marker_.points[1].y = twist.linear.y * 0.5;
     }
     else
     {
-      marker_.points[1].y = twist.angular.z;
+      marker_.points[1].y = twist.angular.z * 0.5;
     }
   }
 
@@ -112,12 +112,11 @@ private:
   TwistMarker marker_;
 };
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   ros::init(argc, argv, "twist_marker");
 
-  TwistMarkerPublisher t(1.0, 2.0);
+  TwistMarkerPublisher t(1.0, 1.0);
 
   while (ros::ok())
   {
@@ -126,4 +125,3 @@ main(int argc, char *argv[])
 
   return EXIT_SUCCESS;
 }
-

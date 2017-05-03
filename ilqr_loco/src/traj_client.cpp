@@ -60,7 +60,8 @@ void TrajClient::ReactToObstacle()
       Plan();
     else if (mode_==3 || mode_==6)
       MpcILQR();
-    else if (mode_==7 || mode_==13 || mode_==14) {
+    else if (mode_==7 || mode_==13 || mode_==14 || mode_==15) {
+   	  ROS_INFO("velocity: %f", cur_state_.twist.twist.linear.x);
       SendInitControlSeq();
       if (mode_==13)
         Plan();
@@ -91,6 +92,8 @@ void TrajClient::modeCb(const geometry_msgs::Point &msg)
   switch (command)
   {
     case 1: ROS_INFO("Mode 1: ramp. If I see an obstacle, I'll brake!");
+			found_obstacle_ = false;
+			reacted_to_obstacle_ = false;
 			mode_ = 1;
             break;
             // wait for stateCb to ramp

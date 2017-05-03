@@ -24,7 +24,7 @@ ilqr_loco::TrajExecGoal TrajClient::GenTrajILQR(nav_msgs::Odometry &x_start, std
   double Obs[2] = {(double)obstacle_pos.x, (double)obstacle_pos.y};
 
   int N = T_horizon_+1;
-  int n = 10; //state size
+  int n = 8; //state size
   int m = 2;  //control size
 
   //Run iLQR trajectory generation
@@ -139,10 +139,11 @@ nav_msgs::Odometry TrajClient::ExtrapolateState(const nav_msgs::Odometry &state)
 
   extrapolated.pose.pose.position.x += (extrapolate_dt_ * vx_world);
   extrapolated.pose.pose.position.y += (extrapolate_dt_ * vy_world);
-  theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
+  // theta = 0;
+  // theta += extrapolate_dt_ * extrapolated.twist.twist.angular.z;
 
-  if (T_==0)
-    theta = 0;
+  // if (T_==0)
+  //   theta = 0;
 
   // double steer_scaling_factor = 5;
   // double last_steer = u_seq_saved_[2*step_on_last_traj_ + 1];
