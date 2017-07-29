@@ -1,3 +1,29 @@
+//
+// MIT License
+//
+// Copyright (c) 2017 MRSD Team D - LoCo
+// The Robotics Institute, Carnegie Mellon University
+// http://mrsdprojects.ri.cmu.edu/2016teamd/
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+
 /*
     MRSD Team D '16 - Team LoCo - Evasive Maneuvers and Drifting for Autonomous Vehicles - Teensy Firmware
     This sets up the Teensy as a ROS subscriber for steering command inputs and also a ROS publisher on the /teensy topic for diagnostics
@@ -184,5 +210,3 @@ void disable_ISR() {
   pwm_val = pwm_zero;
 
 }
-
-

@@ -1,16 +1,28 @@
-/*
- * rosserial Servo Control Example
- *
- * This sketch demonstrates the control of hobby R/C servos
- * using ROS and the arduiono
- * 
- * For the full tutorial write up, visit
- * www.ros.org/wiki/rosserial_arduino_demos
- *
- * For more information on the Arduino Servo Library
- * Checkout :
- * http://www.arduino.cc/en/Reference/Servo
- */
+//
+// MIT License
+//
+// Copyright (c) 2017 MRSD Team D - LoCo
+// The Robotics Institute, Carnegie Mellon University
+// http://mrsdprojects.ri.cmu.edu/2016teamd/
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
 
 #if (ARDUINO >= 100)
  #include <Arduino.h>
@@ -18,7 +30,7 @@
  #include <WProgram.h>
 #endif
 
-#include <Servo.h> 
+#include <Servo.h>
 #include <ros.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/String.h>
@@ -49,13 +61,13 @@ bool kill = 0;
 double mapf(double x, double in_min, double in_max, double out_min, double out_max)
 {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-} 
+}
 
 void cmd_vel_cb(const ackermann_msgs::AckermannDriveStamped& cmd_msg){
   x = cmd_msg.drive.speed;
   w = cmd_msg.drive.steering_angle;
   last_received = millis();
- 
+
 }
 
 ros::Subscriber<ackermann_msgs::AckermannDriveStamped> sub("cmd_vel_ack", cmd_vel_cb);
@@ -67,7 +79,7 @@ void setup(){
   pinMode(led_pin, OUTPUT);
   pinMode(esc_pin, OUTPUT);
   pinMode(servo_pin, OUTPUT);
-  pinMode(disable_pin, INPUT); 
+  pinMode(disable_pin, INPUT);
 //  pinMode(kill_pin, INPUT);
   attachInterrupt(disable_pin, disable_ISR, CHANGE);
 //  attachInterrupt(kill_pin, kill_ISR, CHANGE);
@@ -75,7 +87,7 @@ void setup(){
   nh.initNode();
   nh.subscribe(sub);
   nh.advertise(teensy);
-  
+
   servo.attach(servo_pin,1000,2000); //attach it to pin A9/23
   esc.attach(esc_pin,1000,2000); //attach it to pin A8/22
 
@@ -84,12 +96,12 @@ void setup(){
 void loop(){
 
   unsigned long elapsed = millis() - last_received;
-  
+
   if (elapsed > timeout) {
     x = 0;
     w = 0;
   }
-  
+
   nh.spinOnce();
   String out;
   out +=  "Throttle: " + String(x) + ", " + String(throttle) + '\t' + "Steering: " + String(w) + ", " + String(steer) + '\t' + "Disabled: " + String(disabled) + "\t Elapsed: " + elapsed ;
@@ -98,11 +110,11 @@ void loop(){
   teensy.publish( &out_msg );
 
   if (!disabled) {
-    
-    steer = mapf(w, 1.0, -1.0, 1100,1900); //maxes out at +/- 0.8
-    servo.writeMicroseconds(steer); 
 
-    if (x>0) {                                                
+    steer = mapf(w, 1.0, -1.0, 1100,1900); //maxes out at +/- 0.8
+    servo.writeMicroseconds(steer);
+
+    if (x>0) {
       if (x == 1.6 && (w > 0.8 || w < - 0.8)) {   //if turbo mode on teleop is activated, make sure steering is high and spin fast enough so it can drift
         throttle = 1700;
       }
@@ -118,26 +130,26 @@ void loop(){
       else {
        throttle = mapf(x, -1.5, 0, 1440, 1460); //hand tuned values. default to 1500, 2000 if problems
       }
-      
+
     }
 
     else {
       throttle = 1500;
     }
 
-    esc.writeMicroseconds(throttle);  
+    esc.writeMicroseconds(throttle);
 
     digitalWrite(led_pin, LOW);
   }
-  
-  else {  
-      
+
+  else {
+
     throttle = 1500;
     steer = 1500;
     servo.writeMicroseconds(1500);
     esc.writeMicroseconds(1500);
     digitalWrite(led_pin, HIGH);
-    
+
   }
 
   delay(10);
@@ -159,7 +171,7 @@ void kill_ISR() {
   while (1) {
     servo.writeMicroseconds(1500);
     esc.writeMicroseconds(1500);
-    digitalWrite(led_pin, HIGH-digitalRead(led_pin));  //toggle led  
+    digitalWrite(led_pin, HIGH-digitalRead(led_pin));  //toggle led
     delay(1000);
   }
 }

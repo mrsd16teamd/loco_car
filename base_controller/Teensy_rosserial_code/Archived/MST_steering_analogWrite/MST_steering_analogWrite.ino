@@ -1,16 +1,28 @@
-/*
- * rosserial Servo Control Example
- *
- * This sketch demonstrates the control of hobby R/C servos
- * using ROS and the arduiono
- * 
- * For the full tutorial write up, visit
- * www.ros.org/wiki/rosserial_arduino_demos
- *
- * For more information on the Arduino Servo Library
- * Checkout :
- * http://www.arduino.cc/en/Reference/Servo
- */
+//
+// MIT License
+//
+// Copyright (c) 2017 MRSD Team D - LoCo
+// The Robotics Institute, Carnegie Mellon University
+// http://mrsdprojects.ri.cmu.edu/2016teamd/
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
 
 #if (ARDUINO >= 100)
  #include <Arduino.h>
@@ -18,7 +30,7 @@
  #include <WProgram.h>
 #endif
 
-#include <Servo.h> 
+#include <Servo.h>
 #include <ros.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/Float64.h>
@@ -54,25 +66,25 @@ bool kill = 0;
 double mapf(double x, double in_min, double in_max, double out_min, double out_max)
 {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-} 
+}
 
 
 //void cmd_vel_cb(const geometry_msgs::Twist& cmd_msg){
 //  x = cmd_msg.linear.x;
 //  w = cmd_msg.angular.z;
 //  last_received = millis();
-// 
+//
 //}
 
 void cmd_vel_cb(const std_msgs::Float64& steering_angle){
 //  x = cmd_msg.linear.x;
 //  w = cmd_msg.angular.z;
-  
+
   w = steering_angle.data;
 //  servo.attach(servo_pin,885,1885);
-  
+
   last_received = millis();
- 
+
 }
 
 //ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", cmd_vel_cb);
@@ -85,7 +97,7 @@ void setup(){
   pinMode(led_pin, OUTPUT);
   pinMode(esc_pin, OUTPUT);
   pinMode(servo_pin, OUTPUT);
-  pinMode(disable_pin, INPUT); 
+  pinMode(disable_pin, INPUT);
   pinMode(on_pin, OUTPUT);
   pinMode(off_pin, OUTPUT);
   attachInterrupt(disable_pin, disable_ISR, CHANGE);
@@ -94,7 +106,7 @@ void setup(){
   nh.initNode();
   nh.subscribe(sub);
   nh.advertise(teensy);
-  
+
 //  servo.attach(servo_pin,885,1885); //attach it to pin A9/23
 //  esc.attach(esc_pin,1000,2000); //attach it to pin A8/22
 
@@ -109,7 +121,7 @@ void setup(){
   digitalWrite(led_pin, HIGH);
   delay(100);
   digitalWrite(led_pin, LOW);
-  
+
   // send pulse to turn ON VESC
   digitalWrite(on_pin, HIGH);
   delay(10);
@@ -119,7 +131,7 @@ void setup(){
 void loop(){
 
   unsigned long elapsed = millis() - last_received;
-  
+
   nh.spinOnce();
   String out;
   actual_w = w-0.22;
@@ -130,7 +142,7 @@ void loop(){
   teensy.publish( &out_msg );
 
   if (!disabled) {
-    
+
 
       steer = mapf(w, 0.9977, -0.5577, 7728 , 10408); //maxes out at +/- 0.77 rads = +/- 44.56 degs, with offset of 0.22 rad from center
 
@@ -144,18 +156,18 @@ void loop(){
       analogWrite(servo_pin, steer);
     }
     digitalWrite(led_pin, LOW);
-  
-  
-  
-  
+
+
+
+
   }
-  
+
   else {  //when disabled
 
     steer = steer_zero;
-    
+
     analogWrite(servo_pin, steer_zero);
-    digitalWrite(led_pin, HIGH);   
+    digitalWrite(led_pin, HIGH);
   }
 
   delay(10);
@@ -169,26 +181,24 @@ void disable_ISR() {
     digitalWrite(off_pin, HIGH);
     delay(10);
     digitalWrite(off_pin, LOW);
-    
+
   }
 
   else {
     digitalWrite(on_pin, HIGH);
     delay(10);
     digitalWrite(on_pin, LOW);
-    
+
   }
 
 
 
-  
+
 //  throttle = 1500;
   steer = steer_zero;
 //  esc.writeMicroseconds(throttle);
 //  servo.writeMicroseconds(steer);
 //  servo.detach();
-  
+
 
 }
-
-
