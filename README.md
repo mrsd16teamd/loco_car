@@ -1,6 +1,12 @@
 # Team LoCo: loco_car
 Software for LOCO, our autonomous drifting RC car. See our wiki for details about this repo, and learn more about our project at: http://mrsdprojects.ri.cmu.edu/2016teamd/
 
+Project Video: </br>
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=LxzJOHa37sg
+" target="_blank"><img src="http://img.youtube.com/vi/LxzJOHa37sg/0.jpg" 
+alt="Team LoCo Project Video" width="240" height="180" border="10" /></a>
+
 # Project Abstract
 Autonomous vehicles are currently being tested and deployed in major cities around the world, and it is not difficult to imagine that they will be fully deployed on public roads within the next 5-10 years. While these vehicles have advanced sensing capabilities and intelligent systems for decision-making and control, they might still be susceptible to external threats on the road, including reckless human rivers and suddenly-appearing wildlife.
 
